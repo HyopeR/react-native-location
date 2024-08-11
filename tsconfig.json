@@ -1,17 +1,26 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
+    "outDir": "./dist",
+    "target": "esnext",
+    "module": "es2015",
+    "moduleResolution": "node",
     "jsx": "react",
     "sourceMap": true,
     "declaration": true,
     "strict": true,
-    "outDir": "./dist",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
     "lib": ["es2015", "es2016", "esnext"],
-    "types": ["react", "react-native"],
-  }
+    "types": ["react-native", "jest"]
+  },
+  "include": ["src"],
+  "exclude": [
+    "example",
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ]
 }

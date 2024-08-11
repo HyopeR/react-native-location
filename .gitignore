@@ -1,55 +1,9 @@
-dist/
-docs/
-jsconfig.json
-coverage/
-.nyc*
-
-### SublimeText ###
-*.sublime-workspace
-
-### VsCode ###
-.vscode
-
-### OSX ###
+# OSX
+#
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
-
-# Thumbnails
-._*
-
-# Files that might appear on external disk
-.Spotlight-V100
-.Trashes
-
-### Windows ###
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Webstorm
-.idea
-
-# App specific
-
-npm-debug.log
-yarn-error.log
-node_modules/
-.tmp
-old
-
-# Binaries
-*.ipa
-*.zip
 
 # Xcode
+#
 build/
 *.pbxuser
 !default.pbxuser
@@ -59,17 +13,58 @@ build/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-*.xcworkspace
-!default.xcworkspace
 xcuserdata
-profile
+*.xccheckout
 *.moved-aside
 DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+ios/.xcode.env.local
 
-.idea/
-android/.gradle
-android/*.iml
-android/local.properties
+# Android/IntelliJ
+#
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
 
-# Pods - for those of you who use CocoaPods
-Pods
+# node.js
+#
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/
+
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
+# Bundle artifact
+*.jsbundle
+
+# Ruby / CocoaPods
+/ios/Pods/
+/vendor/bundle/
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+
+# testing
+/coverage
+
+# customize
+/dist
+/docs

@@ -1,61 +1,61 @@
 export type LocationPermissionStatus =
   // iOS
-  | "authorizedAlways"
-  | "authorizedWhenInUse"
+  | 'authorizedAlways'
+  | 'authorizedWhenInUse'
   // Android
-  | "authorizedFine"
-  | "authorizedCoarse"
+  | 'authorizedFine'
+  | 'authorizedCoarse'
   // Shared
-  | "denied"
-  | "restricted"
-  | "notDetermined";
+  | 'denied'
+  | 'restricted'
+  | 'notDetermined';
 /**
  * Constants indicating the type of activity associated with location updates.
  * @platform ios
  * @see [Apple Docs](https://developer.apple.com/documentation/corelocation/clactivitytype?language=objc)
  */
 export type LocationActivityType =
-  | "other"
-  | "automotiveNavigation"
-  | "fitness"
-  | "otherNavigation"
-  | "airborne"; // iOS 12+
+  | 'other'
+  | 'automotiveNavigation'
+  | 'fitness'
+  | 'otherNavigation'
+  | 'airborne'; // iOS 12+
 /**
  * The location provider to use for Android.
  * @platform android
  */
-export type AndroidProvider = "auto" | "playServices" | "standard";
+export type AndroidProvider = 'auto' | 'playServices' | 'standard';
 /**
  * The accuracy of the location responses for Android.
  * @platform android
  * @see [Apple Docs](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setPriority(int))
  */
 export type LocationPriorityAndroid =
-  | "balancedPowerAccuracy"
-  | "highAccuracy"
-  | "lowPower"
-  | "noPower";
+  | 'balancedPowerAccuracy'
+  | 'highAccuracy'
+  | 'lowPower'
+  | 'noPower';
 /**
  * The accuracy of a geographical coordinate for iOS.
  * @platform ios
  * @see [Apple Docs](https://developer.apple.com/documentation/corelocation/cllocationaccuracy?language=objc)
  */
 export type LocationAccuracyIOS =
-  | "bestForNavigation"
-  | "best"
-  | "nearestTenMeters"
-  | "hundredMeters"
-  | "threeKilometers";
+  | 'bestForNavigation'
+  | 'best'
+  | 'nearestTenMeters'
+  | 'hundredMeters'
+  | 'threeKilometers';
 /**
  * Constants indicating the physical orientation of the device.
  * @platform ios
  * @see [Apple Docs](https://developer.apple.com/documentation/corelocation/cldeviceorientation?language=objc)
  */
 export type HeadingOrientation =
-  | "portrait"
-  | "portraitUpsideDown"
-  | "landscapeLeft"
-  | "landscapeRight";
+  | 'portrait'
+  | 'portraitUpsideDown'
+  | 'landscapeLeft'
+  | 'landscapeRight';
 
 export interface Location {
   /**
@@ -231,9 +231,9 @@ export interface GetLatestLocationOptions {
 }
 
 export interface RequestPermissionOptions {
-  ios?: "whenInUse" | "always" | void;
+  ios?: 'whenInUse' | 'always' | void;
   android?: {
-    detail: "coarse" | "fine";
+    detail: 'coarse' | 'fine';
     rationale?: {
       title: string;
       message: string;

@@ -160,7 +160,7 @@ In the [example](https://github.com/timfpark/react-native-location/example) fold
 
 The app requests permissions, takes reading every 5 distance and starts immediately. To use in the iOS simulator, look on the `Debug -> Location` menu for sample trips that will show you updating location such as City Bycicle Ride, City Run, and Freeway Drive.
 
-![Example App](./screenshots/example.gif)
+![Example App](assets/example.gif)
 
 ## Usage
 ```javascript

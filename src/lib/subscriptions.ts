@@ -1,10 +1,10 @@
-import { EventEmitter } from "react-native";
+import {NativeEventEmitter} from 'react-native';
 import {
   Location,
   Subscription,
   Heading,
-  RNLocationNativeInterface
-} from "../types";
+  RNLocationNativeInterface,
+} from '../types';
 
 /**
  * Internal helper class for managing event subscriptions
@@ -12,25 +12,25 @@ import {
  */
 export default class Subscriptions {
   private nativeInterface: RNLocationNativeInterface;
-  private eventEmitter: EventEmitter;
+  private nativeEventEmitter: NativeEventEmitter;
   private locationListenerCount = 0;
   private headingListenerCount = 0;
   private significantLocationListenerCount = 0;
 
   public constructor(
     nativeInterface: RNLocationNativeInterface,
-    eventEmitter: EventEmitter
+    nativeEventEmitter: NativeEventEmitter,
   ) {
     this.nativeInterface = nativeInterface;
-    this.eventEmitter = eventEmitter;
+    this.nativeEventEmitter = nativeEventEmitter;
   }
 
   public subscribeToLocationUpdates(
-    listener: (locations: Location[]) => void
+    listener: (locations: Location[]) => void,
   ): Subscription {
-    const emitterSubscription = this.eventEmitter.addListener(
-      "locationUpdated",
-      listener
+    const emitterSubscription = this.nativeEventEmitter.addListener(
+      'locationUpdated',
+      listener,
     );
     this.nativeInterface.startUpdatingLocation();
     this.locationListenerCount += 1;
@@ -46,11 +46,11 @@ export default class Subscriptions {
   }
 
   public subscribeToHeadingUpdates(
-    listener: (heading: Heading) => void
+    listener: (heading: Heading) => void,
   ): Subscription {
-    const emitterSubscription = this.eventEmitter.addListener(
-      "headingUpdated",
-      listener
+    const emitterSubscription = this.nativeEventEmitter.addListener(
+      'headingUpdated',
+      listener,
     );
     this.nativeInterface.startUpdatingHeading();
     this.headingListenerCount += 1;
@@ -66,11 +66,11 @@ export default class Subscriptions {
   }
 
   public subscribeToSignificantLocationUpdates(
-    listener: (locations: Location[]) => void
+    listener: (locations: Location[]) => void,
   ): Subscription {
-    const emitterSubscription = this.eventEmitter.addListener(
-      "locationUpdated",
-      listener
+    const emitterSubscription = this.nativeEventEmitter.addListener(
+      'locationUpdated',
+      listener,
     );
     this.nativeInterface.startMonitoringSignificantLocationChanges();
     this.significantLocationListenerCount += 1;

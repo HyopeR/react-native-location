@@ -1,12 +1,10 @@
-/* eslint-disable valid-jsdoc */
-
 /**
  * Wraps a promise with a timeout which resolves to `null` after a given delay.
  * @ignore
  */
 export const promiseTimeoutResolveNull = <T>(
   ms: number,
-  promise: Promise<T>
+  promise: Promise<T>,
 ): Promise<T | null> => {
   // Create a promise that rejects in <ms> milliseconds
   let timeout = new Promise<null>(resolve => {
