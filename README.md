@@ -41,7 +41,7 @@ pod 'react-native-location', :path => '../node_modules/react-native-location/rea
 ```
 
 ### 1c. Or manually link the library
-If you can't or don't want to use the CLI tool, you can also manually link the library using the [intructions in the React NAtive documentation](https://facebook.github.io/react-native/docs/linking-libraries-ios#manual-linking).
+If you can't or don't want to use the CLI tool, you can also manually link the library using the [intructions in the React Native documentation](https://facebook.github.io/react-native/docs/linking-libraries-ios#manual-linking).
 
 ### 2. Ensure you have the CoreLocation library linked
 *This is not required if you have installed using Cocoapods.*
@@ -208,6 +208,7 @@ You can call `configure` multiple times at it will only change the setting which
 
 ```javascript
 RNLocation.configure({
+    allowsBackgroundLocationUpdates: false,
     distanceFilter: 100, // Meters
     desiredAccuracy: {
       ios: "best",
@@ -220,7 +221,6 @@ RNLocation.configure({
     maxWaitTime: 5000, // Milliseconds
     // iOS Only
     activityType: "other",
-    allowsBackgroundLocationUpdates: false,
     headingFilter: 1, // Degrees
     headingOrientation: "portrait",
     pausesLocationUpdatesAutomatically: false,
@@ -237,6 +237,20 @@ There are the valid configuration options and what they do:
       <th>Description</th>
       <th>Values</th>
       <th>Documentation</th>
+   </tr>
+
+   <tr>
+      <td><code>allowsBackgroundLocationUpdates</code></td>
+      <td>
+         Android
+         iOS
+      </td>
+      <td>A Boolean value indicating whether the app should receive location updates when suspended. Requires permissions to always access the users location. Defaults to <code>false</code>.</td>
+      <td><code>boolean</code></td>
+      <td>
+        <a href="https://developer.android.com/develop/sensors-and-location/location/permissions">Android Docs</a>
+        <a href="https://developer.apple.com/documentation/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates">Apple Docs</a>
+      </td>
    </tr>
    
    <tr>
@@ -315,14 +329,6 @@ There are the valid configuration options and what they do:
       </td>
       <td><code>number</code></td>
       <td><a href="https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setMaxWaitTime(int)">Android Docs</a></td>
-   </tr>
-
-   <tr>
-      <td><code>allowsBackgroundLocationUpdates</code></td>
-      <td>iOS</td>
-      <td>A Boolean value indicating whether the app should receive location updates when suspended. Requires permissions to always access the users location. Defaults to <code>false</code>.</td>
-      <td><code>boolean</code></td>
-      <td><a href="https://developer.apple.com/documentation/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates">Apple Docs</a></td>
    </tr>
 
    <tr>

@@ -2,6 +2,7 @@ package com.github.reactnativecommunity.location;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
@@ -12,16 +13,21 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
-
 @ReactModule(name = RNLocationModule.NAME)
 public class RNLocationModule extends ReactContextBaseJavaModule {
     public static final String NAME = "RNLocation";
-
     private RNLocationProvider locationProvider;
+    private boolean backgroundMode = false;
 
     public RNLocationModule(ReactApplicationContext reactContext) {
         super(reactContext);
         reactContext.addActivityEventListener(activityEventListener);
+    }
+
+    @Override
+    public void onCatalystInstanceDestroy() {
+        ReactApplicationContext context = getReactApplicationContext();
+        context.removeActivityEventListener(activityEventListener);
     }
 
     @Override
@@ -62,6 +68,13 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
 
         // Pass the options to the location provider
         locationProvider.configure(getCurrentActivity(), options, promise);
+
+        backgroundMode = options.hasKey("allowsBackgroundLocationUpdates") && options.getBoolean("allowsBackgroundLocationUpdates");
+
+        if (backgroundMode) {
+            RNLocationForegroundService.setLocationProvider(locationProvider);
+            RNLocationForegroundService.restartLocationProvider();
+        }
     }
 
     @ReactMethod
@@ -72,8 +85,11 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
             locationProvider = createDefaultLocationProvider();
         }
 
-        // Call the provider
-        locationProvider.startUpdatingLocation();
+        if (backgroundMode) {
+            startForegroundService();
+        } else {
+            locationProvider.startUpdatingLocation();
+        }
     }
 
     @ReactMethod
@@ -84,8 +100,35 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
             locationProvider = createDefaultLocationProvider();
         }
 
-        // Call the provider
-        locationProvider.stopUpdatingLocation();
+        if (backgroundMode) {
+            stopForegroundService();
+        } else {
+            locationProvider.stopUpdatingLocation();
+        }
+    }
+
+    private void startForegroundService() {
+        if (!RNLocationForegroundService.locationProviderRunning) {
+            ReactApplicationContext context = getReactApplicationContext();
+            Intent intent = new Intent(context, RNLocationForegroundService.class);
+
+            RNLocationForegroundService.setLocationProvider(locationProvider);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent);
+            } else {
+                context.startService(intent);
+            }
+        }
+    }
+
+    private void stopForegroundService() {
+        if (RNLocationForegroundService.locationProviderRunning) {
+            ReactApplicationContext context = getReactApplicationContext();
+            Intent intent = new Intent(context, RNLocationForegroundService.class);
+
+            context.stopService(intent);
+        }
     }
 
     // Helpers
