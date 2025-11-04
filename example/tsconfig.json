@@ -1,0 +1,14 @@
+{
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@hyoper/rn-location": ["../src/index"]
+    },
+    "jsx": "react",
+    "types": ["node"],
+    "moduleResolution": "node",
+    "allowImportingTsExtensions": false
+  },
+  "include": ["./src/**/*.ts", "./src/**/*.tsx"]
+}
