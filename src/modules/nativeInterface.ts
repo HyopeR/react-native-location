@@ -1,0 +1,20 @@
+import {NativeModules, NativeEventEmitter} from 'react-native';
+import {RNLocationNativeInterface} from '../types';
+
+export const get = (): {
+  nativeInterface: RNLocationNativeInterface;
+  eventEmitter: NativeEventEmitter;
+} => {
+  const nativeInterface: RNLocationNativeInterface = NativeModules.RNLocation;
+  if (!nativeInterface) {
+    console.warn(
+      'Could not find the RNLocation native module. Have you correctly linked react-native-location and rebuilt your app?',
+    );
+  }
+  const eventEmitter = new NativeEventEmitter(nativeInterface);
+  return {nativeInterface, eventEmitter};
+};
+
+export default {
+  get,
+};

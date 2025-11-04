@@ -1,0 +1,85 @@
+{
+  "name": "@hyoper/rn-location",
+  "version": "0.0.1",
+  "description": "React Native library for tracking location changes in foreground and background.",
+  "author": "hyoper <tolcelik11@gmail.com> (https://github.com/hyoper)",
+  "homepage": "https://github.com/hyoper/react-native-location",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyoper/react-native-location"
+  },
+  "license": "MIT",
+  "main": "lib/module/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/index.d.ts",
+  "source": "src/index",
+  "react-native": "src/index",
+  "files": [
+    "src",
+    "lib",
+    "android",
+    "!android/build",
+    "ios",
+    "!ios/build",
+    "RNLocation.podspec"
+  ],
+  "keywords": [
+    "react",
+    "react-native",
+    "android",
+    "ios",
+    "location",
+    "location-tracking",
+    "gps",
+    "typescript"
+  ],
+  "scripts": {
+    "prepare": "bob build",
+    "test:ts": "tsc --noEmit",
+    "test:lint": "eslint --ext ts,tsx src/",
+    "build": "bob build",
+    "build:clean": "del-cli lib",
+    "docs": "typedoc",
+    "docs:clean": "del-cli docs",
+    "docs:deploy": "gh-pages -d docs -b docs",
+    "release": "npm publish --access public",
+    "prepublishOnly": "npm run build:clean && npm run build",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
+    "@babel/runtime": "^7.25.0",
+    "@react-native/babel-preset": "0.79.6",
+    "@react-native/eslint-config": "0.79.6",
+    "@react-native/metro-config": "0.79.6",
+    "@react-native/typescript-config": "0.79.6",
+    "@types/react": "^19.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "del-cli": "^7.0.0",
+    "eslint": "^8.19.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "gh-pages": "^6.3.0",
+    "prettier": "2.8.8",
+    "react": "19.0.0",
+    "react-native": "0.79.6",
+    "react-native-builder-bob": "~0.39.1",
+    "typedoc": "^0.28.13",
+    "typescript": "5.0.4"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": ">=0.75.0"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "module",
+      "typescript"
+    ]
+  }
+}

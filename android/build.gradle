@@ -1,0 +1,24 @@
+apply plugin: 'com.android.library'
+
+def safeExtGet(prop, fallback) {
+  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+android {
+  namespace "com.hyoper.location"
+
+  compileSdkVersion safeExtGet('compileSdkVersion', 35)
+  defaultConfig {
+    minSdkVersion safeExtGet("minSdkVersion", 23)
+    targetSdkVersion safeExtGet('targetSdkVersion', 35)
+  }
+}
+
+def playServicesVersion = safeExtGet("playServicesVersion", "18.9.0")
+def playServicesLocationVersion = safeExtGet("playServicesLocationVersion", "21.3.0")
+
+dependencies {
+  implementation "com.facebook.react:react-native:+"
+  implementation "com.google.android.gms:play-services-base:$playServicesVersion"
+  implementation "com.google.android.gms:play-services-location:$playServicesLocationVersion"
+}
