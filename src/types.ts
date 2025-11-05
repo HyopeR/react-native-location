@@ -244,5 +244,3 @@ export interface RequestPermissionOptions {
 }
 
 export type Subscription = () => void;
-
-export type RNLocationNativeInterface = any;

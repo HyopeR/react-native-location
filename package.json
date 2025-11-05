@@ -74,6 +74,14 @@
     "react": "*",
     "react-native": ">=0.75.0"
   },
+  "codegenConfig": {
+    "name": "RNLocationSpec",
+    "type": "modules",
+    "jsSrcsDir": "./src/specs",
+    "android": {
+      "javaPackageName": "com.hyoper.location"
+    }
+  },
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
