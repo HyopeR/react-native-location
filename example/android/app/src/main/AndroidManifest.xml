@@ -2,6 +2,14 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- React Native Location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- React Native Location (Optional) (For Background Usage) -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
@@ -10,6 +18,11 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
+        <!-- React Native Location (Optional) (For Background Usage) -->
+        <service
+          android:name="com.hyoper.location.RNLocationForegroundService"
+          android:exported="false"
+          android:foregroundServiceType="location" />
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

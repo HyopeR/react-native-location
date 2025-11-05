@@ -9,6 +9,7 @@ export const HomePage = ({children}: PageProps) => {
     <Screen>
       <Screen.Header>
         <Screen.Title>React Native Location</Screen.Title>
+        <Screen.Subtitle>@hyoper/rn-location</Screen.Subtitle>
       </Screen.Header>
 
       <Screen.Content style={PageStyle.root}>
