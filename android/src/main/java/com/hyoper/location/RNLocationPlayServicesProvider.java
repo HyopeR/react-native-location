@@ -30,7 +30,7 @@ import com.google.android.gms.tasks.Task;
 
 import java.lang.ref.WeakReference;
 
-public class RNPlayServicesLocationProvider implements RNLocationProvider {
+public class RNLocationPlayServicesProvider implements RNLocationProvider {
     private static final int REQUEST_CHECK_SETTINGS = 1234;
 
     private final ReactApplicationContext context;
@@ -44,7 +44,7 @@ public class RNPlayServicesLocationProvider implements RNLocationProvider {
     private ReadableMap pendingConfigureOptions = null;
     private Promise pendingConfigurePromise = null;
 
-    public RNPlayServicesLocationProvider(Activity activity, ReactApplicationContext context) {
+    public RNLocationPlayServicesProvider(Activity activity, ReactApplicationContext context) {
         this.context = context;
         if (activity != null) {
             locationProvider = LocationServices.getFusedLocationProviderClient(activity);

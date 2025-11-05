@@ -1,4 +1,5 @@
-apply plugin: 'com.android.library'
+apply plugin: "com.android.library"
+apply plugin: "com.facebook.react"
 
 def safeExtGet(prop, fallback) {
   rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -7,7 +8,7 @@ def safeExtGet(prop, fallback) {
 android {
   namespace "com.hyoper.location"
 
-  compileSdkVersion safeExtGet('compileSdkVersion', 35)
+  compileSdkVersion safeExtGet("compileSdkVersion", 35)
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 23)
     targetSdkVersion safeExtGet('targetSdkVersion', 35)

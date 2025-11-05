@@ -8,18 +8,16 @@ import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.BaseActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = RNLocationModule.NAME)
-public class RNLocationModule extends ReactContextBaseJavaModule {
+@ReactModule(name = RNLocation.NAME)
+public class RNLocation extends NativeRNLocationSpec {
     public static final String NAME = "RNLocation";
     private RNLocationProvider locationProvider;
     private boolean backgroundMode = false;
 
-    public RNLocationModule(ReactApplicationContext reactContext) {
+    public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
         reactContext.addActivityEventListener(activityEventListener);
     }
@@ -35,14 +33,6 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
         return NAME;
     }
 
-    // React interface
-    @ReactMethod
-    public void addListener(String eventName) {}
-
-    @ReactMethod
-    public void removeListeners(double count) {}
-
-    @ReactMethod
     @SuppressWarnings("unused")
     public void configure(ReadableMap options, final Promise promise) {
         // Update the location provider if we are given one
@@ -77,7 +67,6 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
     @SuppressWarnings("unused")
     public void startUpdatingLocation() {
         // Ensure we have a provider
@@ -92,7 +81,6 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
     @SuppressWarnings("unused")
     public void stopUpdatingLocation() {
         // Ensure we have a provider
@@ -135,8 +123,8 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
 
     private ActivityEventListener activityEventListener = new BaseActivityEventListener() {
         public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-            if (locationProvider instanceof RNPlayServicesLocationProvider) {
-                ((RNPlayServicesLocationProvider) locationProvider).onActivityResult(requestCode, resultCode, data);
+            if (locationProvider instanceof RNLocationPlayServicesProvider) {
+                ((RNLocationPlayServicesProvider) locationProvider).onActivityResult(requestCode, resultCode, data);
             }
         }
     };
@@ -150,11 +138,11 @@ public class RNLocationModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private RNPlayServicesLocationProvider createPlayServicesLocationProvider() {
-        return new RNPlayServicesLocationProvider(getCurrentActivity(), getReactApplicationContext());
+    private RNLocationPlayServicesProvider createPlayServicesLocationProvider() {
+        return new RNLocationPlayServicesProvider(getCurrentActivity(), getReactApplicationContext());
     }
 
-    private RNStandardLocationProvider createStandardLocationProvider() {
-        return new RNStandardLocationProvider(getReactApplicationContext());
+    private RNLocationStandardProvider createStandardLocationProvider() {
+        return new RNLocationStandardProvider(getReactApplicationContext());
     }
 }

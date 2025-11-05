@@ -17,12 +17,12 @@ import com.facebook.react.bridge.WritableArray;
 
 import javax.annotation.Nullable;
 
-public class RNStandardLocationProvider implements RNLocationProvider {
+public class RNLocationStandardProvider implements RNLocationProvider {
     private final ReactApplicationContext context;
     private LocationOptions options = new LocationOptions();
     private @Nullable String watchedProvider;
 
-    public RNStandardLocationProvider(ReactApplicationContext context) {
+    public RNLocationStandardProvider(ReactApplicationContext context) {
         this.context = context;
     }
 
