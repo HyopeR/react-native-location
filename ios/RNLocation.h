@@ -1,6 +1,7 @@
-#import <React/RCTBridgeModule.h>
-#import <React/RCTEventEmitter.h>
+#import <RNLocationSpec/RNLocationSpec.h>
 
-@interface RNLocation : RCTEventEmitter <RCTBridgeModule>
+#import <CoreLocation/CoreLocation.h>
+
+@interface RNLocation : NativeRNLocationSpecBase <NativeRNLocationSpec, CLLocationManagerDelegate>
 
 @end
