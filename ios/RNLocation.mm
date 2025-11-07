@@ -9,7 +9,6 @@
 @interface RNLocation()
 
 @property (strong, nonatomic) CLLocationManager *locationManager;
-@property (nonatomic) BOOL hasListeners;
 
 @end
 
@@ -30,6 +29,8 @@
     if (self = [super init]) {
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
+        [RNLocationUtils setName:[[self class] moduleName]];
+        [RNLocationUtils setEventEmitter:_eventEmitterCallback];
     }
     return self;
 }
@@ -139,47 +140,25 @@
     [self.locationManager stopUpdatingLocation];
 }
 
-- (void)addListener:(nonnull NSString *)event {
-    self.hasListeners = TRUE;
-}
+- (void)addListener:(nonnull NSString *)event {}
 
-- (void)removeListeners:(double)count {
-    self.hasListeners = FALSE;
-}
+- (void)removeListeners:(double)count {}
 
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    if (_eventEmitterCallback) {
-        _eventEmitterCallback([RNLocationUtils eventName:@"onError"], error);
-    }
+    [RNLocationUtils emitError:error];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
-    if (!self.hasListeners) {
-        return;
-    }
-
     NSMutableArray *results = [NSMutableArray arrayWithCapacity:[locations count]];
     [locations enumerateObjectsUsingBlock:^(CLLocation *location, NSUInteger idx, BOOL *stop) {
-        [results addObject:@{
-            @"latitude": @(location.coordinate.latitude),
-            @"longitude": @(location.coordinate.longitude),
-            @"altitude": @(location.altitude),
-            @"accuracy": @(location.horizontalAccuracy),
-            @"altitudeAccuracy": @(location.verticalAccuracy),
-            @"course": @(location.course),
-            @"speed": @(location.speed),
-            @"floor": @(location.floor.level),
-            @"timestamp": @([location.timestamp timeIntervalSince1970] * 1000) // in ms
-        }];
+        [results addObject:[RNLocationUtils locationToMap:location]];
     }];
 
-    if (_eventEmitterCallback) {
-        _eventEmitterCallback([RNLocationUtils eventName:@"onChange"], results);
-    }
+    [RNLocationUtils emitEvent:@"onChange" body:results];
 }
 
 

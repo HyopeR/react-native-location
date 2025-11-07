@@ -1,9 +1,17 @@
 #import <Foundation/Foundation.h>
 
+#import <ReactCommon/RCTTurboModule.h>
+
+#import <CoreLocation/CoreLocation.h>
+
 @interface RNLocationUtils : NSObject
 
-+ (NSString *)moduleName;
+@property(class, nonatomic, strong, nonnull) NSString *name;
+@property(class, nonatomic, assign, nullable) facebook::react::EventEmitterCallback eventEmitter;
 
-+ (const char *)eventName:(NSString *)event;
++ (NSString *_Nonnull)prefixedEventName:(NSString *_Nonnull)event;
++ (void)emitError:(NSError *_Nonnull)error;
++ (void)emitEvent:(NSString *_Nonnull)event body:(nullable NSObject *)object;
++ (NSDictionary *_Nonnull)locationToMap:(CLLocation *_Nonnull)location;
 
 @end
