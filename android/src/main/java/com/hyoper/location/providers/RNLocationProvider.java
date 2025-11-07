@@ -1,4 +1,4 @@
-package com.hyoper.location;
+package com.hyoper.location.providers;
 
 import android.app.Activity;
 

@@ -2,26 +2,45 @@ package com.hyoper.location;
 
 import android.location.Location;
 import android.os.Build;
+
 import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.CxxCallbackImpl;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 
-public class Utils {
-    public static void emitWarning(ReactApplicationContext context, String message, String type) {
-        WritableMap error = Arguments.createMap();
-        error.putString("message", message);
-        error.putString("type", type);
+public class RNLocationUtils {
+    public static String name = "RNLocation";
+    public static CxxCallbackImpl eventEmitter = null;
 
-        emitEvent(context, "onWarning", error);
+    public static void setName(String _name) {
+        name = _name;
     }
 
-    public static void emitEvent(ReactApplicationContext context, String eventName, @Nullable Object params) {
-        context
-                .getJSModule(RCTNativeAppEventEmitter.class)
-                .emit(eventName, params);
+    public static void setEmitter(@Nullable CxxCallbackImpl _eventEmitter) {
+        eventEmitter = _eventEmitter;
+    }
+
+    public static String prefixedEventName(String event) {
+        return name + "-" + event;
+    }
+
+    public static void emitError(String message, String type) {
+        WritableMap object = Arguments.createMap();
+        object.putString("message", message);
+        object.putString("type", type);
+
+        String eventName = prefixedEventName("onError");
+        if (eventEmitter != null) {
+            eventEmitter.invoke(eventName, object);
+        }
+    }
+
+    public static void emitEvent(String event, @Nullable Object object) {
+        String eventName = prefixedEventName(event);
+        if (eventEmitter != null) {
+            eventEmitter.invoke(eventName, object);
+        }
     }
 
     public static WritableMap locationToMap(Location location) {

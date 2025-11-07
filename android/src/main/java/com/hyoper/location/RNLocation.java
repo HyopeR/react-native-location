@@ -1,15 +1,18 @@
 package com.hyoper.location;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 
-import com.facebook.react.bridge.ActivityEventListener;
-import com.facebook.react.bridge.BaseActivityEventListener;
+import androidx.annotation.NonNull;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.module.annotations.ReactModule;
+
+import com.hyoper.location.providers.RNLocationPlayServicesProvider;
+import com.hyoper.location.providers.RNLocationProvider;
+import com.hyoper.location.providers.RNLocationStandardProvider;
 
 @ReactModule(name = RNLocation.NAME)
 public class RNLocation extends NativeRNLocationSpec {
@@ -19,21 +22,27 @@ public class RNLocation extends NativeRNLocationSpec {
 
     public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
-        reactContext.addActivityEventListener(activityEventListener);
+        RNLocationUtils.setName(NAME);
+        RNLocationUtils.setEmitter(this.mEventEmitterCallback);
     }
 
     @Override
     public void invalidate() {
-        ReactApplicationContext context = getReactApplicationContext();
-        context.removeActivityEventListener(activityEventListener);
+        stopUpdatingLocation();
     }
 
+    @NonNull
     @Override
     public String getName() {
         return NAME;
     }
 
-    @SuppressWarnings("unused")
+    @Override
+    public void addListener(String event) {}
+
+    @Override
+    public void removeListeners(double count) {}
+
     public void configure(ReadableMap options, final Promise promise) {
         // Update the location provider if we are given one
         if (options.hasKey("androidProvider")) {
@@ -49,7 +58,7 @@ public class RNLocation extends NativeRNLocationSpec {
                     locationProvider = createStandardLocationProvider();
                     break;
                 default:
-                    Utils.emitWarning(getReactApplicationContext(), "androidProvider was passed an unknown value: " + providerName, "401");
+                    RNLocationUtils.emitError("androidProvider was passed an unknown value: " + providerName, "401");
             }
         } else if (locationProvider == null) {
             // Otherwise ensure we have a provider and create a default if not
@@ -67,7 +76,6 @@ public class RNLocation extends NativeRNLocationSpec {
         }
     }
 
-    @SuppressWarnings("unused")
     public void startUpdatingLocation() {
         // Ensure we have a provider
         if (locationProvider == null) {
@@ -81,7 +89,6 @@ public class RNLocation extends NativeRNLocationSpec {
         }
     }
 
-    @SuppressWarnings("unused")
     public void stopUpdatingLocation() {
         // Ensure we have a provider
         if (locationProvider == null) {
@@ -119,19 +126,8 @@ public class RNLocation extends NativeRNLocationSpec {
         }
     }
 
-    // Helpers
-
-    private ActivityEventListener activityEventListener = new BaseActivityEventListener() {
-        public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-            if (locationProvider instanceof RNLocationPlayServicesProvider) {
-                ((RNLocationPlayServicesProvider) locationProvider).onActivityResult(requestCode, resultCode, data);
-            }
-        }
-    };
-
     private RNLocationProvider createDefaultLocationProvider() {
-        // If we have the correct classes for the fused location provider, we default to that. Otherwise, we default to the built-in methods
-        if (Utils.hasFusedLocationProvider()) {
+        if (RNLocationUtils.hasFusedLocationProvider()) {
             return createPlayServicesLocationProvider();
         } else {
             return createStandardLocationProvider();
@@ -139,7 +135,7 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     private RNLocationPlayServicesProvider createPlayServicesLocationProvider() {
-        return new RNLocationPlayServicesProvider(getCurrentActivity(), getReactApplicationContext());
+        return new RNLocationPlayServicesProvider(getReactApplicationContext());
     }
 
     private RNLocationStandardProvider createStandardLocationProvider() {
