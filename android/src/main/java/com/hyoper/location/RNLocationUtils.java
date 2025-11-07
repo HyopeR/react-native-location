@@ -26,21 +26,21 @@ public class RNLocationUtils {
     }
 
     public static void emitError(String message, String type) {
+        if (eventEmitter == null) return;
+
         WritableMap object = Arguments.createMap();
         object.putString("message", message);
         object.putString("type", type);
 
         String eventName = prefixedEventName("onError");
-        if (eventEmitter != null) {
-            eventEmitter.invoke(eventName, object);
-        }
+        eventEmitter.invoke(eventName, object);
     }
 
     public static void emitEvent(String event, @Nullable Object object) {
+        if (eventEmitter == null) return;
+
         String eventName = prefixedEventName(event);
-        if (eventEmitter != null) {
-            eventEmitter.invoke(eventName, object);
-        }
+        eventEmitter.invoke(eventName, object);
     }
 
     public static WritableMap locationToMap(Location location) {
