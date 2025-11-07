@@ -28,7 +28,7 @@ public class RNLocation extends NativeRNLocationSpec {
 
     @Override
     public void invalidate() {
-        stopUpdatingLocation();
+        stop();
     }
 
     @NonNull
@@ -76,7 +76,7 @@ public class RNLocation extends NativeRNLocationSpec {
         }
     }
 
-    public void startUpdatingLocation() {
+    public void start() {
         // Ensure we have a provider
         if (locationProvider == null) {
             locationProvider = createDefaultLocationProvider();
@@ -85,11 +85,11 @@ public class RNLocation extends NativeRNLocationSpec {
         if (backgroundMode) {
             startForegroundService();
         } else {
-            locationProvider.startUpdatingLocation();
+            locationProvider.start();
         }
     }
 
-    public void stopUpdatingLocation() {
+    public void stop() {
         // Ensure we have a provider
         if (locationProvider == null) {
             locationProvider = createDefaultLocationProvider();
@@ -98,7 +98,7 @@ public class RNLocation extends NativeRNLocationSpec {
         if (backgroundMode) {
             stopForegroundService();
         } else {
-            locationProvider.stopUpdatingLocation();
+            locationProvider.stop();
         }
     }
 

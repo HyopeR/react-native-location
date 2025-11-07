@@ -6,12 +6,12 @@ class RNLocationModule {
     return RNLocationNative.configure(options);
   }
 
-  startUpdatingLocation() {
-    RNLocationNative.startUpdatingLocation();
+  start() {
+    RNLocationNative.start();
   }
 
-  stopUpdatingLocation() {
-    RNLocationNative.startUpdatingLocation();
+  stop() {
+    RNLocationNative.stop();
   }
 }
 

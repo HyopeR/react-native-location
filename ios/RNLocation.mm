@@ -37,7 +37,7 @@
 - (void)dealloc
 {
     [_locationManager stopUpdatingLocation];
-    
+
     _locationManager.delegate = nil;
     _locationManager = nil;
 }
@@ -63,13 +63,13 @@
             self.locationManager.activityType = CLActivityTypeAirborne;
         }
     }
-    
+
     // Allows background location updates
     NSNumber *allowsBackgroundLocationUpdates = [RCTConvert NSNumber:options[@"allowsBackgroundLocationUpdates"]];
     if (allowsBackgroundLocationUpdates != nil) {
         self.locationManager.allowsBackgroundLocationUpdates = [allowsBackgroundLocationUpdates boolValue];
     }
-    
+
     // Desired accuracy
     NSDictionary *desiredAccuracy = [RCTConvert NSDictionary:options[@"desiredAccuracy"]];
     if (desiredAccuracy != nil) {
@@ -86,20 +86,20 @@
             self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         }
     }
-    
+
     // Distance filter
     NSNumber *distanceFilter = [RCTConvert NSNumber:options[@"distanceFilter"]];
     if (distanceFilter != nil) {
         self.locationManager.distanceFilter = [distanceFilter doubleValue];
     }
-    
+
     // Heading filter
     NSNumber *headingFilter = [RCTConvert NSNumber:options[@"headingFilter"]];
     if (headingFilter != nil) {
         double headingFilterValue = [headingFilter doubleValue];
         self.locationManager.headingFilter = headingFilterValue == 0 ? kCLHeadingFilterNone : headingFilterValue;
     }
-    
+
     // Heading orientation
     NSString *headingOrientation = [RCTConvert NSString:options[@"headingOrientation"]];
     if ([headingOrientation isEqualToString:@"portrait"]) {
@@ -111,13 +111,13 @@
     } else if ([headingOrientation isEqualToString:@"landscapeRight"]) {
         self.locationManager.headingOrientation = CLDeviceOrientationLandscapeRight;
     }
-    
+
     // Pauses location updates automatically
     NSNumber *pausesLocationUpdatesAutomatically = [RCTConvert NSNumber:options[@"pausesLocationUpdatesAutomatically"]];
     if (pausesLocationUpdatesAutomatically != nil) {
         self.locationManager.pausesLocationUpdatesAutomatically = [pausesLocationUpdatesAutomatically boolValue];
     }
-    
+
     // Shows background location indicator
     if (@available(iOS 11.0, *)) {
         NSNumber *showsBackgroundLocationIndicator = [RCTConvert NSNumber:options[@"showsBackgroundLocationIndicator"]];
@@ -129,12 +129,12 @@
 
 #pragma mark - Monitoring
 
-- (void)startUpdatingLocation
+- (void)start
 {
     [self.locationManager startUpdatingLocation];
 }
 
-- (void)stopUpdatingLocation
+- (void)stop
 {
     [self.locationManager stopUpdatingLocation];
 }
@@ -143,8 +143,7 @@
     self.hasListeners = TRUE;
 }
 
-
-- (void)removeListeners:(double)count { 
+- (void)removeListeners:(double)count {
     self.hasListeners = FALSE;
 }
 
@@ -153,7 +152,7 @@
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     if (_eventEmitterCallback) {
-        _eventEmitterCallback([RNLocationUtils eventName:@"error"], error);
+        _eventEmitterCallback([RNLocationUtils eventName:@"onError"], error);
     }
 }
 
@@ -162,7 +161,7 @@
     if (!self.hasListeners) {
         return;
     }
-    
+
     NSMutableArray *results = [NSMutableArray arrayWithCapacity:[locations count]];
     [locations enumerateObjectsUsingBlock:^(CLLocation *location, NSUInteger idx, BOOL *stop) {
         [results addObject:@{
@@ -177,9 +176,9 @@
             @"timestamp": @([location.timestamp timeIntervalSince1970] * 1000) // in ms
         }];
     }];
-    
+
     if (_eventEmitterCallback) {
-        _eventEmitterCallback([RNLocationUtils eventName:@"change"], results);
+        _eventEmitterCallback([RNLocationUtils eventName:@"onChange"], results);
     }
 }
 

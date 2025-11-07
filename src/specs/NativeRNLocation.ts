@@ -4,8 +4,8 @@ import type {UnsafeObject} from 'react-native/Libraries/Types/CodegenTypes';
 
 export interface Spec extends TurboModule {
   configure(options: UnsafeObject): Promise<void>;
-  startUpdatingLocation(): void;
-  stopUpdatingLocation(): void;
+  start(): void;
+  stop(): void;
   addListener: (event: string) => void;
   removeListeners: (count: number) => void;
 }

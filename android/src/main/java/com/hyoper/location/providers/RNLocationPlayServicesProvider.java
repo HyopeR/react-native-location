@@ -125,13 +125,13 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
     }
 
     @Override
-    public void startUpdatingLocation() {
+    public void start() {
         isUpdatingLocation = true;
         reSetUpLocationListeners();
     }
 
     @Override
-    public void stopUpdatingLocation() {
+    public void stop() {
         isUpdatingLocation = false;
         reSetUpLocationListeners();
     }
@@ -168,7 +168,7 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
             }
 
             // Emit the event
-            RNLocationUtils.emitEvent("change", results);
+            RNLocationUtils.emitEvent("onChange", results);
         }
     };
 }

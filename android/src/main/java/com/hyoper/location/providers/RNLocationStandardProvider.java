@@ -41,12 +41,12 @@ public class RNLocationStandardProvider implements RNLocationProvider {
     }
 
     @Override
-    public void startUpdatingLocation() {
+    public void start() {
         setupListening();
     }
 
     @Override
-    public void stopUpdatingLocation() {
+    public void stop() {
         LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         if (locationManager == null) {
             return;
@@ -131,7 +131,7 @@ public class RNLocationStandardProvider implements RNLocationProvider {
         results.pushMap(RNLocationUtils.locationToMap(location));
 
         // Emit the event
-        RNLocationUtils.emitEvent("change", results);
+        RNLocationUtils.emitEvent("onChange", results);
     }
 
     private static class LocationOptions {
