@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
-import {ConfigureOptions, Location} from '@hyoper/rn-location';
+import {ConfigureOptions, Location, RNLocation} from '@hyoper/rn-location';
 import {Screen} from '../../commons/Screen';
-import {openSettings} from '../../utils';
+import {Button} from '../../commons/Button';
+import {openAlert, openSettings, Permission} from '../../utils';
 import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
@@ -31,8 +32,45 @@ const Options: ConfigureOptions = {
 
 export const ForegroundPage = ({back}: PageProps) => {
   const [location, setLocation] = useState<Location | null>(null);
+  const [locationStarted, setLocationStarted] = useState(false);
+
+  const [locationAllow, setLocationAllow] = useState(false);
   const [locationConfigured, setLocationConfigured] = useState(false);
-  const [locationUsage, setLocationUsage] = useState(false);
+
+  useEffect(() => {
+    Permission.Location.check()
+      .then(status => setLocationAllow(status === 'granted'))
+      .catch(() => setLocationAllow(false));
+  }, []);
+
+  useEffect(() => {
+    if (locationAllow && !locationConfigured) {
+      RNLocation.configure(Options);
+      setLocationConfigured(true);
+    }
+  }, [locationAllow, locationConfigured]);
+
+  const request = async () => {
+    try {
+      const status = await Permission.Location.request();
+      if (status !== 'granted') throw new Error('When in use not granted.');
+
+      setLocationAllow(true);
+    } catch (err) {
+      openAlert('Location Permission');
+      setLocationAllow(false);
+    }
+  };
+
+  const start = async () => {
+    RNLocation.start();
+    setLocationStarted(true);
+  };
+
+  const stop = async () => {
+    RNLocation.stop();
+    setLocationStarted(false);
+  };
 
   return (
     <Screen>
@@ -51,6 +89,18 @@ export const ForegroundPage = ({back}: PageProps) => {
             To track the user's location when the app is in the foreground, the
             "WHEN-IN-USE" permission is required.
           </Text>
+
+          <Button
+            title={'Request Permission'}
+            onPress={request}
+            style={{marginBottom: 8}}
+          />
+
+          {!locationStarted ? (
+            <Button disabled={!locationAllow} title={'Start'} onPress={start} />
+          ) : (
+            <Button disabled={!locationAllow} title={'Stop'} onPress={stop} />
+          )}
         </View>
       </Screen.Content>
     </Screen>
