@@ -45,8 +45,7 @@ export const BackgroundPage = ({back}: PageProps) => {
 
   useEffect(() => {
     if (locationAllow && !locationConfigured) {
-      RNLocation.configure(Options);
-      setLocationConfigured(true);
+      RNLocation.configure(Options).finally(() => setLocationConfigured(true));
     }
   }, [locationAllow, locationConfigured]);
 
