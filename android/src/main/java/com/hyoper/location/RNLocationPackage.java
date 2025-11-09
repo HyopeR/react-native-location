@@ -32,11 +32,10 @@ public class RNLocationPackage extends BaseReactPackage {
                     new ReactModuleInfo(
                             RNLocation.NAME,
                             RNLocation.NAME,
-                            true,  // canOverrideExistingModule
-                            false, // needsEagerInit
-                            false, // hasConstants
-                            true,  // isCxxModule
-                            true   // isTurboModule
+                            false,
+                            false,
+                            true,
+                            true
                     )
             );
             return map;

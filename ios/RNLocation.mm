@@ -18,10 +18,6 @@
   return @"RNLocation";
 }
 
-+ (BOOL)requiresMainQueueSetup {
-  return YES;
-}
-
 #pragma mark - Initialization
 
 - (instancetype)init
@@ -30,7 +26,6 @@
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
         [RNLocationUtils setName:[[self class] moduleName]];
-        [RNLocationUtils setEventEmitter:_eventEmitterCallback];
     }
     return self;
 }
@@ -41,6 +36,12 @@
 
     _locationManager.delegate = nil;
     _locationManager = nil;
+}
+
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
+{
+    [super setEventEmitterCallback:eventEmitterCallbackWrapper];
+    [RNLocationUtils setEventEmitter:_eventEmitterCallback];
 }
 
 #pragma mark - Configure
@@ -139,10 +140,6 @@
 {
     [self.locationManager stopUpdatingLocation];
 }
-
-- (void)addListener:(nonnull NSString *)event {}
-
-- (void)removeListeners:(double)count {}
 
 #pragma mark - CLLocationManagerDelegate
 

@@ -5,6 +5,7 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import com.facebook.react.bridge.CxxCallbackImpl;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
@@ -23,7 +24,6 @@ public class RNLocation extends NativeRNLocationSpec {
     public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
         RNLocationUtils.setName(NAME);
-        RNLocationUtils.setEmitter(this.mEventEmitterCallback);
     }
 
     @Override
@@ -38,10 +38,10 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     @Override
-    public void addListener(String event) {}
-
-    @Override
-    public void removeListeners(double count) {}
+    protected void setEventEmitterCallback(CxxCallbackImpl eventEmitterCallback) {
+        super.setEventEmitterCallback(eventEmitterCallback);
+        RNLocationUtils.setEmitter(eventEmitterCallback);
+    }
 
     public void configure(ReadableMap options, final Promise promise) {
         // Update the location provider if we are given one

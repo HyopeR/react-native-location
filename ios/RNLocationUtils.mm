@@ -25,22 +25,35 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     eventEmitter = _eventEmitter;
 }
 
-+ (NSString *)prefixedEventName:(NSString *)event {
-    return [NSString stringWithFormat:@"%@-%@", name, event];
-}
-
 + (void)emitError:(NSError *)object {
     if (!eventEmitter) return;
 
-    NSString *eventName = [self prefixedEventName:@"onError"];
-    eventEmitter([eventName UTF8String], object);
+    NSMutableDictionary *map = [NSMutableDictionary dictionary];
+    map[@"event"] = @"onError";
+    map[@"payload"] = object;
+
+    eventEmitter([@"onEvent" UTF8String], map);
 }
 
 + (void)emitEvent:(NSString *)event body:(nullable NSObject *)object {
     if (!eventEmitter) return;
+    
+    NSMutableDictionary *map = [NSMutableDictionary dictionary];
+    map[@"event"] = event;
+    
+    if (!object) {
+        map[@"payload"] = [NSNull null];
+    } else if ([object isKindOfClass:[NSDictionary class]] ||
+               [object isKindOfClass:[NSArray class]] ||
+               [object isKindOfClass:[NSString class]] ||
+               [object isKindOfClass:[NSNumber class]])
+    {
+        map[@"payload"] = object;
+    } else {
+        map[@"payload"] = [object description];
+    }
 
-    NSString *eventName = [self prefixedEventName:event];
-    eventEmitter([eventName UTF8String], object ?: [NSNull null]);
+    eventEmitter([@"onEvent" UTF8String], map);
 }
 
 + (NSDictionary *)locationToMap:(CLLocation *)location {

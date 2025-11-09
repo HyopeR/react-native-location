@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CxxCallbackImpl;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 public class RNLocationUtils {
@@ -21,10 +22,6 @@ public class RNLocationUtils {
         eventEmitter = _eventEmitter;
     }
 
-    public static String prefixedEventName(String event) {
-        return name + "-" + event;
-    }
-
     public static void emitError(String message, String type) {
         if (eventEmitter == null) return;
 
@@ -32,15 +29,35 @@ public class RNLocationUtils {
         object.putString("message", message);
         object.putString("type", type);
 
-        String eventName = prefixedEventName("onError");
-        eventEmitter.invoke(eventName, object);
+        WritableMap map = Arguments.createMap();
+        map.putString("event", "onError");
+        map.putMap("payload", object);
+
+        eventEmitter.invoke("onEvent", map);
     }
 
     public static void emitEvent(String event, @Nullable Object object) {
         if (eventEmitter == null) return;
 
-        String eventName = prefixedEventName(event);
-        eventEmitter.invoke(eventName, object);
+        WritableMap map = Arguments.createMap();
+        map.putString("event", event);
+        if (object == null) {
+            map.putNull("payload");
+        } else if (object instanceof WritableMap) {
+            map.putMap("payload", (WritableMap) object);
+        } else if (object instanceof WritableArray) {
+            map.putArray("payload", (WritableArray) object);
+        } else if (object instanceof String) {
+            map.putString("payload", (String) object);
+        } else if (object instanceof Number) {
+            map.putDouble("payload", ((Number) object).doubleValue());
+        } else if (object instanceof Boolean) {
+            map.putBoolean("payload", (Boolean) object);
+        } else {
+            map.putString("payload", object.toString());
+        }
+
+        eventEmitter.invoke("onEvent", map);
     }
 
     public static WritableMap locationToMap(Location location) {

@@ -9,7 +9,6 @@
 @property(class, nonatomic, strong, nonnull) NSString *name;
 @property(class, nonatomic, assign, nullable) facebook::react::EventEmitterCallback eventEmitter;
 
-+ (NSString *_Nonnull)prefixedEventName:(NSString *_Nonnull)event;
 + (void)emitError:(NSError *_Nonnull)error;
 + (void)emitEvent:(NSString *_Nonnull)event body:(nullable NSObject *)object;
 + (NSDictionary *_Nonnull)locationToMap:(CLLocation *_Nonnull)location;
