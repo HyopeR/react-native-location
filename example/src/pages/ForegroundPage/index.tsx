@@ -1,33 +1,31 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
-import {ConfigureOptions, Location, RNLocation} from '@hyoper/rn-location';
+import {Location, RNLocation} from '@hyoper/rn-location';
 import {Screen} from '../../commons/Screen';
 import {Button} from '../../commons/Button';
 import {openAlert, openSettings, Permission} from '../../utils';
 import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
-const Options: ConfigureOptions = {
-  // Shared
+const Options = {
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
-  desiredAccuracy: {
-    ios: 'best',
-    android: 'highAccuracy',
+
+  android: {
+    priority: 'highAccuracy',
+    provider: 'auto',
+    interval: 2000,
+    minWaitTime: 1000,
+    maxWaitTime: 2000,
   },
-
-  // Android only
-  androidProvider: 'auto',
-  interval: 2000,
-  fastestInterval: 1000,
-  maxWaitTime: 2000,
-
-  // Ios only
-  activityType: 'other',
-  headingFilter: 0,
-  headingOrientation: 'portrait',
-  pausesLocationUpdatesAutomatically: false,
-  showsBackgroundLocationIndicator: false,
+  ios: {
+    desiredAccuracy: 'best',
+    activityType: 'other',
+    headingFilter: 0,
+    headingOrientation: 'portrait',
+    pausesLocationUpdatesAutomatically: false,
+    showsBackgroundLocationIndicator: false,
+  },
 };
 
 export const ForegroundPage = ({back}: PageProps) => {

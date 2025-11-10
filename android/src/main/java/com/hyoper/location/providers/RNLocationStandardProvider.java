@@ -1,8 +1,10 @@
 package com.hyoper.location.providers;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,6 +13,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
@@ -23,44 +26,44 @@ import com.hyoper.location.RNLocationUtils;
 
 public class RNLocationStandardProvider implements RNLocationProvider {
     private final ReactApplicationContext context;
-    private LocationOptions options = new LocationOptions();
-    private @Nullable String watchedProvider;
+    private @Nullable String locationProvider;
+
+    private LocationOptions locationOptions;
+    private boolean tracking = false;
 
     public RNLocationStandardProvider(ReactApplicationContext context) {
         this.context = context;
+        this.locationOptions = new LocationOptions();
     }
 
     @Override
     public void configure(Activity activity, ReadableMap map, Promise promise) {
-        options = LocationOptions.fromReactMap(context, map);
-
-        if (watchedProvider != null) {
-            setupListening();
-        }
+        if (tracking) unregister();
+        locationOptions = LocationOptions.fromReactMap(context, map);
+        if (tracking) register();
         promise.resolve(null);
     }
 
     @Override
     public void start() {
-        setupListening();
+        tracking = true;
+        register();
     }
 
     @Override
     public void stop() {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager == null) {
-            return;
-        }
-        locationManager.removeUpdates(locationListener);
-        watchedProvider = null;
+        tracking = false;
+        unregister();
     }
-
-    // Listener
 
     private final LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(@NonNull Location location) {
-            processLocation(location);
+            if (!tracking) return;
+
+            WritableArray results = Arguments.createArray();
+            results.pushMap(RNLocationUtils.locationToMap(location));
+            RNLocationUtils.emitEvent("onChange", results);
         }
 
         @Override
@@ -71,77 +74,72 @@ public class RNLocationStandardProvider implements RNLocationProvider {
                 RNLocationUtils.emitError("Provider " + provider + " is temporarily unavailable.", "501");
             }
         }
-
-        @Override
-        public void onProviderEnabled(@NonNull String provider) {}
-
-        @Override
-        public void onProviderDisabled(@NonNull String provider) {}
     };
 
-
     @SuppressLint("MissingPermission")
-    private void setupListening() {
-        try {
-            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-            if (locationManager == null) {
-                RNLocationUtils.emitError("No location manager is available.", "502");
-                return;
-            }
-            String provider = getProvider(locationManager, options.highAccuracy);
-            if (provider == null) {
-                RNLocationUtils.emitError("There is no valid location provider available.", "503");
-                return;
-            }
-            if (!provider.equals(watchedProvider)) {
-                // Setup the listener
-                locationManager.removeUpdates(locationListener);
-                locationManager.requestLocationUpdates(provider, 1000, options.distanceFilter, locationListener);
+    private void register() {
+        LocationManager locationManager = getLocationManager();
+        if (locationManager == null) return;
 
-                // Get the last known location
-                Location lastLocation = locationManager.getLastKnownLocation(provider);
-                if (lastLocation != null) {
-                    processLocation(lastLocation);
-                }
-            }
-            watchedProvider = provider;
-        } catch (SecurityException e) {
-            RNLocationUtils.emitError("Attempted to start updating the location without location permissions. Detail: " + e.getLocalizedMessage(), "403");
+        String provider = getProvider(locationManager, locationOptions.highAccuracy);
+        if (provider == null) return;
+
+        int permissionFine = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionCoarse = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (permissionFine != PackageManager.PERMISSION_GRANTED && permissionCoarse != PackageManager.PERMISSION_GRANTED) {
+            RNLocationUtils.emitError("Attempted to start updating the location without location permissions", "403");
+            return;
         }
+
+        locationManager.requestLocationUpdates(provider, 1000, locationOptions.distanceFilter, locationListener);
+        locationProvider = provider;
+    }
+
+    private void unregister() {
+        LocationManager locationManager = getLocationManager();
+        if (locationManager == null) return;
+
+        String provider = getProvider(locationManager, locationOptions.highAccuracy);
+        if (provider == null) return;
+
+        locationManager.removeUpdates(locationListener);
+        locationProvider = null;
+    }
+
+    @Nullable
+    private LocationManager getLocationManager() {
+        LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        if (manager == null) {
+            RNLocationUtils.emitError("No location manager is available.", "502");
+            return null;
+        }
+
+        return manager;
     }
 
     @Nullable
     private String getProvider(LocationManager locationManager, boolean highAccuracy) {
-        String provider =
-                highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
-        if (!locationManager.isProviderEnabled(provider)) {
-            provider = provider.equals(LocationManager.GPS_PROVIDER)
-                    ? LocationManager.NETWORK_PROVIDER
-                    : LocationManager.GPS_PROVIDER;
-            if (!locationManager.isProviderEnabled(provider)) {
-                return null;
-            }
+        String provider = highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
+        boolean providerIsAvailable = locationManager.isProviderEnabled(provider);
+
+        if (!providerIsAvailable) {
+            RNLocationUtils.emitError("No valid location provider available.", "503");
+            return null;
         }
+
         return provider;
     }
 
-    private void processLocation(Location location) {
-        // Convert the location to a map and wrap it in an array
-        WritableArray results = Arguments.createArray();
-        results.pushMap(RNLocationUtils.locationToMap(location));
-
-        // Emit the event
-        RNLocationUtils.emitEvent("onChange", results);
-    }
-
     private static class LocationOptions {
-        private static final float RCT_DEFAULT_LOCATION_ACCURACY = 100;
+        private static final boolean DEFAULT_HIGH_ACCURACY = false;
+        private static final float DEFAULT_DISTANCE_FILTER = 100;
         private final boolean highAccuracy;
         private final float distanceFilter;
 
         private LocationOptions() {
-            this.highAccuracy = false;
-            this.distanceFilter = RCT_DEFAULT_LOCATION_ACCURACY;
+            this.highAccuracy = DEFAULT_HIGH_ACCURACY;
+            this.distanceFilter = DEFAULT_DISTANCE_FILTER;
         }
 
         private LocationOptions(boolean highAccuracy, float distanceFilter) {
@@ -150,45 +148,43 @@ public class RNLocationStandardProvider implements RNLocationProvider {
         }
 
         private static LocationOptions fromReactMap(ReactApplicationContext context, ReadableMap map) {
-            boolean highAccuracy = false;
-            float distanceFilter = RCT_DEFAULT_LOCATION_ACCURACY;
-
-            // Priority (accuracy)
-            if (map.hasKey("desiredAccuracy")) {
-                if (map.getType("desiredAccuracy") == ReadableType.Map) {
-                    ReadableMap desiredAccuracy = map.getMap("desiredAccuracy");
-                    if (desiredAccuracy.hasKey("android")) {
-                        if (desiredAccuracy.getType("android") == ReadableType.String) {
-                            String desiredAccuracyAndroid = desiredAccuracy.getString("android");
-                            switch (desiredAccuracyAndroid) {
-                                case "highAccuracy":
-                                    highAccuracy = true;
-                                    break;
-                                case "balancedPowerAccuracy":
-                                case "lowPower":
-                                case "noPower":
-                                    highAccuracy = false;
-                                    break;
-                                default:
-                                    RNLocationUtils.emitError("desiredAccuracy.android was passed an unknown value: " + desiredAccuracyAndroid, "401");
-                                    break;
-                            }
-                        } else {
-                            RNLocationUtils.emitError("desiredAccuracy.android must be a string", "401");
-                        }
-                    }
-                } else {
-                    RNLocationUtils.emitError("desiredAccuracy must be an object", "401");
-                }
-            }
+            boolean highAccuracy = DEFAULT_HIGH_ACCURACY;
+            float distanceFilter = DEFAULT_DISTANCE_FILTER;
 
             // Distance filter
             if (map.hasKey("distanceFilter")) {
                 if (map.getType("distanceFilter") == ReadableType.Number) {
                     distanceFilter = (float) map.getDouble("distanceFilter");
-
                 } else {
                     RNLocationUtils.emitError("distanceFilter must be a number", "401");
+                }
+            }
+
+            if (map.hasKey("android")) {
+                if (map.getType("android") == ReadableType.Map) {
+                    ReadableMap platformOptions = map.getMap("android");
+
+                    // Priority
+                    if (platformOptions.hasKey("priority")) {
+                        if (platformOptions.getType("priority") == ReadableType.String) {
+                            String priority = platformOptions.getString("priority");
+                            switch (priority) {
+                                case "highAccuracy":
+                                    highAccuracy = true;
+                                    break;
+                                case "balancedPowerAccuracy":
+                                case "lowPower":
+                                case "passive":
+                                    highAccuracy = false;
+                                    break;
+                                default:
+                                    RNLocationUtils.emitError("priority was passed an unknown value: " + priority, "401");
+                                    break;
+                            }
+                        } else {
+                            RNLocationUtils.emitError("priority must be a string", "401");
+                        }
+                    }
                 }
             }
 
