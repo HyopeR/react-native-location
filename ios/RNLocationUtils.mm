@@ -67,7 +67,6 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     map[@"speed"] = @(location.speed);
     map[@"floor"] = @(location.floor.level);
     map[@"timestamp"] = @([location.timestamp timeIntervalSince1970] * 1000);
-    map[@"fromMockProvider"] = @(NO);
     return map;
 }
 

@@ -50,6 +50,20 @@
         resolve:(nonnull RCTPromiseResolveBlock)resolve
         reject:(nonnull RCTPromiseRejectBlock)reject
 {
+    // Desired accuracy
+    NSString *desiredAccuracy = [RCTConvert NSString:options[@"desiredAccuracy"]];
+    if ([desiredAccuracy isEqualToString:@"bestForNavigation"]) {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+    } else if ([desiredAccuracy isEqualToString:@"best"]) {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+    } else if ([desiredAccuracy isEqualToString:@"nearestTenMeters"]) {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+    } else if ([desiredAccuracy isEqualToString:@"hundredMeters"]) {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    } else if ([desiredAccuracy isEqualToString:@"threeKilometers"]) {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+    }
+
     // Activity type
     NSString *activityType = [RCTConvert NSString:options[@"activityType"]];
     if ([activityType isEqualToString:@"other"]) {
@@ -63,29 +77,6 @@
     } else if ([activityType isEqualToString:@"airborne"]) {
         if (@available(iOS 12.0, *)) {
             self.locationManager.activityType = CLActivityTypeAirborne;
-        }
-    }
-
-    // Allows background location updates
-    NSNumber *allowsBackgroundLocationUpdates = [RCTConvert NSNumber:options[@"allowsBackgroundLocationUpdates"]];
-    if (allowsBackgroundLocationUpdates != nil) {
-        self.locationManager.allowsBackgroundLocationUpdates = [allowsBackgroundLocationUpdates boolValue];
-    }
-
-    // Desired accuracy
-    NSDictionary *desiredAccuracy = [RCTConvert NSDictionary:options[@"desiredAccuracy"]];
-    if (desiredAccuracy != nil) {
-        NSString *desiredAccuracyIOS = [RCTConvert NSString:desiredAccuracy[@"ios"]];
-        if ([desiredAccuracyIOS isEqualToString:@"bestForNavigation"]) {
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
-        } else if ([desiredAccuracyIOS isEqualToString:@"best"]) {
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-        } else if ([desiredAccuracyIOS isEqualToString:@"nearestTenMeters"]) {
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-        } else if ([desiredAccuracyIOS isEqualToString:@"hundredMeters"]) {
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-        } else if ([desiredAccuracyIOS isEqualToString:@"threeKilometers"]) {
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
         }
     }
 
@@ -112,6 +103,12 @@
         self.locationManager.headingOrientation = CLDeviceOrientationLandscapeLeft;
     } else if ([headingOrientation isEqualToString:@"landscapeRight"]) {
         self.locationManager.headingOrientation = CLDeviceOrientationLandscapeRight;
+    }
+
+    // Allows background location updates
+    NSNumber *allowsBackgroundLocationUpdates = [RCTConvert NSNumber:options[@"allowsBackgroundLocationUpdates"]];
+    if (allowsBackgroundLocationUpdates != nil) {
+        self.locationManager.allowsBackgroundLocationUpdates = [allowsBackgroundLocationUpdates boolValue];
     }
 
     // Pauses location updates automatically
@@ -157,7 +154,6 @@
 
     [RNLocationUtils emitEvent:@"onChange" body:results];
 }
-
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
     return std::make_shared<facebook::react::NativeRNLocationSpecJSI>(params);
