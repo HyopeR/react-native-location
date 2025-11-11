@@ -1,10 +1,11 @@
 import RNLocationNative from './specs/NativeRNLocation';
 import {RNLocationModuleHelper} from './RNLocationHelper';
-import {ConfigureOptions} from './types';
+import {Options} from './types';
 
 class RNLocationModule extends RNLocationModuleHelper {
-  async configure(options: ConfigureOptions) {
-    return RNLocationNative.configure(options);
+  async configure(options?: Options) {
+    const opts = this.getPlatformBaseNormalizeOptions(options);
+    return RNLocationNative.configure(opts);
   }
 
   start() {
