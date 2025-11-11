@@ -44,28 +44,24 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void configure(ReadableMap options, final Promise promise) {
-        // Update the location provider if we are given one
-        if (options.hasKey("androidProvider")) {
-            String providerName = options.getString("androidProvider");
-            switch (providerName) {
-                case "auto":
-                    locationProvider = createDefaultLocationProvider();
-                    break;
-                case "playServices":
-                    locationProvider = createPlayServicesLocationProvider();
-                    break;
-                case "standard":
-                    locationProvider = createStandardLocationProvider();
-                    break;
-                default:
-                    RNLocationUtils.emitError("androidProvider was passed an unknown value: " + providerName, "401");
-            }
-        } else if (locationProvider == null) {
-            // Otherwise ensure we have a provider and create a default if not
-            locationProvider = createDefaultLocationProvider();
+        String provider = options.hasKey("provider")
+                ? options.getString("provider")
+                : "auto";
+
+        switch (provider) {
+            case "auto":
+                locationProvider = createDefaultLocationProvider();
+                break;
+            case "playServices":
+                locationProvider = createPlayServicesLocationProvider();
+                break;
+            case "standard":
+                locationProvider = createStandardLocationProvider();
+                break;
+            default:
+                RNLocationUtils.emitError("androidProvider was passed an unknown value: " + provider, "401");
         }
 
-        // Pass the options to the location provider
         locationProvider.configure(getCurrentActivity(), options, promise);
 
         backgroundMode = options.hasKey("allowsBackgroundLocationUpdates") && options.getBoolean("allowsBackgroundLocationUpdates");
@@ -77,7 +73,6 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void start() {
-        // Ensure we have a provider
         if (locationProvider == null) {
             locationProvider = createDefaultLocationProvider();
         }
@@ -90,7 +85,6 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void stop() {
-        // Ensure we have a provider
         if (locationProvider == null) {
             locationProvider = createDefaultLocationProvider();
         }
