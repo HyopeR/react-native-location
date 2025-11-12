@@ -1,6 +1,6 @@
 import {Platform} from 'react-native';
-import {OPTIONS} from './constants';
-import {AndroidOptions, IosOptions, Options, SharedOptions} from './types';
+import {OPTIONS} from '../constants';
+import {AndroidOptions, IosOptions, Options, SharedOptions} from '../types';
 
 export class RNLocationModuleHelper {
   protected getNormalizeOptions(options?: Options) {

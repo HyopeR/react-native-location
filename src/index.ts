@@ -1,2 +1,2 @@
-export {RNLocation} from './RNLocation';
+export {RNLocation} from './services/RNLocation';
 export * from './types';

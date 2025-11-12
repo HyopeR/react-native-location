@@ -153,7 +153,7 @@ export type Options = {
   };
 };
 
-export interface Location {
+export type Location = {
   /**
    * The latitude of the location.
    * @platform android ios
@@ -228,4 +228,49 @@ export interface Location {
    * @see [Android Docs](https://developer.android.com/reference/android/location/Location.html#isFromMockProvider())
    */
   fromMockProvider?: boolean;
-}
+};
+
+export type LocationError = {
+  /**
+   * Error message.
+   */
+  message: string;
+  /**
+   * Error type.
+   */
+  type: string;
+  /**
+   * Indicates whether the error is critical or not.
+   * If the error is critical, positioning will not work.
+   */
+  critical: boolean;
+};
+
+/**
+ * The event that is triggered when a location changes.
+ */
+export type OnChangeEvent<T = void> = (locations: Location[]) => T;
+
+/**
+ * The event that is triggered when an error occurs.
+ */
+export type OnErrorEvent<T = void> = (error: LocationError) => T;
+
+export type Subscription = {
+  /**
+   * The unique id of the subscription.
+   */
+  id: string;
+  /**
+   * The method to unsubscribe subscription.
+   */
+  unsubscribe: () => void;
+  /**
+   * The event that will trigger the subscription when any location change.
+   */
+  onChange: (callback: OnChangeEvent) => Subscription;
+  /**
+   * The event that will trigger the subscription when any error occurs.
+   */
+  onError: (callback: OnErrorEvent) => Subscription;
+};
