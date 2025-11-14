@@ -1,9 +1,5 @@
 #import "RNLocationUtils.h"
 
-#import <ReactCommon/RCTTurboModule.h>
-
-#import <CoreLocation/CoreLocation.h>
-
 static NSString *name = @"RNLocation";
 static facebook::react::EventEmitterCallback eventEmitter = nullptr;
 

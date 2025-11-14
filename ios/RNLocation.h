@@ -1,7 +1,9 @@
 #import <RNLocationSpec/RNLocationSpec.h>
 
-#import <CoreLocation/CoreLocation.h>
+#import "RNLocationProvider.h"
 
-@interface RNLocation : NativeRNLocationSpecBase <NativeRNLocationSpec, CLLocationManagerDelegate>
+@interface RNLocation : NativeRNLocationSpecBase <NativeRNLocationSpec>
+
+@property (nonatomic, strong) RNLocationProvider *provider;
 
 @end
