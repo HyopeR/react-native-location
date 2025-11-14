@@ -37,7 +37,8 @@
         resolve:(nonnull RCTPromiseResolveBlock)resolve
         reject:(nonnull RCTPromiseRejectBlock)reject
 {
-    [self.provider configure:options resolve:resolve reject:reject];
+    [self.provider configure:options];
+    resolve(nil);
 }
 
 #pragma mark - Monitoring

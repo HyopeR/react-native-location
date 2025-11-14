@@ -1,6 +1,6 @@
 #import <RNLocationSpec/RNLocationSpec.h>
 
-#import "RNLocationProvider.h"
+@class RNLocationProvider;
 
 @interface RNLocation : NativeRNLocationSpecBase <NativeRNLocationSpec>
 

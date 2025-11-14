@@ -25,14 +25,6 @@ public class RNLocationForegroundService extends Service {
         locationProvider = provider;
     }
 
-    public static void restartLocationProvider() {
-        if (locationProvider != null && locationProviderRunning) {
-            locationProvider.stop();
-            locationProvider.start();
-        }
-    }
-
-
     @Override
     public void onCreate() {
         super.onCreate();

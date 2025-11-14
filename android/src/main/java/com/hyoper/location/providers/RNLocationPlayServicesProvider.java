@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -36,11 +35,8 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
     }
 
     @Override
-    public void configure(final Activity activity, final ReadableMap map, final Promise promise) {
-        if (tracking) unregister();
+    public void configure(final Activity activity, final ReadableMap map) {
         locationRequest = RNLocationPlayServicesHelper.build(map);
-        if (tracking) register();
-        promise.resolve(null);
     }
 
     @Override

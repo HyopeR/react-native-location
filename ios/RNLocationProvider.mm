@@ -23,8 +23,6 @@
 }
 
 - (void)configure:(NSDictionary *)options
-          resolve:(RCTPromiseResolveBlock)resolve
-           reject:(RCTPromiseRejectBlock)reject
 {
     // Desired accuracy
     NSString *desiredAccuracy = [RCTConvert NSString:options[@"desiredAccuracy"]];
@@ -100,8 +98,6 @@
             self.locationManager.showsBackgroundLocationIndicator = [showsBackgroundLocationIndicator boolValue];
         }
     }
-    
-    resolve(nil);
 }
 
 #pragma mark - Monitoring

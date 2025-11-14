@@ -18,11 +18,12 @@ import com.hyoper.location.providers.RNLocationStandardProvider;
 @ReactModule(name = RNLocation.NAME)
 public class RNLocation extends NativeRNLocationSpec {
     public static final String NAME = "RNLocation";
-    private RNLocationProvider locationProvider;
+    private RNLocationProvider provider;
     private boolean backgroundMode = false;
 
     public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
+        provider = createDefaultLocationProvider();
         RNLocationUtils.setName(NAME);
     }
 
@@ -44,56 +45,47 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void configure(ReadableMap options, final Promise promise) {
-        String provider = options.hasKey("provider")
-                ? options.getString("provider")
-                : "auto";
-
-        switch (provider) {
-            case "auto":
-                locationProvider = createDefaultLocationProvider();
-                break;
-            case "playServices":
-                locationProvider = createPlayServicesLocationProvider();
-                break;
-            case "standard":
-                locationProvider = createStandardLocationProvider();
-                break;
-            default:
-                RNLocationUtils.emitError("androidProvider was passed an unknown value: " + provider, "401");
+        if (options.hasKey("provider")) {
+            String providerName = options.getString("provider");
+            switch (providerName) {
+                case "auto":
+                    provider = createDefaultLocationProvider();
+                    break;
+                case "playServices":
+                    provider = createPlayServicesLocationProvider();
+                    break;
+                case "standard":
+                    provider = createStandardLocationProvider();
+                    break;
+                default:
+                    RNLocationUtils.emitError("provider was passed an unknown value: " + providerName, "401");
+            }
         }
+
+        provider.configure(getCurrentActivity(), options);
 
         backgroundMode = options.hasKey("allowsBackgroundLocationUpdates") && options.getBoolean("allowsBackgroundLocationUpdates");
-
         if (backgroundMode) {
-            RNLocationForegroundService.setLocationProvider(locationProvider);
-            RNLocationForegroundService.restartLocationProvider();
+            RNLocationForegroundService.setLocationProvider(provider);
         }
 
-        locationProvider.configure(getCurrentActivity(), options, promise);
+        promise.resolve(null);
     }
 
     public void start() {
-        if (locationProvider == null) {
-            locationProvider = createDefaultLocationProvider();
-        }
-
         if (backgroundMode) {
             startForegroundService();
-        } else {
-            locationProvider.start();
+            return;
         }
+        provider.start();
     }
 
     public void stop() {
-        if (locationProvider == null) {
-            locationProvider = createDefaultLocationProvider();
-        }
-
-        if (backgroundMode) {
+        if (RNLocationForegroundService.locationProviderRunning) {
             stopForegroundService();
-        } else {
-            locationProvider.stop();
+            return;
         }
+        provider.stop();
     }
 
     private void startForegroundService() {
@@ -101,7 +93,7 @@ public class RNLocation extends NativeRNLocationSpec {
             ReactApplicationContext context = getReactApplicationContext();
             Intent intent = new Intent(context, RNLocationForegroundService.class);
 
-            RNLocationForegroundService.setLocationProvider(locationProvider);
+            RNLocationForegroundService.setLocationProvider(provider);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent);

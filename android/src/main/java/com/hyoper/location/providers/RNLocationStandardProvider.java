@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -36,11 +35,8 @@ public class RNLocationStandardProvider implements RNLocationProvider {
     }
 
     @Override
-    public void configure(Activity activity, ReadableMap map, Promise promise) {
-        if (tracking) unregister();
+    public void configure(Activity activity, ReadableMap map) {
         locationOptions = RNLocationStandardHelper.build(map);
-        if (tracking) register();
-        promise.resolve(null);
     }
 
     @Override
