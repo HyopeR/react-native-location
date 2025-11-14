@@ -1,13 +1,20 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
-import {Location, RNLocation} from '@hyoper/rn-location';
+import {
+  Location,
+  OnChangeEvent,
+  OnErrorEvent,
+  Options,
+  RNLocation,
+} from '@hyoper/rn-location';
 import {Screen} from '../../commons/Screen';
 import {Button} from '../../commons/Button';
+import {CardLocation} from '../../commons/CardLocation';
 import {openAlert, openSettings, Permission} from '../../utils';
 import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
-const Options = {
+const OPTIONS: Options = {
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
 
@@ -30,10 +37,20 @@ const Options = {
 
 export const ForegroundPage = ({back}: PageProps) => {
   const [location, setLocation] = useState<Location | null>(null);
-  const [locationStarted, setLocationStarted] = useState(false);
 
   const [locationAllow, setLocationAllow] = useState(false);
   const [locationConfigured, setLocationConfigured] = useState(false);
+  const [locationTracking, setLocationTracking] = useState(false);
+
+  const onChange = useCallback<OnChangeEvent>(locations => {
+    if (locations.length > 0) {
+      setLocation(locations[0]);
+    }
+  }, []);
+
+  const onError = useCallback<OnErrorEvent>(error => {
+    console.log(error);
+  }, []);
 
   useEffect(() => {
     Permission.Location.check()
@@ -42,16 +59,33 @@ export const ForegroundPage = ({back}: PageProps) => {
   }, []);
 
   useEffect(() => {
-    if (locationAllow && !locationConfigured) {
-      RNLocation.configure(Options).finally(() => setLocationConfigured(true));
-    }
-  }, [locationAllow, locationConfigured]);
+    if (!locationAllow) return;
+
+    RNLocation.configure(OPTIONS).finally(() => setLocationConfigured(true));
+  }, [locationAllow]);
+
+  useEffect(() => {
+    if (!locationConfigured || !locationTracking) return;
+
+    const subscription = RNLocation.subscribe();
+    subscription.onChange(onChange).onError(onError);
+    return () => {
+      subscription && subscription.unsubscribe();
+    };
+  }, [locationConfigured, locationTracking, onChange, onError]);
+
+  const start = () => {
+    setLocationTracking(true);
+  };
+
+  const stop = () => {
+    setLocationTracking(false);
+  };
 
   const request = async () => {
     try {
       const status = await Permission.Location.request();
       if (status !== 'granted') throw new Error('When in use not granted.');
-
       setLocationAllow(true);
     } catch (err) {
       openAlert('Location Permission');
@@ -59,18 +93,8 @@ export const ForegroundPage = ({back}: PageProps) => {
     }
   };
 
-  const start = async () => {
-    RNLocation.start();
-    setLocationStarted(true);
-  };
-
-  const stop = async () => {
-    RNLocation.stop();
-    setLocationStarted(false);
-  };
-
   return (
-    <Screen>
+    <Screen scrollable={true}>
       <Screen.Header
         left={'Back'}
         leftProps={{onPress: back}}
@@ -90,13 +114,27 @@ export const ForegroundPage = ({back}: PageProps) => {
           <Button
             title={'Request Permission'}
             onPress={request}
-            style={{marginBottom: 8}}
+            style={PageStyle.button}
           />
 
-          {!locationStarted ? (
-            <Button disabled={!locationAllow} title={'Start'} onPress={start} />
+          {!locationTracking ? (
+            <Button
+              disabled={!locationAllow}
+              title={'Start'}
+              onPress={start}
+              style={PageStyle.button}
+            />
           ) : (
-            <Button disabled={!locationAllow} title={'Stop'} onPress={stop} />
+            <Button
+              disabled={!locationAllow}
+              title={'Stop'}
+              onPress={stop}
+              style={PageStyle.button}
+            />
+          )}
+
+          {locationTracking && location && (
+            <CardLocation location={location} style={{marginTop: 8}} />
           )}
         </View>
       </Screen.Content>
