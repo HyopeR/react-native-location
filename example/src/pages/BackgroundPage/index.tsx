@@ -44,7 +44,9 @@ export const BackgroundPage = ({back}: PageProps) => {
 
   const onChange = useCallback<OnChangeEvent>(locations => {
     if (locations.length > 0) {
-      setLocation(locations[0]);
+      const item = locations[0];
+      setLocation(item);
+      console.log(item);
     }
   }, []);
 
