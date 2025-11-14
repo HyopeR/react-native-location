@@ -81,7 +81,7 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
                 results.pushMap(RNLocationUtils.locationToMap(location));
             }
 
-            RNLocationUtils.emitEvent("onChange", results);
+            RNLocationUtils.emitChange(results);
         }
     };
 }

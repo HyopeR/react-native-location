@@ -62,14 +62,14 @@ public class RNLocation extends NativeRNLocationSpec {
                 RNLocationUtils.emitError("androidProvider was passed an unknown value: " + provider, "401");
         }
 
-        locationProvider.configure(getCurrentActivity(), options, promise);
-
         backgroundMode = options.hasKey("allowsBackgroundLocationUpdates") && options.getBoolean("allowsBackgroundLocationUpdates");
 
         if (backgroundMode) {
             RNLocationForegroundService.setLocationProvider(locationProvider);
             RNLocationForegroundService.restartLocationProvider();
         }
+
+        locationProvider.configure(getCurrentActivity(), options, promise);
     }
 
     public void start() {

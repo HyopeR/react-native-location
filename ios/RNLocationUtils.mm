@@ -25,35 +25,25 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     eventEmitter = _eventEmitter;
 }
 
-+ (void)emitError:(NSError *)object {
-    if (!eventEmitter) return;
-
-    NSMutableDictionary *map = [NSMutableDictionary dictionary];
-    map[@"event"] = @"onError";
-    map[@"payload"] = object;
-
-    eventEmitter([@"onEvent" UTF8String], map);
++ (void)emitError:(NSError *)error {
+    [self emitError:error critical:NO];
 }
 
-+ (void)emitEvent:(NSString *)event body:(nullable NSObject *)object {
++ (void)emitError:(NSError *)error critical:(BOOL)critical {
     if (!eventEmitter) return;
-    
-    NSMutableDictionary *map = [NSMutableDictionary dictionary];
-    map[@"event"] = event;
-    
-    if (!object) {
-        map[@"payload"] = [NSNull null];
-    } else if ([object isKindOfClass:[NSDictionary class]] ||
-               [object isKindOfClass:[NSArray class]] ||
-               [object isKindOfClass:[NSString class]] ||
-               [object isKindOfClass:[NSNumber class]])
-    {
-        map[@"payload"] = object;
-    } else {
-        map[@"payload"] = [object description];
-    }
 
-    eventEmitter([@"onEvent" UTF8String], map);
+    NSMutableDictionary *map = [NSMutableDictionary dictionary];
+    map[@"message"] = error.localizedDescription;
+    map[@"type"] = @(error.code).stringValue;
+    map[@"critical"] = @(critical);
+
+    eventEmitter("onError", map);
+}
+
++ (void)emitChange:(nullable NSObject *)body {
+    if (!eventEmitter) return;
+
+    eventEmitter([@"onChange" UTF8String], body);
 }
 
 + (NSDictionary *)locationToMap:(CLLocation *)location {

@@ -10,7 +10,8 @@
 @property(class, nonatomic, assign, nullable) facebook::react::EventEmitterCallback eventEmitter;
 
 + (void)emitError:(NSError *_Nonnull)error;
-+ (void)emitEvent:(NSString *_Nonnull)event body:(nullable NSObject *)object;
++ (void)emitError:(NSError *_Nonnull)error critical:(BOOL)critical;
++ (void)emitChange:(nullable NSObject *)body;
 + (NSDictionary *_Nonnull)locationToMap:(CLLocation *_Nonnull)location;
 
 @end

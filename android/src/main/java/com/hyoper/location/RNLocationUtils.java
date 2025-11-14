@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CxxCallbackImpl;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 
 public class RNLocationUtils {
@@ -23,41 +22,24 @@ public class RNLocationUtils {
     }
 
     public static void emitError(String message, String type) {
-        if (eventEmitter == null) return;
-
-        WritableMap object = Arguments.createMap();
-        object.putString("message", message);
-        object.putString("type", type);
-
-        WritableMap map = Arguments.createMap();
-        map.putString("event", "onError");
-        map.putMap("payload", object);
-
-        eventEmitter.invoke("onEvent", map);
+        emitError(message, type, false);
     }
 
-    public static void emitEvent(String event, @Nullable Object object) {
+    public static void emitError(String message, String type, boolean critical) {
         if (eventEmitter == null) return;
 
         WritableMap map = Arguments.createMap();
-        map.putString("event", event);
-        if (object == null) {
-            map.putNull("payload");
-        } else if (object instanceof WritableMap) {
-            map.putMap("payload", (WritableMap) object);
-        } else if (object instanceof WritableArray) {
-            map.putArray("payload", (WritableArray) object);
-        } else if (object instanceof String) {
-            map.putString("payload", (String) object);
-        } else if (object instanceof Number) {
-            map.putDouble("payload", ((Number) object).doubleValue());
-        } else if (object instanceof Boolean) {
-            map.putBoolean("payload", (Boolean) object);
-        } else {
-            map.putString("payload", object.toString());
-        }
+        map.putString("message", message);
+        map.putString("type", type);
+        map.putBoolean("critical", critical);
 
-        eventEmitter.invoke("onEvent", map);
+        eventEmitter.invoke("onError", map);
+    }
+
+    public static void emitChange(@Nullable Object body) {
+        if (eventEmitter == null) return;
+
+        eventEmitter.invoke("onChange", body);
     }
 
     public static WritableMap locationToMap(Location location) {

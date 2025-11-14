@@ -120,7 +120,7 @@ public class RNLocationStandardProvider implements RNLocationProvider {
 
             WritableArray results = Arguments.createArray();
             results.pushMap(RNLocationUtils.locationToMap(location));
-            RNLocationUtils.emitEvent("onChange", results);
+            RNLocationUtils.emitChange(results);
         }
 
         @Override

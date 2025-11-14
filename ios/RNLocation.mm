@@ -124,6 +124,8 @@
             self.locationManager.showsBackgroundLocationIndicator = [showsBackgroundLocationIndicator boolValue];
         }
     }
+    
+    resolve(nil);
 }
 
 #pragma mark - Monitoring
@@ -152,7 +154,7 @@
         [results addObject:[RNLocationUtils locationToMap:location]];
     }];
 
-    [RNLocationUtils emitEvent:@"onChange" body:results];
+    [RNLocationUtils emitChange:results];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
