@@ -36,21 +36,6 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     [self emitError:message type:type critical:NO];
 }
 
-+ (void)emitError:(NSError *)error critical:(BOOL)critical {
-    if (!eventEmitter) return;
-
-    NSMutableDictionary *map = [NSMutableDictionary dictionary];
-    map[@"message"] = error.localizedDescription;
-    map[@"type"] = @(error.code).stringValue;
-    map[@"critical"] = @(critical);
-
-    eventEmitter("onError", map);
-}
-
-+ (void)emitError:(NSError *)error {
-    [self emitError:error critical:NO];
-}
-
 + (void)emitChange:(nullable NSObject *)body {
     if (!eventEmitter) return;
 

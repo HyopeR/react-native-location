@@ -1,4 +1,5 @@
 #import "RNLocationPermission.h"
+#import "RNLocationConstants.h"
 #import "RNLocationUtils.h"
 
 @implementation RNLocationPermission
@@ -26,7 +27,11 @@
         return YES;
     }
 
-    [RNLocationUtils emitError:@"Location (Coarse/Fine) permission is not granted" type:@"403" critical:YES];
+    [RNLocationUtils
+     emitError:@"Location (Coarse/Fine) permission is not granted."
+     type:RNLocationErrorPermission
+     critical:YES];
+
     return NO;
 }
 
@@ -40,7 +45,11 @@
         return YES;
     }
 
-    [RNLocationUtils emitError:@"Location (Background) permission is not granted" type:@"403" critical:YES];
+    [RNLocationUtils
+     emitError:@"Location (Background) permission is not granted."
+     type:RNLocationErrorPermissionAlways
+     critical:YES];
+    
     return NO;
 }
 

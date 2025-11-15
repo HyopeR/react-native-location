@@ -8,6 +8,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.hyoper.location.RNLocationConstants;
 import com.hyoper.location.RNLocationUtils;
 
 public class RNLocationPermission {
@@ -31,7 +32,12 @@ public class RNLocationPermission {
             return true;
         }
 
-        RNLocationUtils.emitError("Location (Coarse/Fine) permission is not granted", "403", true);
+        RNLocationUtils.emitError(
+                "Location (Coarse/Fine) permission is not granted.",
+                RNLocationConstants.ERROR_PERMISSION,
+                true
+        );
+
         return false;
     }
 
@@ -46,7 +52,12 @@ public class RNLocationPermission {
                 return true;
             }
 
-            RNLocationUtils.emitError("Location (Background) permission is not granted", "403", true);
+            RNLocationUtils.emitError(
+                    "Location (Background) permission is not granted.",
+                    RNLocationConstants.ERROR_PERMISSION_ALWAYS,
+                    true
+            );
+
             return false;
         } else {
             return true;

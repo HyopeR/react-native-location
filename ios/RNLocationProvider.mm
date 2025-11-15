@@ -1,4 +1,5 @@
 #import "RNLocationProvider.h"
+#import "RNLocationConstants.h"
 #import "RNLocationUtils.h"
 
 #import <React/RCTConvert.h>
@@ -116,7 +117,8 @@
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    [RNLocationUtils emitError:error];
+    NSString *message = error.localizedDescription;
+    [RNLocationUtils emitError:message type:RNLocationErrorUnknown];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations

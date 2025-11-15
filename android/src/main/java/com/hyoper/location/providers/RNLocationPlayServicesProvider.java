@@ -12,11 +12,13 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import com.hyoper.location.RNLocationConstants;
 import com.hyoper.location.RNLocationUtils;
 
 public class RNLocationPlayServicesProvider implements RNLocationProvider {
@@ -68,6 +70,17 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
             }
 
             RNLocationUtils.emitChange(results);
+        }
+
+        @Override
+        public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
+            if (!locationAvailability.isLocationAvailable()) {
+                RNLocationUtils.emitError(
+                        "Provider is temporarily unavailable.",
+                        RNLocationConstants.ERROR_UNKNOWN,
+                        false
+                );
+            }
         }
     };
 }

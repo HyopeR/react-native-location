@@ -6,6 +6,7 @@ import android.location.LocationManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hyoper.location.RNLocationConstants;
 import com.hyoper.location.RNLocationUtils;
 
 public class RNLocationManager {
@@ -26,7 +27,12 @@ public class RNLocationManager {
 
         if (manager != null) return manager;
 
-        RNLocationUtils.emitError("No location manager is available.", "502", true);
+        RNLocationUtils.emitError(
+                "No location manager is available.",
+                RNLocationConstants.ERROR_PROVIDER,
+                true
+        );
+
         return null;
     }
 
@@ -40,7 +46,12 @@ public class RNLocationManager {
         boolean providerFallbackIsAvailable = locationManager.isProviderEnabled(providerFallbackName);
         if (providerFallbackIsAvailable) return providerFallbackName;
 
-        RNLocationUtils.emitError("No location provider is available.", "503", true);
+        RNLocationUtils.emitError(
+                "No location provider is available.",
+                RNLocationConstants.ERROR_PROVIDER,
+                true
+        );
+
         return null;
     }
 

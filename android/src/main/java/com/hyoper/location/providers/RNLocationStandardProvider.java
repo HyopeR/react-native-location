@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
@@ -13,6 +15,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 
+import com.hyoper.location.RNLocationConstants;
 import com.hyoper.location.RNLocationUtils;
 import com.hyoper.location.manager.RNLocationManager;
 
@@ -70,5 +73,22 @@ public class RNLocationStandardProvider implements RNLocationProvider {
             results.pushMap(RNLocationUtils.locationToMap(location));
             RNLocationUtils.emitChange(results);
         }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            if (status == LocationProvider.OUT_OF_SERVICE || status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
+                RNLocationUtils.emitError(
+                        "Provider is temporarily unavailable.",
+                        RNLocationConstants.ERROR_UNKNOWN,
+                        false
+                );
+            }
+        }
+
+        @Override
+        public void onProviderEnabled(@NonNull String provider) {}
+
+        @Override
+        public void onProviderDisabled(@NonNull String provider) {}
     };
 }
