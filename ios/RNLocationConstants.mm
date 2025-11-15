@@ -1,4 +1,4 @@
-#import "RNLocationError.h"
+#import "RNLocationConstants.h"
 
 NSString * const RNLocationErrorProvider = @"ERROR_PROVIDER";
 NSString * const RNLocationErrorPermission = @"ERROR_PERMISSION";
