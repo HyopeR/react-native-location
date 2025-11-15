@@ -76,6 +76,8 @@ public class RNLocationStandardProvider implements RNLocationProvider {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
+            if (!tracking) return;
+
             if (status == LocationProvider.OUT_OF_SERVICE || status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
                 RNLocationUtils.emitError(
                         "Provider is temporarily unavailable.",

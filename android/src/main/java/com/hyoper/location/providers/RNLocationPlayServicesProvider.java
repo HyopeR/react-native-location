@@ -74,6 +74,8 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
 
         @Override
         public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {
+            if (!tracking) return;
+
             if (!locationAvailability.isLocationAvailable()) {
                 RNLocationUtils.emitError(
                         "Provider is temporarily unavailable.",
