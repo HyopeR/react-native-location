@@ -5,5 +5,7 @@
 @interface RNLocation : NativeRNLocationSpecBase <NativeRNLocationSpec>
 
 @property (nonatomic, strong) RNLocationProvider *provider;
+@property (nonatomic, assign) BOOL locationBackground;
+@property (nonatomic, assign) BOOL locationHighAccuracy;
 
 @end

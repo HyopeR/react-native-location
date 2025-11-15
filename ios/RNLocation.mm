@@ -1,4 +1,6 @@
 #import "RNLocation.h"
+#import "RNLocationManager.h"
+#import "RNLocationPermission.h"
 #import "RNLocationProvider.h"
 #import "RNLocationUtils.h"
 
@@ -23,6 +25,8 @@
 {
     [_provider stop];
     _provider = nil;
+    [RNLocationManager reset];
+    [RNLocationUtils reset];
 }
 
 - (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
@@ -38,6 +42,19 @@
         reject:(nonnull RCTPromiseRejectBlock)reject
 {
     [self.provider configure:options];
+    
+    NSString *desiredAccuracy = options[@"desiredAccuracy"];
+    if (desiredAccuracy != nil) {
+        self.locationHighAccuracy = [desiredAccuracy isEqualToString:@"bestForNavigation"] || [desiredAccuracy isEqualToString:@"best"];
+    }
+    
+    NSNumber *allowsBackgroundLocationUpdates = options[@"allowsBackgroundLocationUpdates"];
+    if (allowsBackgroundLocationUpdates != nil) {
+        self.locationBackground = [allowsBackgroundLocationUpdates boolValue];
+    } else {
+        self.locationBackground = NO;
+    }
+    
     resolve(nil);
 }
 
@@ -45,6 +62,10 @@
 
 - (void)start
 {
+    if (![RNLocationManager ensure:self.locationHighAccuracy]) return;
+    
+    if (![RNLocationPermission check:self.locationBackground]) return;
+
     [self.provider start];
 }
 

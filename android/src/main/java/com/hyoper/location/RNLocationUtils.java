@@ -80,4 +80,9 @@ public class RNLocationUtils {
             return false;
         }
     }
+
+    public static void reset() {
+        name = "RNLocation";
+        eventEmitter = null;
+    }
 }

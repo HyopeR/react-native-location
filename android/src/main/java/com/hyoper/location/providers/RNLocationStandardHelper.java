@@ -5,8 +5,6 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 
-import com.hyoper.location.RNLocationUtils;
-
 public class RNLocationStandardHelper {
     public static final float DISTANCE_FILTER = 0f;
     public static final Priority PRIORITY = Priority.BALANCED_POWER_ACCURACY;
@@ -37,47 +35,24 @@ public class RNLocationStandardHelper {
 
         if (map != null) {
             // Distance filter
-            if (map.hasKey("distanceFilter")) {
-                if (map.getType("distanceFilter") == ReadableType.Number) {
-                    distanceFilter = (float) map.getDouble("distanceFilter");
-                } else {
-                    RNLocationUtils.emitError("distanceFilter must be a number", "401");
-                }
+            if (map.hasKey("distanceFilter") && map.getType("distanceFilter") == ReadableType.Number) {
+                distanceFilter = (float) map.getDouble("distanceFilter");
             }
 
             // Priority
-            if (map.hasKey("priority")) {
-                if (map.getType("priority") == ReadableType.String) {
-                    String priorityValue = map.getString("priority");
-                    switch (priorityValue) {
-                        case "highAccuracy":
-                            priority = Priority.HIGH_ACCURACY;
-                            break;
-                        case "balancedPowerAccuracy":
-                            priority = Priority.BALANCED_POWER_ACCURACY;
-                            break;
-                        case "lowPower":
-                            priority = Priority.LOW_POWER;
-                            break;
-                        case "passive":
-                            priority = Priority.PASSIVE;
-                            break;
-                        default:
-                            RNLocationUtils.emitError("priority was passed an unknown value: " + priority, "401");
-                            break;
-                    }
-                } else {
-                    RNLocationUtils.emitError("priority must be a string", "401");
-                }
+            if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
+                String priorityValue = map.getString("priority");
+                priority = switch (priorityValue) {
+                    case "highAccuracy" -> Priority.HIGH_ACCURACY;
+                    case "lowPower" -> Priority.LOW_POWER;
+                    case "passive" -> Priority.PASSIVE;
+                    default -> Priority.BALANCED_POWER_ACCURACY;
+                };
             }
 
             // Interval
-            if (map.hasKey("interval")) {
-                if (map.getType("interval") == ReadableType.Number) {
-                    interval = (long) map.getDouble("interval");
-                } else {
-                    RNLocationUtils.emitError("interval must be a number", "401");
-                }
+            if (map.hasKey("interval") && map.getType("interval") == ReadableType.Number) {
+                interval = (long) map.getDouble("interval");
             }
         }
 

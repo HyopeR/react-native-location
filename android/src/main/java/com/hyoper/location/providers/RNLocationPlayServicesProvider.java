@@ -1,13 +1,10 @@
 package com.hyoper.location.providers;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -53,13 +50,6 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
 
     @SuppressLint("MissingPermission")
     private void register() {
-        int permissionFine = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION);
-        int permissionCoarse = ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION);
-        if (permissionFine != PackageManager.PERMISSION_GRANTED && permissionCoarse != PackageManager.PERMISSION_GRANTED) {
-            RNLocationUtils.emitError("Attempted to start updating the location without location permissions", "403");
-            return;
-        }
-
         locationProvider.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 

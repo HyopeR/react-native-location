@@ -21,8 +21,19 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     eventEmitter = _eventEmitter;
 }
 
-+ (void)emitError:(NSError *)error {
-    [self emitError:error critical:NO];
++ (void)emitError:(NSString *)message type:(NSString *)type critical:(BOOL)critical {
+    if (!eventEmitter) return;
+
+    NSMutableDictionary *map = [NSMutableDictionary dictionary];
+    map[@"message"] = message;
+    map[@"type"] = type;
+    map[@"critical"] = @(critical);
+
+    eventEmitter("onError", map);
+}
+
++ (void)emitError:(NSString *)message type:(NSString *)type {
+    [self emitError:message type:type critical:NO];
 }
 
 + (void)emitError:(NSError *)error critical:(BOOL)critical {
@@ -34,6 +45,10 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     map[@"critical"] = @(critical);
 
     eventEmitter("onError", map);
+}
+
++ (void)emitError:(NSError *)error {
+    [self emitError:error critical:NO];
 }
 
 + (void)emitChange:(nullable NSObject *)body {
@@ -54,6 +69,11 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     map[@"floor"] = @(location.floor.level);
     map[@"timestamp"] = @([location.timestamp timeIntervalSince1970] * 1000);
     return map;
+}
+
++ (void)reset {
+    name = @"RNLocation";
+    eventEmitter = nullptr;
 }
 
 @end

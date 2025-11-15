@@ -9,8 +9,11 @@ import com.facebook.react.bridge.CxxCallbackImpl;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
 
+import com.hyoper.location.manager.RNLocationManager;
+import com.hyoper.location.permissions.RNLocationPermission;
 import com.hyoper.location.providers.RNLocationPlayServicesProvider;
 import com.hyoper.location.providers.RNLocationProvider;
 import com.hyoper.location.providers.RNLocationStandardProvider;
@@ -18,8 +21,9 @@ import com.hyoper.location.providers.RNLocationStandardProvider;
 @ReactModule(name = RNLocation.NAME)
 public class RNLocation extends NativeRNLocationSpec {
     public static final String NAME = "RNLocation";
-    private RNLocationProvider provider;
-    private boolean backgroundMode = false;
+    private RNLocationProvider provider = null;
+    private boolean locationHighAccuracy = false;
+    private boolean locationBackground = false;
 
     public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -30,6 +34,9 @@ public class RNLocation extends NativeRNLocationSpec {
     @Override
     public void invalidate() {
         stop();
+        provider = null;
+        RNLocationManager.reset();
+        RNLocationUtils.reset();
     }
 
     @NonNull
@@ -45,12 +52,9 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void configure(ReadableMap options, final Promise promise) {
-        if (options.hasKey("provider")) {
+        if (options.hasKey("provider") && options.getType("provider") == ReadableType.String) {
             String providerName = options.getString("provider");
             switch (providerName) {
-                case "auto":
-                    provider = createDefaultLocationProvider();
-                    break;
                 case "playServices":
                     provider = createPlayServicesLocationProvider();
                     break;
@@ -58,14 +62,25 @@ public class RNLocation extends NativeRNLocationSpec {
                     provider = createStandardLocationProvider();
                     break;
                 default:
-                    RNLocationUtils.emitError("provider was passed an unknown value: " + providerName, "401");
+                    provider = createDefaultLocationProvider();
+                    break;
             }
         }
 
         provider.configure(getCurrentActivity(), options);
 
-        backgroundMode = options.hasKey("allowsBackgroundLocationUpdates") && options.getBoolean("allowsBackgroundLocationUpdates");
-        if (backgroundMode) {
+        if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
+            String priorityName = options.getString("priority");
+            locationHighAccuracy = priorityName.equals("highAccuracy");
+        }
+
+        if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
+            locationBackground = options.getBoolean("allowsBackgroundLocationUpdates");
+        } else {
+            locationBackground = false;
+        }
+
+        if (locationBackground) {
             RNLocationForegroundService.setLocationProvider(provider);
         }
 
@@ -73,7 +88,13 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void start() {
-        if (backgroundMode) {
+        ReactApplicationContext context = getReactApplicationContext();
+
+        if (!RNLocationManager.ensure(context, locationHighAccuracy)) return;
+
+        if (!RNLocationPermission.check(context, locationBackground)) return;
+
+        if (locationBackground) {
             startForegroundService();
             return;
         }
