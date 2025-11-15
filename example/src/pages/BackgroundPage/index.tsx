@@ -52,6 +52,22 @@ export const BackgroundPage = ({back}: PageProps) => {
 
   const onError = useCallback<OnErrorEvent>(error => {
     console.log(error);
+    switch (error.type) {
+      case 'ERROR_PROVIDER':
+        // Location services are disabled.
+        break;
+      case 'ERROR_PERMISSION':
+        // Location "when-in-use" permission is not granted.
+        break;
+      case 'ERROR_PERMISSION_ALWAYS':
+        // Location "always" permission is not granted.
+        break;
+      case 'ERROR_UNKNOWN':
+      default:
+        // Errors that may be returned by location services.
+        // Most of the time, they will only work during outages.
+        break;
+    }
   }, []);
 
   useEffect(() => {
