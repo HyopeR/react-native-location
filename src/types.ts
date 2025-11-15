@@ -230,6 +230,12 @@ export type Location = {
   fromMockProvider?: boolean;
 };
 
+export type LocationErrorType =
+  | 'ERROR_PROVIDER'
+  | 'ERROR_PERMISSION'
+  | 'ERROR_PERMISSION_ALWAYS'
+  | 'ERROR_UNKNOWN';
+
 export type LocationError = {
   /**
    * Error message.
@@ -238,7 +244,7 @@ export type LocationError = {
   /**
    * Error type.
    */
-  type: string;
+  type: LocationErrorType | string;
   /**
    * Indicates whether the error is critical or not.
    * If the error is critical, positioning will not work.
