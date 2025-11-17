@@ -48,10 +48,12 @@ export type IosHeadingOrientation =
   | 'landscapeRight';
 
 type SharedKeys = 'allowsBackgroundLocationUpdates' | 'distanceFilter';
-export type SharedOptions = Pick<Options, SharedKeys>;
-export type AndroidOptions = SharedOptions & Options['android'];
-export type IosOptions = SharedOptions & Options['ios'];
-export type Options = {
+export type ConfigureSharedOptions = Pick<ConfigureOptions, SharedKeys>;
+export type ConfigureAndroidOptions = ConfigureSharedOptions &
+  ConfigureOptions['android'];
+export type ConfigureIosOptions = ConfigureSharedOptions &
+  ConfigureOptions['ios'];
+export type ConfigureOptions = {
   /**
    * A Boolean value indicating whether the app should receive location updates when suspended. Requires permissions to always access the users location.
    * @platform android ios
@@ -151,6 +153,27 @@ export type Options = {
      */
     showsBackgroundLocationIndicator?: boolean;
   };
+};
+
+export type Accuracy = 'high' | 'balanced' | 'low';
+export type CurrentSharedOptions = {
+  duration?: number;
+};
+export type CurrentAndroidOptions = CurrentSharedOptions & {
+  priority?: AndroidPriority;
+};
+export type CurrentIosOptions = CurrentSharedOptions & {
+  desiredAccuracy?: IosAccuracy;
+};
+export type CurrentOptions = {
+  /**
+   * Desired accuracy level.
+   */
+  accuracy?: Accuracy;
+  /**
+   * Maximum time in milliseconds to wait before timing out.
+   */
+  timeout?: number;
 };
 
 export type Location = {

@@ -35,6 +35,7 @@ export interface Spec extends TurboModule {
   configure(options: UnsafeObject): Promise<void>;
   start(): void;
   stop(): void;
+  getCurrent(options: UnsafeObject): Promise<Location>;
   readonly onChange: EventEmitter<Location[]>;
   readonly onError: EventEmitter<LocationError>;
 }

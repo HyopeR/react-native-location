@@ -1,6 +1,12 @@
-import {Options} from './types';
+import {
+  Accuracy,
+  AndroidPriority,
+  ConfigureOptions,
+  CurrentOptions,
+  IosAccuracy,
+} from './types';
 
-export const OPTIONS: Options = {
+export const CONFIGURE_OPTIONS: ConfigureOptions = {
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
   android: {
@@ -18,4 +24,22 @@ export const OPTIONS: Options = {
     pausesLocationUpdatesAutomatically: false,
     showsBackgroundLocationIndicator: false,
   },
+};
+
+export const CURRENT_OPTIONS: CurrentOptions = {
+  accuracy: 'high',
+  timeout: 10000,
+};
+
+export const ACCURACY = {
+  android: {
+    high: 'highAccuracy',
+    balanced: 'balancedPowerAccuracy',
+    low: 'lowPower',
+  } as Record<Accuracy, AndroidPriority>,
+  ios: {
+    high: 'best',
+    balanced: 'nearestTenMeters',
+    low: 'hundredMeters',
+  } as Record<Accuracy, IosAccuracy>,
 };

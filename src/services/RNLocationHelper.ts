@@ -1,23 +1,32 @@
 import {Platform} from 'react-native';
-import {OPTIONS} from '../constants';
-import {AndroidOptions, IosOptions, Options, SharedOptions} from '../types';
+import {ACCURACY, CONFIGURE_OPTIONS, CURRENT_OPTIONS} from '../constants';
+import {
+  ConfigureOptions,
+  ConfigureAndroidOptions,
+  ConfigureIosOptions,
+  ConfigureSharedOptions,
+  CurrentOptions,
+  CurrentAndroidOptions,
+  CurrentIosOptions,
+  CurrentSharedOptions,
+} from '../types';
 
 export class RNLocationModuleHelper {
-  protected getNormalizeOptions(options?: Options) {
-    const opts = options || ({} as Options);
+  protected getSafeConfigureOptions(options?: ConfigureOptions) {
+    const opts = options || ({} as ConfigureOptions);
     return {
-      ...OPTIONS,
+      ...CONFIGURE_OPTIONS,
       ...opts,
-      android: {...OPTIONS.android, ...opts?.android},
-      ios: {...OPTIONS.ios, ...opts?.ios},
+      android: {...CONFIGURE_OPTIONS.android, ...opts?.android},
+      ios: {...CONFIGURE_OPTIONS.ios, ...opts?.ios},
     };
   }
 
-  protected getPlatformBaseNormalizeOptions(
-    options?: Options,
-  ): AndroidOptions | IosOptions | SharedOptions {
-    const opts = this.getNormalizeOptions(options);
-    const optsShared: SharedOptions = {
+  protected getPlatformConfigureOptions(
+    options?: ConfigureOptions,
+  ): ConfigureAndroidOptions | ConfigureIosOptions | ConfigureSharedOptions {
+    const opts = this.getSafeConfigureOptions(options);
+    const optsShared: ConfigureSharedOptions = {
       allowsBackgroundLocationUpdates: opts.allowsBackgroundLocationUpdates,
       distanceFilter: opts.distanceFilter,
     };
@@ -25,11 +34,40 @@ export class RNLocationModuleHelper {
     const platform = Platform.OS;
     switch (platform) {
       case 'android':
-        return {...optsShared, ...opts.android} as AndroidOptions;
+        return {...optsShared, ...opts.android} as ConfigureAndroidOptions;
       case 'ios':
-        return {...optsShared, ...opts.ios} as IosOptions;
+        return {...optsShared, ...opts.ios} as ConfigureIosOptions;
       default:
-        return {...optsShared} as SharedOptions;
+        return {...optsShared} as ConfigureSharedOptions;
+    }
+  }
+
+  protected getSafeCurrentOptions(options?: CurrentOptions) {
+    const opts = options || ({} as CurrentOptions);
+    return {...CURRENT_OPTIONS, ...opts};
+  }
+
+  protected getPlatformCurrentOptions(options?: CurrentOptions) {
+    const {accuracy, timeout} = this.getSafeCurrentOptions(options);
+
+    const platform = Platform.OS;
+    switch (platform) {
+      case 'android':
+        return {
+          priority: accuracy ? ACCURACY[platform][accuracy] : undefined,
+          duration: timeout,
+        } as CurrentAndroidOptions;
+
+      case 'ios':
+        return {
+          desiredAccuracy: accuracy ? ACCURACY[platform][accuracy] : undefined,
+          duration: timeout,
+        } as CurrentIosOptions;
+
+      default:
+        return {
+          duration: timeout,
+        } as CurrentSharedOptions;
     }
   }
 }

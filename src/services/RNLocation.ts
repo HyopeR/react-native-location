@@ -1,13 +1,13 @@
 import RNLocationNative from '../specs/NativeRNLocation';
 import {RNLocationModuleHelper} from './RNLocationHelper';
 import {RNLocationSubscription} from './RNLocationSubscription';
-import {Options, Subscription} from '../types';
+import {CurrentOptions, ConfigureOptions, Subscription} from '../types';
 
 class RNLocationModule extends RNLocationModuleHelper {
   private subscriptions = new Map<string, RNLocationSubscription>();
 
-  async configure(options?: Options) {
-    const opts = this.getPlatformBaseNormalizeOptions(options);
+  async configure(options?: ConfigureOptions) {
+    const opts = this.getPlatformConfigureOptions(options);
     return RNLocationNative.configure(opts);
   }
 
@@ -17,6 +17,11 @@ class RNLocationModule extends RNLocationModuleHelper {
 
   private stop() {
     RNLocationNative.stop();
+  }
+
+  async getCurrent(options?: CurrentOptions) {
+    const opts = this.getPlatformCurrentOptions(options);
+    return RNLocationNative.getCurrent(opts);
   }
 
   subscribe(): Subscription {
