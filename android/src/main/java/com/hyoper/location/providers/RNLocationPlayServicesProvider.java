@@ -3,10 +3,13 @@ package com.hyoper.location.providers;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
@@ -20,6 +23,8 @@ import com.google.android.gms.location.LocationServices;
 
 import com.hyoper.location.RNLocationConstants;
 import com.hyoper.location.RNLocationUtils;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RNLocationPlayServicesProvider implements RNLocationProvider {
     private final ReactApplicationContext context;
@@ -85,4 +90,68 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
             }
         }
     };
+
+    @SuppressLint("MissingPermission")
+    @Override
+    public void getCurrent(final Activity activity, final ReadableMap map, final Promise promise) {
+        Handler handler = new Handler(Looper.getMainLooper());
+
+        LocationRequest request = RNLocationPlayServicesHelper.buildCurrent(map);
+
+        final AtomicBoolean resolved = new AtomicBoolean(false);
+
+        LocationCallback callback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                if (resolved.get()) return;
+
+                Location location = locationResult.getLastLocation();
+                if (location != null) {
+                    resolved.set(true);
+                    locationProvider.removeLocationUpdates(this);
+                    handler.post(() -> promise.resolve(RNLocationUtils.locationToMap(location)));
+                }
+            }
+
+            @Override
+            public void onLocationAvailability(@NonNull LocationAvailability locationAvailability) {}
+        };
+
+        try {
+            locationProvider.requestLocationUpdates(request, callback, null);
+
+            handler.postDelayed(() -> {
+                if (resolved.get()) return;
+
+                resolved.set(true);
+                locationProvider.removeLocationUpdates(callback);
+                promise.reject(RNLocationConstants.ERROR_UNKNOWN, "Location timed out.");
+            }, request.getDurationMillis());
+
+        } catch (Exception e) {
+            handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, e.getMessage()));
+        }
+    }
+
+//    @SuppressLint("MissingPermission")
+//    @Override
+//    public void getCurrent(final Activity activity, final ReadableMap options, Promise promise) {
+//        CurrentLocationRequest currentLocationRequest = RNLocationPlayServicesHelper.buildCurrent(options);
+//
+//        try {
+//            locationProvider.getCurrentLocation(currentLocationRequest, null)
+//                    .addOnSuccessListener(location -> {
+//                        if (location != null) {
+//                            promise.resolve(RNLocationUtils.locationToMap(location));
+//                            return;
+//                        }
+//                        promise.reject(RNLocationConstants.ERROR_UNKNOWN, "Location timed out.");
+//                    })
+//                    .addOnFailureListener(e -> {
+//                        promise.reject(RNLocationConstants.ERROR_UNKNOWN, e.getMessage());
+//                    });
+//        } catch (Exception e) {
+//            promise.reject(RNLocationConstants.ERROR_UNKNOWN, e.getMessage());
+//        }
+//    }
 }
