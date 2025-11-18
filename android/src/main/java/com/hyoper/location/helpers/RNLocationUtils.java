@@ -22,19 +22,19 @@ public class RNLocationUtils {
         eventEmitter = _eventEmitter;
     }
 
-    public static void emitError(String message, String type, boolean critical) {
+    public static void emitError(String type, String message, boolean critical) {
         if (eventEmitter == null) return;
 
         WritableMap map = Arguments.createMap();
-        map.putString("message", message);
         map.putString("type", type);
+        map.putString("message", message);
         map.putBoolean("critical", critical);
 
         eventEmitter.invoke("onError", map);
     }
 
-    public static void emitError(String message, String type) {
-        emitError(message, type, false);
+    public static void emitError(String type, String message) {
+        emitError(type, message, false);
     }
 
     public static void emitChange(@Nullable Object body) {

@@ -83,8 +83,8 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
 
             if (!locationAvailability.isLocationAvailable()) {
                 RNLocationUtils.emitError(
-                        "Provider is temporarily unavailable.",
                         RNLocationConstants.ERROR_UNKNOWN,
+                        "Provider is temporarily unavailable.",
                         false
                 );
             }

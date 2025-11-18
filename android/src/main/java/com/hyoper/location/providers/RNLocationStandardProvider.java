@@ -85,8 +85,8 @@ public class RNLocationStandardProvider implements RNLocationProvider {
 
             if (status == LocationProvider.OUT_OF_SERVICE || status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
                 RNLocationUtils.emitError(
-                        "Provider is temporarily unavailable.",
                         RNLocationConstants.ERROR_UNKNOWN,
+                        "Provider is temporarily unavailable.",
                         false
                 );
             }
