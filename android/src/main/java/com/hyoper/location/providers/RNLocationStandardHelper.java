@@ -6,12 +6,14 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 
 public class RNLocationStandardHelper {
-    public static final float DEFAULT_DISTANCE_FILTER = 0f;
-    public static final Priority DEFAULT_PRIORITY = Priority.BALANCED_POWER_ACCURACY;
-    public static final long DEFAULT_INTERVAL = 5_000L;
+    private static final float DEFAULT_DISTANCE_FILTER = 0f;
+    private static final Priority DEFAULT_PRIORITY = Priority.HIGH_ACCURACY;
+    private static final long DEFAULT_INTERVAL = 5_000L;
 
-    public static final long DEFAULT_CURRENT_DURATION = 10_000L;
-    public static final long DEFAULT_CURRENT_INTERVAL = 10L;
+    private static final float DEFAULT_CURRENT_DISTANCE_FILTER = 0f;
+    private static final Priority DEFAULT_CURRENT_PRIORITY = Priority.HIGH_ACCURACY;
+    private static final long DEFAULT_CURRENT_INTERVAL = 10L;
+    private static final long DEFAULT_CURRENT_DURATION = 10_000L;
 
     public enum Priority {
         HIGH_ACCURACY,
@@ -37,10 +39,10 @@ public class RNLocationStandardHelper {
             if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
                 String priorityValue = map.getString("priority");
                 priority = switch (priorityValue) {
-                    case "highAccuracy" -> Priority.HIGH_ACCURACY;
+                    case "balancedPowerAccuracy" -> Priority.BALANCED_POWER_ACCURACY;
                     case "lowPower" -> Priority.LOW_POWER;
                     case "passive" -> Priority.PASSIVE;
-                    default -> Priority.BALANCED_POWER_ACCURACY;
+                    default -> Priority.HIGH_ACCURACY;
                 };
             }
 
@@ -54,7 +56,9 @@ public class RNLocationStandardHelper {
     }
 
     public static LocationOptions buildCurrent(@Nullable ReadableMap map) {
-        Priority priority = DEFAULT_PRIORITY;
+        float distanceFilter = DEFAULT_CURRENT_DISTANCE_FILTER;
+        Priority priority = DEFAULT_CURRENT_PRIORITY;
+        long interval = DEFAULT_CURRENT_INTERVAL;
         long duration = DEFAULT_CURRENT_DURATION;
 
         if (map != null) {
@@ -62,10 +66,10 @@ public class RNLocationStandardHelper {
             if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
                 String priorityValue = map.getString("priority");
                 priority = switch (priorityValue) {
-                    case "highAccuracy" -> Priority.HIGH_ACCURACY;
+                    case "balancedPowerAccuracy" -> Priority.BALANCED_POWER_ACCURACY;
                     case "lowPower" -> Priority.LOW_POWER;
                     case "passive" -> Priority.PASSIVE;
-                    default -> Priority.BALANCED_POWER_ACCURACY;
+                    default -> Priority.HIGH_ACCURACY;
                 };
             }
 
@@ -75,6 +79,6 @@ public class RNLocationStandardHelper {
             }
         }
 
-        return new LocationOptions(DEFAULT_DISTANCE_FILTER, priority, DEFAULT_CURRENT_INTERVAL, duration);
+        return new LocationOptions(distanceFilter, priority, interval, duration);
     }
 }

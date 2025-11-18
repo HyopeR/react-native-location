@@ -10,12 +10,15 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.Priority;
 
 public class RNLocationPlayServicesHelper {
-    public static final float DEFAULT_DISTANCE_FILTER = 0f;
-    public static final int DEFAULT_PRIORITY = Priority.PRIORITY_BALANCED_POWER_ACCURACY;
-    public static final long DEFAULT_INTERVAL = 5_000L;
+    private static final float DEFAULT_DISTANCE_FILTER = 0f;
+    private static final int DEFAULT_PRIORITY = Priority.PRIORITY_HIGH_ACCURACY;
+    private static final long DEFAULT_INTERVAL = 5_000L;
 
-    public static final long DEFAULT_CURRENT_DURATION = 10_000L;
-    public static final long DEFAULT_CURRENT_INTERVAL = 10L;
+    private static final float DEFAULT_CURRENT_DISTANCE_FILTER = 0f;
+    private static final int DEFAULT_CURRENT_PRIORITY = Priority.PRIORITY_HIGH_ACCURACY;
+    private static final long DEFAULT_CURRENT_INTERVAL = 10L;
+    private static final long DEFAULT_CURRENT_DURATION = 10_000L;
+
 
     @NonNull
     public static LocationRequest build(@Nullable ReadableMap map) {
@@ -33,8 +36,8 @@ public class RNLocationPlayServicesHelper {
             if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
                 String priority = map.getString("priority");
                 switch (priority) {
-                    case "highAccuracy":
-                        builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+                    case "balancedPowerAccuracy":
+                        builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
                         break;
                     case "lowPower":
                         builder.setPriority(Priority.PRIORITY_LOW_POWER);
@@ -43,7 +46,7 @@ public class RNLocationPlayServicesHelper {
                         builder.setPriority(Priority.PRIORITY_PASSIVE);
                         break;
                     default:
-                        builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
+                        builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
                         break;
                 }
             }
@@ -72,9 +75,9 @@ public class RNLocationPlayServicesHelper {
 
     @NonNull
     public static LocationRequest buildCurrent(@Nullable ReadableMap map) {
-        LocationRequest.Builder builder = new LocationRequest.Builder(DEFAULT_PRIORITY, DEFAULT_CURRENT_INTERVAL);
+        LocationRequest.Builder builder = new LocationRequest.Builder(DEFAULT_CURRENT_PRIORITY, DEFAULT_CURRENT_INTERVAL);
         builder
-                .setMinUpdateDistanceMeters(DEFAULT_DISTANCE_FILTER)
+                .setMinUpdateDistanceMeters(DEFAULT_CURRENT_DISTANCE_FILTER)
                 .setDurationMillis(DEFAULT_CURRENT_DURATION)
                 .setMaxUpdateAgeMillis(0L);
 
@@ -83,8 +86,8 @@ public class RNLocationPlayServicesHelper {
             if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
                 String priority = map.getString("priority");
                 switch (priority) {
-                    case "highAccuracy":
-                        builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+                    case "balancedPowerAccuracy":
+                        builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
                         break;
                     case "lowPower":
                         builder.setPriority(Priority.PRIORITY_LOW_POWER);
@@ -93,7 +96,7 @@ public class RNLocationPlayServicesHelper {
                         builder.setPriority(Priority.PRIORITY_PASSIVE);
                         break;
                     default:
-                        builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
+                        builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
                         break;
                 }
             }
