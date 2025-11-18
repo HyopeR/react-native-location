@@ -74,7 +74,7 @@ export type ConfigureOptions = {
     /**
      * The accuracy of the location data.
      * @platform android
-     * @default 'balancedPowerAccuracy'
+     * @default 'highAccuracy'
      * @see [Android Docs](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#setPriority(int))
      */
     priority?: AndroidPriority;

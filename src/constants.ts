@@ -10,7 +10,7 @@ export const CONFIGURE_OPTIONS: ConfigureOptions = {
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
   android: {
-    priority: 'balancedPowerAccuracy',
+    priority: 'highAccuracy',
     provider: 'auto',
     interval: 5000,
     minWaitTime: undefined,
