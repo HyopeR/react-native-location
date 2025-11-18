@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CxxCallbackImpl;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.WritableMap;
 
 public class RNLocationUtils {
@@ -21,10 +22,6 @@ public class RNLocationUtils {
         eventEmitter = _eventEmitter;
     }
 
-    public static void emitError(String message, String type) {
-        emitError(message, type, false);
-    }
-
     public static void emitError(String message, String type, boolean critical) {
         if (eventEmitter == null) return;
 
@@ -36,10 +33,30 @@ public class RNLocationUtils {
         eventEmitter.invoke("onError", map);
     }
 
+    public static void emitError(String message, String type) {
+        emitError(message, type, false);
+    }
+
     public static void emitChange(@Nullable Object body) {
         if (eventEmitter == null) return;
 
         eventEmitter.invoke("onChange", body);
+    }
+
+    public static void handleException(Exception exception, @Nullable Promise promise) {
+        boolean hasPromise = promise != null;
+
+        if (exception instanceof RNLocationException e) {
+            if (hasPromise) promise.reject(e.type, e.getMessage());
+            else emitError(e.type, e.getMessage(), e.critical);
+        } else {
+            if (hasPromise) promise.reject(RNLocationConstants.ERROR_UNKNOWN, exception.getMessage());
+            else emitError(RNLocationConstants.ERROR_UNKNOWN, exception.getMessage());
+        }
+    }
+
+    public static void handleException(Exception exception) {
+        handleException(exception, null);
     }
 
     public static WritableMap locationToMap(Location location) {

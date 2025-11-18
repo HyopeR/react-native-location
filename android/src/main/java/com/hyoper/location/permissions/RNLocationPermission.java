@@ -9,12 +9,29 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.hyoper.location.RNLocationConstants;
-import com.hyoper.location.RNLocationUtils;
+import com.hyoper.location.RNLocationException;
 
 public class RNLocationPermission {
+    public static void ensure(@NonNull Context context, boolean background) throws RNLocationException {
+        boolean locationAllowed = checkLocation(context);
+        if (!locationAllowed) {
+            throw new RNLocationException(
+                    RNLocationConstants.ERROR_PERMISSION,
+                    "Location (Coarse/Fine) permission is not granted.",
+                    true
+            );
+        }
 
-    public static boolean check(@NonNull Context context, boolean background) {
-        return background ? checkLocationAlways(context) : checkLocation(context);
+        if (background) {
+            boolean locationAlwaysAllowed = checkLocationAlways(context);
+            if (!locationAlwaysAllowed) {
+                throw new RNLocationException(
+                        RNLocationConstants.ERROR_PERMISSION_ALWAYS,
+                        "Location (Background) permission is not granted.",
+                        true
+                );
+            }
+        }
     }
 
     public static boolean checkLocation(@NonNull Context context) {
@@ -24,21 +41,9 @@ public class RNLocationPermission {
                 ? ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                 : PackageManager.PERMISSION_DENIED;
 
-        if (
-                permissionCoarse == PackageManager.PERMISSION_GRANTED ||
+        return permissionCoarse == PackageManager.PERMISSION_GRANTED ||
                 permissionFine == PackageManager.PERMISSION_GRANTED ||
-                permissionBackground == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true;
-        }
-
-        RNLocationUtils.emitError(
-                "Location (Coarse/Fine) permission is not granted.",
-                RNLocationConstants.ERROR_PERMISSION,
-                true
-        );
-
-        return false;
+                permissionBackground == PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean checkLocationAlways(@NonNull Context context) {
@@ -48,17 +53,7 @@ public class RNLocationPermission {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             int permissionBackground = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
-            if (permissionBackground == PackageManager.PERMISSION_GRANTED) {
-                return true;
-            }
-
-            RNLocationUtils.emitError(
-                    "Location (Background) permission is not granted.",
-                    RNLocationConstants.ERROR_PERMISSION_ALWAYS,
-                    true
-            );
-
-            return false;
+            return permissionBackground == PackageManager.PERMISSION_GRANTED;
         } else {
             return true;
         }

@@ -7,33 +7,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hyoper.location.RNLocationConstants;
-import com.hyoper.location.RNLocationUtils;
+import com.hyoper.location.RNLocationException;
 
 public class RNLocationManager {
     public static LocationManager manager = null;
     public static String provider = null;
 
-    public static boolean ensure(@NonNull Context context, boolean highAccuracy) {
+    public static void ensure(@NonNull Context context, boolean highAccuracy) throws RNLocationException {
         manager = getLocationManager(context);
-        if (manager == null) return false;
+        if (manager == null) {
+            throw new RNLocationException(RNLocationConstants.ERROR_PROVIDER, "No location manager is available.", true);
+        }
 
         provider = getProvider(manager, highAccuracy);
-        return provider != null;
+        if (provider == null) {
+            throw new RNLocationException(RNLocationConstants.ERROR_PROVIDER, "No location provider is available.", true);
+        }
     }
 
     @Nullable
     private static LocationManager getLocationManager(@NonNull Context context) {
-        LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-        if (manager != null) return manager;
-
-        RNLocationUtils.emitError(
-                "No location manager is available.",
-                RNLocationConstants.ERROR_PROVIDER,
-                true
-        );
-
-        return null;
+        return (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
     @Nullable
@@ -45,12 +39,6 @@ public class RNLocationManager {
         String providerFallbackName = !highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
         boolean providerFallbackIsAvailable = locationManager.isProviderEnabled(providerFallbackName);
         if (providerFallbackIsAvailable) return providerFallbackName;
-
-        RNLocationUtils.emitError(
-                "No location provider is available.",
-                RNLocationConstants.ERROR_PROVIDER,
-                true
-        );
 
         return null;
     }

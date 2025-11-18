@@ -22,7 +22,7 @@ import com.hyoper.location.providers.RNLocationStandardProvider;
 public class RNLocation extends NativeRNLocationSpec {
     public static final String NAME = "RNLocation";
     private RNLocationProvider provider = null;
-    private boolean locationHighAccuracy = false;
+    private boolean locationHighAccuracy = true;
     private boolean locationBackground = false;
 
     public RNLocation(ReactApplicationContext reactContext) {
@@ -51,7 +51,7 @@ public class RNLocation extends NativeRNLocationSpec {
         RNLocationUtils.setEmitter(eventEmitterCallback);
     }
 
-    public void configure(ReadableMap options, final Promise promise) {
+    public void configure(ReadableMap options) {
         if (options.hasKey("provider") && options.getType("provider") == ReadableType.String) {
             String providerName = options.getString("provider");
             switch (providerName) {
@@ -83,22 +83,24 @@ public class RNLocation extends NativeRNLocationSpec {
         if (locationBackground) {
             RNLocationForegroundService.setLocationProvider(provider);
         }
-
-        promise.resolve(null);
     }
 
     public void start() {
-        ReactApplicationContext context = getReactApplicationContext();
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
 
-        if (!RNLocationManager.ensure(context, locationHighAccuracy)) return;
+            RNLocationManager.ensure(context, locationHighAccuracy);
 
-        if (!RNLocationPermission.check(context, locationBackground)) return;
+            RNLocationPermission.ensure(context, locationBackground);
 
-        if (locationBackground) {
-            startForegroundService();
-            return;
+            if (locationBackground) {
+                startForegroundService();
+                return;
+            }
+            provider.start();
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e);
         }
-        provider.start();
     }
 
     public void stop() {
@@ -107,6 +109,20 @@ public class RNLocation extends NativeRNLocationSpec {
             return;
         }
         provider.stop();
+    }
+
+    public void getCurrent(ReadableMap options, final Promise promise) {
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+
+            RNLocationManager.ensure(context, locationHighAccuracy);
+
+            RNLocationPermission.ensure(context, locationBackground);
+
+            provider.getCurrent(getCurrentActivity(), options, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
     }
 
     private void startForegroundService() {
