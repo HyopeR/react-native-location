@@ -132,26 +132,4 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
             handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, e.getMessage()));
         }
     }
-
-//    @SuppressLint("MissingPermission")
-//    @Override
-//    public void getCurrent(final Activity activity, final ReadableMap options, Promise promise) {
-//        CurrentLocationRequest currentLocationRequest = RNLocationPlayServicesHelper.buildCurrent(options);
-//
-//        try {
-//            locationProvider.getCurrentLocation(currentLocationRequest, null)
-//                    .addOnSuccessListener(location -> {
-//                        if (location != null) {
-//                            promise.resolve(RNLocationUtils.locationToMap(location));
-//                            return;
-//                        }
-//                        promise.reject(RNLocationConstants.ERROR_UNKNOWN, "Location timed out.");
-//                    })
-//                    .addOnFailureListener(e -> {
-//                        promise.reject(RNLocationConstants.ERROR_UNKNOWN, e.getMessage());
-//                    });
-//        } catch (Exception e) {
-//            promise.reject(RNLocationConstants.ERROR_UNKNOWN, e.getMessage());
-//        }
-//    }
 }
