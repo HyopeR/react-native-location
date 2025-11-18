@@ -4,7 +4,7 @@
 
 @interface RNLocationManager : NSObject
 
-+ (BOOL)ensure:(BOOL)highAccuracy;
++ (void)ensure:(BOOL)highAccuracy;
 + (void)reset;
 
 @end

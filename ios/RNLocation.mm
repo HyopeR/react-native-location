@@ -4,6 +4,14 @@
 #import "RNLocationProvider.h"
 #import "RNLocationUtils.h"
 
+@interface RNLocation ()
+
+@property (nonatomic, strong, nonnull) RNLocationProvider *provider;
+@property (nonatomic, assign) BOOL locationBackground;
+@property (nonatomic, assign) BOOL locationHighAccuracy;
+
+@end
+
 @implementation RNLocation
 
 + (NSString *)moduleName {
@@ -16,6 +24,8 @@
 {
     if (self = [super init]) {
         _provider = [[RNLocationProvider alloc] init];
+        _locationBackground = NO;
+        _locationHighAccuracy = YES;
         [RNLocationUtils setName:[[self class] moduleName]];
     }
     return self;
@@ -38,8 +48,6 @@
 #pragma mark - Configure
 
 - (void)configure:(nonnull NSDictionary *)options
-        resolve:(nonnull RCTPromiseResolveBlock)resolve
-        reject:(nonnull RCTPromiseRejectBlock)reject
 {
     [self.provider configure:options];
     
@@ -54,19 +62,32 @@
     } else {
         self.locationBackground = NO;
     }
-    
-    resolve(nil);
 }
 
-#pragma mark - Monitoring
+- (void)getCurrent:(nonnull NSDictionary *)options
+        resolve:(nonnull RCTPromiseResolveBlock)resolve
+        reject:(nonnull RCTPromiseRejectBlock)reject
+{
+    @try {
+        [RNLocationManager ensure:self.locationHighAccuracy];
+        
+        [RNLocationPermission ensure:self.locationBackground];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
+}
 
 - (void)start
 {
-    if (![RNLocationManager ensure:self.locationHighAccuracy]) return;
-    
-    if (![RNLocationPermission check:self.locationBackground]) return;
+    @try {
+        [RNLocationManager ensure:self.locationHighAccuracy];
 
-    [self.provider start];
+        [RNLocationPermission ensure:self.locationBackground];
+
+        [self.provider start];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e];
+    }
 }
 
 - (void)stop

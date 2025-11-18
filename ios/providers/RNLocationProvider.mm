@@ -1,5 +1,6 @@
 #import "RNLocationProvider.h"
 #import "RNLocationConstants.h"
+#import "RNLocationRequest.h"
 #import "RNLocationUtils.h"
 
 #import <React/RCTConvert.h>
@@ -29,14 +30,14 @@
     NSString *desiredAccuracy = [RCTConvert NSString:options[@"desiredAccuracy"]];
     if ([desiredAccuracy isEqualToString:@"bestForNavigation"]) {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
-    } else if ([desiredAccuracy isEqualToString:@"best"]) {
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     } else if ([desiredAccuracy isEqualToString:@"nearestTenMeters"]) {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
     } else if ([desiredAccuracy isEqualToString:@"hundredMeters"]) {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     } else if ([desiredAccuracy isEqualToString:@"threeKilometers"]) {
         self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+    } else {
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
     }
 
     // Activity type
@@ -101,8 +102,6 @@
     }
 }
 
-#pragma mark - Monitoring
-
 - (void)start
 {
     [self.locationManager startUpdatingLocation];
@@ -113,12 +112,20 @@
     [self.locationManager stopUpdatingLocation];
 }
 
+- (void)getCurrent:(nonnull NSDictionary *)options
+        resolve:(nonnull RCTPromiseResolveBlock)resolve
+        reject:(nonnull RCTPromiseRejectBlock)reject
+{
+    // [self.locationManager copy];
+    // RNLocationRequest
+}
+
 #pragma mark - CLLocationManagerDelegate
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     NSString *message = error.localizedDescription;
-    [RNLocationUtils emitError:message type:RNLocationErrorUnknown];
+    [RNLocationUtils emitError:RNLocationErrorUnknown message:message];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
@@ -127,7 +134,6 @@
     [locations enumerateObjectsUsingBlock:^(CLLocation *location, NSUInteger idx, BOOL *stop) {
         [results addObject:[RNLocationUtils locationToMap:location]];
     }];
-
     [RNLocationUtils emitChange:results];
 }
 

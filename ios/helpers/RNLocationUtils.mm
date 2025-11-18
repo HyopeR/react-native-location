@@ -1,4 +1,6 @@
 #import "RNLocationUtils.h"
+#import "RNLocationConstants.h"
+#import "RNLocationException.h"
 
 static NSString *name = @"RNLocation";
 static facebook::react::EventEmitterCallback eventEmitter = nullptr;
@@ -21,7 +23,7 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     eventEmitter = _eventEmitter;
 }
 
-+ (void)emitError:(NSString *)message type:(NSString *)type critical:(BOOL)critical {
++ (void)emitError:(NSString *)type message:(NSString *)message critical:(BOOL)critical {
     if (!eventEmitter) return;
 
     NSMutableDictionary *map = [NSMutableDictionary dictionary];
@@ -32,14 +34,35 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     eventEmitter("onError", map);
 }
 
-+ (void)emitError:(NSString *)message type:(NSString *)type {
-    [self emitError:message type:type critical:NO];
++ (void)emitError:(NSString *)type message:(NSString *)message {
+    [self emitError:type message:message critical:NO];
 }
 
 + (void)emitChange:(nullable NSObject *)body {
     if (!eventEmitter) return;
 
     eventEmitter([@"onChange" UTF8String], body);
+}
+
++ (void)handleException:(NSException *)exception
+                resolve:(nullable RCTPromiseResolveBlock)resolve
+                reject:(nullable RCTPromiseRejectBlock)reject
+{
+    BOOL hasPromise = (reject != nil);
+
+    if ([exception isKindOfClass:[RNLocationException class]]) {
+        RNLocationException *e = (RNLocationException *)exception;
+        if (hasPromise) reject(e.type, e.reason, nil);
+        else [self emitError:e.type message:e.reason critical:e.critical];
+    } else {
+        if (hasPromise) reject(RNLocationErrorUnknown, exception.reason, nil);
+        else [self emitError:RNLocationErrorUnknown message:exception.reason];
+    }
+}
+
++ (void)handleException:(NSException *)exception
+{
+    [self handleException:exception resolve:nil reject:nil];
 }
 
 + (NSDictionary *)locationToMap:(CLLocation *)location {
