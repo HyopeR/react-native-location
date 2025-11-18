@@ -8,8 +8,8 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
-import com.hyoper.location.RNLocationConstants;
-import com.hyoper.location.RNLocationException;
+import com.hyoper.location.helpers.RNLocationConstants;
+import com.hyoper.location.helpers.RNLocationException;
 
 public class RNLocationPermission {
     public static void ensure(@NonNull Context context, boolean background) throws RNLocationException {

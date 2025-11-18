@@ -21,8 +21,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-import com.hyoper.location.RNLocationConstants;
-import com.hyoper.location.RNLocationUtils;
+import com.hyoper.location.helpers.RNLocationConstants;
+import com.hyoper.location.helpers.RNLocationUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

@@ -1,4 +1,4 @@
-package com.hyoper.location;
+package com.hyoper.location.helpers;
 
 import android.location.Location;
 import android.os.Build;

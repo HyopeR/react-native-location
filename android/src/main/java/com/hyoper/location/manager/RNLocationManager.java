@@ -6,8 +6,8 @@ import android.location.LocationManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hyoper.location.RNLocationConstants;
-import com.hyoper.location.RNLocationException;
+import com.hyoper.location.helpers.RNLocationConstants;
+import com.hyoper.location.helpers.RNLocationException;
 
 public class RNLocationManager {
     public static LocationManager manager = null;

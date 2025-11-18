@@ -18,8 +18,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 
-import com.hyoper.location.RNLocationConstants;
-import com.hyoper.location.RNLocationUtils;
+import com.hyoper.location.helpers.RNLocationConstants;
+import com.hyoper.location.helpers.RNLocationUtils;
 import com.hyoper.location.manager.RNLocationManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;

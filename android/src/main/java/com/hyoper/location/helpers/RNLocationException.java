@@ -1,4 +1,4 @@
-package com.hyoper.location;
+package com.hyoper.location.helpers;
 
 public class RNLocationException extends Exception {
     public final String type;

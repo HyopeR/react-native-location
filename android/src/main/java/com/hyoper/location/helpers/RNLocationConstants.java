@@ -1,4 +1,4 @@
-package com.hyoper.location;
+package com.hyoper.location.helpers;
 
 public class RNLocationConstants {
     public static final String ERROR_PROVIDER = "ERROR_PROVIDER";
