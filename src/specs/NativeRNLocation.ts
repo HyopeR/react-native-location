@@ -32,7 +32,7 @@ type LocationError = {
 };
 
 export interface Spec extends TurboModule {
-  configure(options: UnsafeObject): Promise<void>;
+  configure(options: UnsafeObject): void;
   start(): void;
   stop(): void;
   getCurrent(options: UnsafeObject): Promise<Location>;
