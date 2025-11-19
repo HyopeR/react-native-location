@@ -1,10 +1,10 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {
+  ConfigureOptions,
   Location,
   OnChangeEvent,
   OnErrorEvent,
-  Options,
   RNLocation,
 } from '@hyoper/rn-location';
 import {Screen} from '../../commons/Screen';
@@ -14,7 +14,7 @@ import {openAlert, openSettings, Permission} from '../../utils';
 import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
-const OPTIONS: Options = {
+const OPTIONS: ConfigureOptions = {
   allowsBackgroundLocationUpdates: true,
   distanceFilter: 0,
 
@@ -39,7 +39,6 @@ export const BackgroundPage = ({back}: PageProps) => {
   const [location, setLocation] = useState<Location | null>(null);
 
   const [locationAllow, setLocationAllow] = useState(false);
-  const [locationConfigured, setLocationConfigured] = useState(false);
   const [locationTracking, setLocationTracking] = useState(false);
 
   const onChange = useCallback<OnChangeEvent>(locations => {
@@ -71,26 +70,21 @@ export const BackgroundPage = ({back}: PageProps) => {
   }, []);
 
   useEffect(() => {
+    RNLocation.configure(OPTIONS);
     Permission.LocationAlways.check()
       .then(status => setLocationAllow(status === 'granted'))
       .catch(() => setLocationAllow(false));
   }, []);
 
   useEffect(() => {
-    if (!locationAllow) return;
-
-    RNLocation.configure(OPTIONS).finally(() => setLocationConfigured(true));
-  }, [locationAllow]);
-
-  useEffect(() => {
-    if (!locationConfigured || !locationTracking) return;
+    if (!locationTracking) return;
 
     const subscription = RNLocation.subscribe();
     subscription.onChange(onChange).onError(onError);
     return () => {
       subscription && subscription.unsubscribe();
     };
-  }, [locationConfigured, locationTracking, onChange, onError]);
+  }, [locationTracking, onChange, onError]);
 
   const start = () => {
     setLocationTracking(true);
@@ -123,7 +117,7 @@ export const BackgroundPage = ({back}: PageProps) => {
         right={'Config'}
         rightProps={{onPress: openSettings}}>
         <Screen.Title>Background Location</Screen.Title>
-        <Screen.Subtitle>Usage</Screen.Subtitle>
+        <Screen.Subtitle>Tracking</Screen.Subtitle>
       </Screen.Header>
 
       <Screen.Content style={PageStyle.root}>
