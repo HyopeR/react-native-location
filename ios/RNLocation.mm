@@ -7,8 +7,8 @@
 @interface RNLocation ()
 
 @property (nonatomic, strong, nonnull) RNLocationProvider *provider;
-@property (nonatomic, assign) BOOL locationBackground;
 @property (nonatomic, assign) BOOL locationHighAccuracy;
+@property (nonatomic, assign) BOOL locationBackground;
 
 @end
 
@@ -22,8 +22,8 @@
 {
     if (self = [super init]) {
         _provider = [[RNLocationProvider alloc] init];
-        _locationBackground = NO;
         _locationHighAccuracy = YES;
+        _locationBackground = NO;
         [RNLocationUtils setName:[[self class] moduleName]];
     }
     return self;
@@ -64,12 +64,24 @@
         resolve:(nonnull RCTPromiseResolveBlock)resolve
         reject:(nonnull RCTPromiseRejectBlock)reject
 {
+    bool currentHighAccuracy = true;
+    NSString *desiredAccuracy = options[@"desiredAccuracy"];
+    if (desiredAccuracy != nil) {
+        currentHighAccuracy = [desiredAccuracy isEqualToString:@"bestForNavigation"] || [desiredAccuracy isEqualToString:@"best"];
+    }
+    
+    bool currentBackground = false;
+    NSNumber *background = options[@"background"];
+    if (background != nil) {
+        currentBackground = [background boolValue];
+    }
+    
     @try {
-        [RNLocationManager ensure:self.locationHighAccuracy];
+        [RNLocationManager ensure:currentHighAccuracy];
         
-        [RNLocationPermission ensure:self.locationBackground];
+        [RNLocationPermission ensure:currentBackground];
         
-        [self.provider getCurrent: options resolve: resolve reject: reject];
+        [self.provider getCurrent:options resolve:resolve reject:reject];
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }

@@ -49,21 +49,15 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
                 reject:(nullable RCTPromiseRejectBlock)reject
 {
     BOOL hasPromise = (reject != nil);
+    NSString *message = exception.reason ?: @"Unknown error.";
+
     if ([exception isKindOfClass:[RNLocationException class]]) {
         RNLocationException *e = (RNLocationException *)exception;
-        NSString *message = e.reason ?: @"Unknown error.";
-        if (hasPromise) {
-            reject(e.type, message, nil);
-        } else {
-            [self emitError:e.type message:message critical:e.critical];
-        }
+        if (hasPromise) reject(e.type, message, nil);
+        else [self emitError:e.type message:message critical:e.critical];
     } else {
-        NSString *message = exception.reason ?: @"Unknown error.";
-        if (hasPromise) {
-            reject(RNLocationErrorUnknown, message, nil);
-        } else {
-            [self emitError:RNLocationErrorUnknown message:message];
-        }
+        if (hasPromise) reject(RNLocationErrorUnknown, message, nil);
+        else [self emitError:RNLocationErrorUnknown message:message];
     }
 }
 
