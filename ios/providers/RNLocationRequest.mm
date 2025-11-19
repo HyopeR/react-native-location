@@ -34,7 +34,6 @@
 
 - (void)dealloc
 {
-    
     [_manager stopUpdatingLocation];
     _manager.delegate = nil;
     _manager = nil;

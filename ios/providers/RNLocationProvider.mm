@@ -9,6 +9,7 @@
 @interface RNLocationProvider ()
 
 @property (nonatomic, strong) NSMutableDictionary<NSString*, RNLocationRequest*> *requests;
+@property (nonatomic, assign) BOOL tracking;
 
 @end
 
@@ -20,6 +21,7 @@
         _manager = [[CLLocationManager alloc] init];
         _manager.delegate = self;
         _requests = [NSMutableDictionary new];
+        _tracking = NO;
     }
     return self;
 }
@@ -112,11 +114,13 @@
 
 - (void)start
 {
+    self.tracking = YES;
     [self.manager startUpdatingLocation];
 }
 
 - (void)stop
 {
+    self.tracking = NO;
     [self.manager stopUpdatingLocation];
 }
 
