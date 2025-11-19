@@ -6,11 +6,11 @@
 
 @interface RNLocationRequest : NSObject <CLLocationManagerDelegate>
 
-@property (nonatomic, strong, readonly) CLLocationManager *manager;
+@property (nonatomic, strong, readonly, nonnull) CLLocationManager *manager;
 
-- (instancetype)initWithOptions:(NSDictionary *)options
-                        resolve:(RCTPromiseResolveBlock)resolve
-                        reject:(RCTPromiseRejectBlock)reject;
+- (instancetype _Nonnull)initWithOptions:(NSDictionary *_Nonnull)options
+                        resolve:(_Nonnull RCTPromiseResolveBlock)resolve
+                        reject:(_Nonnull RCTPromiseRejectBlock)reject;
 - (void)run;
 
 @end

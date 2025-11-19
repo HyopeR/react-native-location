@@ -19,8 +19,7 @@
                         resolve:(RCTPromiseResolveBlock)resolve
                         reject:(RCTPromiseRejectBlock)reject
 {
-    self = [super init];
-    if (self) {
+    if (self = [super init]) {
         _manager = [[CLLocationManager alloc] init];
         _manager.delegate = self;
 
@@ -35,6 +34,7 @@
 
 - (void)dealloc
 {
+    
     [_manager stopUpdatingLocation];
     _manager.delegate = nil;
     _manager = nil;
@@ -75,7 +75,7 @@
         
         __weak __typeof__(self) weakSelf = self;
 
-        int64_t delta = (int64_t)(self.duration * 1000000);
+        int64_t delta = (int64_t)(self.duration * NSEC_PER_MSEC);
         dispatch_queue_t queue = dispatch_get_main_queue();
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), queue, ^{
             __strong __typeof__(self) strongSelf = weakSelf;
@@ -84,7 +84,6 @@
 
             strongSelf.resolved = YES;
             [strongSelf.manager stopUpdatingLocation];
-            strongSelf.manager.delegate = nil;
             dispatch_async(dispatch_get_main_queue(), ^{
                 strongSelf.reject(RNLocationErrorUnknown, @"Location timed out.", nil);
             });
@@ -99,19 +98,16 @@
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)locationManager didUpdateLocations:(NSArray *)locations
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     if (self.resolved) return;
 
     self.resolved = YES;
     [self.manager stopUpdatingLocation];
-    self.manager.delegate = nil;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.resolve([RNLocationUtils locationToMap:locations.lastObject]);
-    });
+    self.resolve([RNLocationUtils locationToMap:locations.lastObject]);
 }
 
-- (void)locationManager:(CLLocationManager *)locationManager didFailWithError:(NSError *)error
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     // Error management is done by the timer.
 }

@@ -6,6 +6,12 @@
 #import <React/RCTConvert.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
+@interface RNLocationProvider ()
+
+@property (nonatomic, strong) NSMutableDictionary<NSString*, RNLocationRequest*> *requests;
+
+@end
+
 @implementation RNLocationProvider
 
 - (instancetype)init
@@ -13,6 +19,7 @@
     if (self = [super init]) {
         _manager = [[CLLocationManager alloc] init];
         _manager.delegate = self;
+        _requests = [NSMutableDictionary new];
     }
     return self;
 }
@@ -22,6 +29,7 @@
     [_manager stopUpdatingLocation];
     _manager.delegate = nil;
     _manager = nil;
+    _requests = nil;
 }
 
 - (void)configure:(NSDictionary *)options
@@ -116,15 +124,22 @@
         resolve:(nonnull RCTPromiseResolveBlock)resolve
         reject:(nonnull RCTPromiseRejectBlock)reject
 {
-    RNLocationRequest *request = [[RNLocationRequest alloc] initWithOptions:options
-                                                                    resolve:resolve
-                                                                    reject:reject];
+    NSString *requestId = [[NSUUID UUID] UUIDString];
+    RNLocationRequest *request = [[RNLocationRequest alloc] initWithOptions:options resolve:^(id result) {
+        resolve(result);
+        [self.requests removeObjectForKey:requestId];
+    } reject:^(NSString *code, NSString *message, NSError *error) {
+        reject(code, message, error);
+        [self.requests removeObjectForKey:requestId];
+    }];
+
+    self.requests[requestId] = request;
     [request run];
 }
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)locationManager didUpdateLocations:(NSArray *)locations
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     NSMutableArray *results = [NSMutableArray arrayWithCapacity:[locations count]];
     [locations enumerateObjectsUsingBlock:^(CLLocation *location, NSUInteger idx, BOOL *stop) {
@@ -133,7 +148,7 @@
     [RNLocationUtils emitChange:results];
 }
 
-- (void)locationManager:(CLLocationManager *)locationManager didFailWithError:(NSError *)error
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
     NSString *message = error.localizedDescription;
     [RNLocationUtils emitError:RNLocationErrorUnknown message:message];
