@@ -27,11 +27,11 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     if (!eventEmitter) return;
 
     NSMutableDictionary *map = [NSMutableDictionary dictionary];
-    map[@"message"] = message;
     map[@"type"] = type;
+    map[@"message"] = message;
     map[@"critical"] = @(critical);
 
-    eventEmitter("onError", map);
+    eventEmitter([@"onError" UTF8String], map);
 }
 
 + (void)emitError:(NSString *)type message:(NSString *)message {
@@ -49,14 +49,21 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
                 reject:(nullable RCTPromiseRejectBlock)reject
 {
     BOOL hasPromise = (reject != nil);
-
     if ([exception isKindOfClass:[RNLocationException class]]) {
         RNLocationException *e = (RNLocationException *)exception;
-        if (hasPromise) reject(e.type, e.reason, nil);
-        else [self emitError:e.type message:e.reason critical:e.critical];
+        NSString *message = e.reason ?: @"Unknown error.";
+        if (hasPromise) {
+            reject(e.type, message, nil);
+        } else {
+            [self emitError:e.type message:message critical:e.critical];
+        }
     } else {
-        if (hasPromise) reject(RNLocationErrorUnknown, exception.reason, nil);
-        else [self emitError:RNLocationErrorUnknown message:exception.reason];
+        NSString *message = exception.reason ?: @"Unknown error.";
+        if (hasPromise) {
+            reject(RNLocationErrorUnknown, message, nil);
+        } else {
+            [self emitError:RNLocationErrorUnknown message:message];
+        }
     }
 }
 

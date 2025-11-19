@@ -18,8 +18,6 @@
   return @"RNLocation";
 }
 
-#pragma mark - Initialization
-
 - (instancetype)init
 {
     if (self = [super init]) {
@@ -44,8 +42,6 @@
     [super setEventEmitterCallback:eventEmitterCallbackWrapper];
     [RNLocationUtils setEventEmitter:_eventEmitterCallback];
 }
-
-#pragma mark - Configure
 
 - (void)configure:(nonnull NSDictionary *)options
 {
@@ -72,6 +68,8 @@
         [RNLocationManager ensure:self.locationHighAccuracy];
         
         [RNLocationPermission ensure:self.locationBackground];
+        
+        [self.provider getCurrent: options resolve: resolve reject: reject];
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }

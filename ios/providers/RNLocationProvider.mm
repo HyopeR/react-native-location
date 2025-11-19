@@ -11,17 +11,17 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        _locationManager = [[CLLocationManager alloc] init];
-        _locationManager.delegate = self;
+        _manager = [[CLLocationManager alloc] init];
+        _manager.delegate = self;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [_locationManager stopUpdatingLocation];
-    _locationManager.delegate = nil;
-    _locationManager = nil;
+    [_manager stopUpdatingLocation];
+    _manager.delegate = nil;
+    _manager = nil;
 }
 
 - (void)configure:(NSDictionary *)options
@@ -29,112 +29,114 @@
     // Desired accuracy
     NSString *desiredAccuracy = [RCTConvert NSString:options[@"desiredAccuracy"]];
     if ([desiredAccuracy isEqualToString:@"bestForNavigation"]) {
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+        self.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
     } else if ([desiredAccuracy isEqualToString:@"nearestTenMeters"]) {
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+        self.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
     } else if ([desiredAccuracy isEqualToString:@"hundredMeters"]) {
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+        self.manager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
     } else if ([desiredAccuracy isEqualToString:@"threeKilometers"]) {
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+        self.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
     } else {
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        self.manager.desiredAccuracy = kCLLocationAccuracyBest;
     }
 
     // Activity type
     NSString *activityType = [RCTConvert NSString:options[@"activityType"]];
     if ([activityType isEqualToString:@"other"]) {
-        self.locationManager.activityType = CLActivityTypeOther;
+        self.manager.activityType = CLActivityTypeOther;
     } else if ([activityType isEqualToString:@"automotiveNavigation"]) {
-        self.locationManager.activityType = CLActivityTypeAutomotiveNavigation;
+        self.manager.activityType = CLActivityTypeAutomotiveNavigation;
     } else if ([activityType isEqualToString:@"fitness"]) {
-        self.locationManager.activityType = CLActivityTypeFitness;
+        self.manager.activityType = CLActivityTypeFitness;
     } else if ([activityType isEqualToString:@"otherNavigation"]) {
-        self.locationManager.activityType = CLActivityTypeOtherNavigation;
+        self.manager.activityType = CLActivityTypeOtherNavigation;
     } else if ([activityType isEqualToString:@"airborne"]) {
         if (@available(iOS 12.0, *)) {
-            self.locationManager.activityType = CLActivityTypeAirborne;
+            self.manager.activityType = CLActivityTypeAirborne;
         }
     }
 
     // Distance filter
     NSNumber *distanceFilter = [RCTConvert NSNumber:options[@"distanceFilter"]];
     if (distanceFilter != nil) {
-        self.locationManager.distanceFilter = [distanceFilter doubleValue];
+        self.manager.distanceFilter = [distanceFilter doubleValue];
     }
 
     // Heading filter
     NSNumber *headingFilter = [RCTConvert NSNumber:options[@"headingFilter"]];
     if (headingFilter != nil) {
         double headingFilterValue = [headingFilter doubleValue];
-        self.locationManager.headingFilter = headingFilterValue == 0 ? kCLHeadingFilterNone : headingFilterValue;
+        self.manager.headingFilter = headingFilterValue == 0 ? kCLHeadingFilterNone : headingFilterValue;
     }
 
     // Heading orientation
     NSString *headingOrientation = [RCTConvert NSString:options[@"headingOrientation"]];
     if ([headingOrientation isEqualToString:@"portrait"]) {
-        self.locationManager.headingOrientation = CLDeviceOrientationPortrait;
+        self.manager.headingOrientation = CLDeviceOrientationPortrait;
     } else if ([headingOrientation isEqualToString:@"portraitUpsideDown"]) {
-        self.locationManager.headingOrientation = CLDeviceOrientationPortraitUpsideDown;
+        self.manager.headingOrientation = CLDeviceOrientationPortraitUpsideDown;
     } else if ([headingOrientation isEqualToString:@"landscapeLeft"]) {
-        self.locationManager.headingOrientation = CLDeviceOrientationLandscapeLeft;
+        self.manager.headingOrientation = CLDeviceOrientationLandscapeLeft;
     } else if ([headingOrientation isEqualToString:@"landscapeRight"]) {
-        self.locationManager.headingOrientation = CLDeviceOrientationLandscapeRight;
+        self.manager.headingOrientation = CLDeviceOrientationLandscapeRight;
     }
 
     // Allows background location updates
     NSNumber *allowsBackgroundLocationUpdates = [RCTConvert NSNumber:options[@"allowsBackgroundLocationUpdates"]];
     if (allowsBackgroundLocationUpdates != nil) {
-        self.locationManager.allowsBackgroundLocationUpdates = [allowsBackgroundLocationUpdates boolValue];
+        self.manager.allowsBackgroundLocationUpdates = [allowsBackgroundLocationUpdates boolValue];
     }
 
     // Pauses location updates automatically
     NSNumber *pausesLocationUpdatesAutomatically = [RCTConvert NSNumber:options[@"pausesLocationUpdatesAutomatically"]];
     if (pausesLocationUpdatesAutomatically != nil) {
-        self.locationManager.pausesLocationUpdatesAutomatically = [pausesLocationUpdatesAutomatically boolValue];
+        self.manager.pausesLocationUpdatesAutomatically = [pausesLocationUpdatesAutomatically boolValue];
     }
 
     // Shows background location indicator
     if (@available(iOS 11.0, *)) {
         NSNumber *showsBackgroundLocationIndicator = [RCTConvert NSNumber:options[@"showsBackgroundLocationIndicator"]];
         if (showsBackgroundLocationIndicator != nil) {
-            self.locationManager.showsBackgroundLocationIndicator = [showsBackgroundLocationIndicator boolValue];
+            self.manager.showsBackgroundLocationIndicator = [showsBackgroundLocationIndicator boolValue];
         }
     }
 }
 
 - (void)start
 {
-    [self.locationManager startUpdatingLocation];
+    [self.manager startUpdatingLocation];
 }
 
 - (void)stop
 {
-    [self.locationManager stopUpdatingLocation];
+    [self.manager stopUpdatingLocation];
 }
 
 - (void)getCurrent:(nonnull NSDictionary *)options
         resolve:(nonnull RCTPromiseResolveBlock)resolve
         reject:(nonnull RCTPromiseRejectBlock)reject
 {
-    // [self.locationManager copy];
-    // RNLocationRequest
+    RNLocationRequest *request = [[RNLocationRequest alloc] initWithOptions:options
+                                                                    resolve:resolve
+                                                                    reject:reject];
+    [request run];
 }
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
-{
-    NSString *message = error.localizedDescription;
-    [RNLocationUtils emitError:RNLocationErrorUnknown message:message];
-}
-
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+- (void)locationManager:(CLLocationManager *)locationManager didUpdateLocations:(NSArray *)locations
 {
     NSMutableArray *results = [NSMutableArray arrayWithCapacity:[locations count]];
     [locations enumerateObjectsUsingBlock:^(CLLocation *location, NSUInteger idx, BOOL *stop) {
         [results addObject:[RNLocationUtils locationToMap:location]];
     }];
     [RNLocationUtils emitChange:results];
+}
+
+- (void)locationManager:(CLLocationManager *)locationManager didFailWithError:(NSError *)error
+{
+    NSString *message = error.localizedDescription;
+    [RNLocationUtils emitError:RNLocationErrorUnknown message:message];
 }
 
 @end

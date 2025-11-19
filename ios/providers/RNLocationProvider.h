@@ -6,7 +6,7 @@
 
 @interface RNLocationProvider : NSObject <CLLocationManagerDelegate>
 
-@property (nonatomic, strong, readonly, nonnull) CLLocationManager *locationManager;
+@property (nonatomic, strong, readonly, nonnull) CLLocationManager *manager;
 
 - (instancetype _Nonnull)init;
 - (void)configure:(NSDictionary *_Nonnull)options;
