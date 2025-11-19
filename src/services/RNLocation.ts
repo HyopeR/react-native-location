@@ -6,7 +6,7 @@ import {CurrentOptions, ConfigureOptions, Subscription} from '../types';
 class RNLocationModule extends RNLocationModuleHelper {
   private subscriptions = new Map<string, RNLocationSubscription>();
 
-  async configure(options?: ConfigureOptions) {
+  configure(options?: ConfigureOptions) {
     const opts = this.getPlatformConfigureOptions(options);
     return RNLocationNative.configure(opts);
   }
