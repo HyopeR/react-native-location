@@ -45,13 +45,14 @@ public class RNLocationUtils {
 
     public static void handleException(Exception exception, @Nullable Promise promise) {
         boolean hasPromise = promise != null;
+        String message = (exception.getMessage() != null) ? exception.getMessage() : "Unknown error.";
 
         if (exception instanceof RNLocationException e) {
-            if (hasPromise) promise.reject(e.type, e.getMessage());
-            else emitError(e.type, e.getMessage(), e.critical);
+            if (hasPromise) promise.reject(e.type, message);
+            else emitError(e.type, message, e.critical);
         } else {
-            if (hasPromise) promise.reject(RNLocationConstants.ERROR_UNKNOWN, exception.getMessage());
-            else emitError(RNLocationConstants.ERROR_UNKNOWN, exception.getMessage());
+            if (hasPromise) promise.reject(RNLocationConstants.ERROR_UNKNOWN, message);
+            else emitError(RNLocationConstants.ERROR_UNKNOWN, message);
         }
     }
 

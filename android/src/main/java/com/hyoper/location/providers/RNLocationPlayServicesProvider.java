@@ -129,7 +129,8 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
             }, request.getDurationMillis());
 
         } catch (Exception e) {
-            handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, e.getMessage()));
+            String message = (e.getMessage() != null) ? e.getMessage() : "Unknown error.";
+            handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, message));
         }
     }
 }

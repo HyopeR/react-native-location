@@ -71,8 +71,7 @@ public class RNLocation extends NativeRNLocationSpec {
         provider.configure(getCurrentActivity(), options);
 
         if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
-            String priorityName = options.getString("priority");
-            locationHighAccuracy = priorityName.equals("highAccuracy");
+            locationHighAccuracy = options.getString("priority").equals("highAccuracy");
         }
 
         if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
@@ -113,12 +112,22 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void getCurrent(ReadableMap options, final Promise promise) {
+        boolean currentHighAccuracy = true;
+        if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
+            currentHighAccuracy = options.getString("priority").equals("highAccuracy");
+        }
+
+        boolean currentBackground = false;
+        if (options.hasKey("background") && options.getType("background") == ReadableType.Boolean) {
+            currentBackground = options.getBoolean("background");
+        }
+
         try {
             ReactApplicationContext context = getReactApplicationContext();
 
-            RNLocationManager.ensure(context, locationHighAccuracy);
+            RNLocationManager.ensure(context, currentHighAccuracy);
 
-            RNLocationPermission.ensure(context, locationBackground);
+            RNLocationPermission.ensure(context, currentBackground);
 
             provider.getCurrent(getCurrentActivity(), options, promise);
         } catch (Exception e) {
