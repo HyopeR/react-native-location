@@ -36,6 +36,7 @@
 
 - (void)configure:(NSDictionary *)options
 {
+    [self.options reset];
     [self.options configure:options];
     self.manager.desiredAccuracy = self.options.desiredAccuracy;
     self.manager.distanceFilter = self.options.distanceFilter;

@@ -17,5 +17,6 @@
 - (instancetype _Nonnull)init;
 - (instancetype _Nonnull)initWithOptions:(NSDictionary *_Nullable)options;
 - (void)configure:(NSDictionary *_Nonnull)options;
+- (void)reset;
 
 @end

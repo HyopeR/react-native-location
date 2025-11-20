@@ -13,8 +13,16 @@
 {
     if (self = [super init]) {
         _desiredAccuracy = kCLLocationAccuracyBest;
-        _distanceFilter = 0;
+        _distanceFilter = kCLDistanceFilterNone;
         _duration = 10000;
+        _activityType = CLActivityTypeOther;
+        _headingFilter = kCLHeadingFilterNone;
+        _headingOrientation = CLDeviceOrientationPortrait;
+        _allowsBackgroundLocationUpdates = NO;
+        _pausesLocationUpdatesAutomatically = YES;
+        if (@available(iOS 11.0, *)) {
+            _showsBackgroundLocationIndicator = NO;
+        }
         [self configure:options];
     }
     return self;
@@ -39,7 +47,14 @@
     // Distance filter
     NSNumber *distanceFilter = [RCTConvert NSNumber:options[@"distanceFilter"]];
     if (distanceFilter != nil) {
-        self.distanceFilter = [distanceFilter doubleValue];
+        double value = [distanceFilter doubleValue];
+        self.distanceFilter = value == 0 ? kCLDistanceFilterNone : value;
+    }
+    
+    // Duration
+    NSNumber *duration = [RCTConvert NSNumber:options[@"duration"]];
+    if (duration != nil) {
+        self.duration = [duration doubleValue];
     }
 
     // Activity type
@@ -96,11 +111,20 @@
             self.showsBackgroundLocationIndicator = [showsBackgroundLocationIndicator boolValue];
         }
     }
-    
-    // Duration
-    NSNumber *duration = [RCTConvert NSNumber:options[@"duration"]];
-    if (duration != nil) {
-        self.duration = [duration doubleValue];
+}
+
+- (void)reset
+{
+    self.desiredAccuracy = kCLLocationAccuracyBest;
+    self.distanceFilter = kCLDistanceFilterNone;
+    self.duration = 10000;
+    self.activityType = CLActivityTypeOther;
+    self.headingFilter = kCLHeadingFilterNone;
+    self.headingOrientation = CLDeviceOrientationPortrait;
+    self.allowsBackgroundLocationUpdates = NO;
+    self.pausesLocationUpdatesAutomatically = YES;
+    if (@available(iOS 11.0, *)) {
+        self.showsBackgroundLocationIndicator = NO;
     }
 }
 
