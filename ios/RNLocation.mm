@@ -55,8 +55,6 @@
     NSNumber *allowsBackgroundLocationUpdates = options[@"allowsBackgroundLocationUpdates"];
     if (allowsBackgroundLocationUpdates != nil) {
         self.locationBackground = [allowsBackgroundLocationUpdates boolValue];
-    } else {
-        self.locationBackground = NO;
     }
 }
 
