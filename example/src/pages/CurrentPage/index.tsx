@@ -32,8 +32,10 @@ export const CurrentPage = ({back}: PageProps) => {
       const item = await RNLocation.getCurrent(OPTIONS);
       setLocation(item);
       console.log(item);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      console.log(err?.code);
+      console.log(err?.message);
     } finally {
       setLocationLoading(false);
     }
