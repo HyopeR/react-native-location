@@ -29,19 +29,19 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     eventEmitter([RNLocationEventChange UTF8String], body);
 }
 
-+ (void)emitError:(NSString *)type message:(NSString *)message critical:(BOOL)critical {
++ (void)emitError:(NSString *)code message:(NSString *)message critical:(BOOL)critical {
     if (!eventEmitter) return;
 
     NSMutableDictionary *map = [NSMutableDictionary dictionary];
-    map[@"type"] = type;
+    map[@"code"] = code;
     map[@"message"] = message;
     map[@"critical"] = @(critical);
 
     eventEmitter([RNLocationEventError UTF8String], map);
 }
 
-+ (void)emitError:(NSString *)type message:(NSString *)message {
-    [self emitError:type message:message critical:NO];
++ (void)emitError:(NSString *)code message:(NSString *)message {
+    [self emitError:code message:message critical:NO];
 }
 
 + (void)handleException:(NSException *)exception
@@ -53,8 +53,8 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
 
     if ([exception isKindOfClass:[RNLocationException class]]) {
         RNLocationException *e = (RNLocationException *)exception;
-        if (hasPromise) reject(e.type, message, nil);
-        else [self emitError:e.type message:message critical:e.critical];
+        if (hasPromise) reject(e.code, message, nil);
+        else [self emitError:e.code message:message critical:e.critical];
     } else {
         if (hasPromise) reject(RNLocationErrorUnknown, message, nil);
         else [self emitError:RNLocationErrorUnknown message:message];

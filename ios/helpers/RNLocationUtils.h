@@ -11,8 +11,8 @@
 @property(class, nonatomic, assign, nullable) facebook::react::EventEmitterCallback eventEmitter;
 
 + (void)emitChange:(nullable NSObject *)body;
-+ (void)emitError:(NSString *_Nonnull)type message:(NSString *_Nonnull)message critical:(BOOL)critical;
-+ (void)emitError:(NSString *_Nonnull)type message:(NSString *_Nonnull)message;
++ (void)emitError:(NSString *_Nonnull)code message:(NSString *_Nonnull)message critical:(BOOL)critical;
++ (void)emitError:(NSString *_Nonnull)code message:(NSString *_Nonnull)message;
 
 + (void)handleException:(NSException *_Nonnull)exception
                 resolve:(nullable RCTPromiseResolveBlock)resolve

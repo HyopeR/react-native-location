@@ -28,19 +28,19 @@ public class RNLocationUtils {
         eventEmitter.invoke(RNLocationConstants.EVENT_CHANGE, body);
     }
 
-    public static void emitError(String type, String message, boolean critical) {
+    public static void emitError(String code, String message, boolean critical) {
         if (eventEmitter == null) return;
 
         WritableMap map = Arguments.createMap();
-        map.putString("type", type);
+        map.putString("code", code);
         map.putString("message", message);
         map.putBoolean("critical", critical);
 
         eventEmitter.invoke(RNLocationConstants.EVENT_ERROR, map);
     }
 
-    public static void emitError(String type, String message) {
-        emitError(type, message, false);
+    public static void emitError(String code, String message) {
+        emitError(code, message, false);
     }
 
     public static void handleException(Exception exception, @Nullable Promise promise) {
@@ -48,8 +48,8 @@ public class RNLocationUtils {
         String message = (exception.getMessage() != null) ? exception.getMessage() : "Unknown error.";
 
         if (exception instanceof RNLocationException e) {
-            if (hasPromise) promise.reject(e.type, message);
-            else emitError(e.type, message, e.critical);
+            if (hasPromise) promise.reject(e.code, message);
+            else emitError(e.code, message, e.critical);
         } else {
             if (hasPromise) promise.reject(RNLocationConstants.ERROR_UNKNOWN, message);
             else emitError(RNLocationConstants.ERROR_UNKNOWN, message);
