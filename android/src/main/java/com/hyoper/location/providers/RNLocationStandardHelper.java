@@ -5,6 +5,8 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 
+import java.util.Objects;
+
 public class RNLocationStandardHelper {
     private static final float DEFAULT_DISTANCE_FILTER = 0f;
     private static final Priority DEFAULT_PRIORITY = Priority.HIGH_ACCURACY;
@@ -30,20 +32,23 @@ public class RNLocationStandardHelper {
         long interval = DEFAULT_INTERVAL;
 
         if (map != null) {
-            // Distance filter
-            if (map.hasKey("distanceFilter") && map.getType("distanceFilter") == ReadableType.Number) {
-                distanceFilter = (float) map.getDouble("distanceFilter");
-            }
-
             // Priority
             if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
                 String priorityValue = map.getString("priority");
-                priority = switch (priorityValue) {
-                    case "balancedPowerAccuracy" -> Priority.BALANCED_POWER_ACCURACY;
-                    case "lowPower" -> Priority.LOW_POWER;
-                    case "passive" -> Priority.PASSIVE;
-                    default -> Priority.HIGH_ACCURACY;
-                };
+                if (Objects.equals(priorityValue, "highAccuracy")) {
+                    priority = Priority.HIGH_ACCURACY;
+                } else if (Objects.equals(priorityValue, "balancedPowerAccuracy")) {
+                    priority = Priority.BALANCED_POWER_ACCURACY;
+                } else if (Objects.equals(priorityValue, "lowPower")) {
+                    priority = Priority.LOW_POWER;
+                } else if (Objects.equals(priorityValue, "passive")) {
+                    priority = Priority.PASSIVE;
+                }
+            }
+
+            // Distance filter
+            if (map.hasKey("distanceFilter") && map.getType("distanceFilter") == ReadableType.Number) {
+                distanceFilter = (float) map.getDouble("distanceFilter");
             }
 
             // Interval
@@ -65,12 +70,15 @@ public class RNLocationStandardHelper {
             // Priority
             if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
                 String priorityValue = map.getString("priority");
-                priority = switch (priorityValue) {
-                    case "balancedPowerAccuracy" -> Priority.BALANCED_POWER_ACCURACY;
-                    case "lowPower" -> Priority.LOW_POWER;
-                    case "passive" -> Priority.PASSIVE;
-                    default -> Priority.HIGH_ACCURACY;
-                };
+                if (Objects.equals(priorityValue, "highAccuracy")) {
+                    priority = Priority.HIGH_ACCURACY;
+                } else if (Objects.equals(priorityValue, "balancedPowerAccuracy")) {
+                    priority = Priority.BALANCED_POWER_ACCURACY;
+                } else if (Objects.equals(priorityValue, "lowPower")) {
+                    priority = Priority.LOW_POWER;
+                } else if (Objects.equals(priorityValue, "passive")) {
+                    priority = Priority.PASSIVE;
+                }
             }
 
             // Duration

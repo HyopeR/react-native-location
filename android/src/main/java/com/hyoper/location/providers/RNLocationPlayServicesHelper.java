@@ -9,6 +9,8 @@ import com.facebook.react.bridge.ReadableType;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.Priority;
 
+import java.util.Objects;
+
 public class RNLocationPlayServicesHelper {
     private static final float DEFAULT_DISTANCE_FILTER = 0f;
     private static final int DEFAULT_PRIORITY = Priority.PRIORITY_HIGH_ACCURACY;
@@ -22,33 +24,28 @@ public class RNLocationPlayServicesHelper {
 
     @NonNull
     public static LocationRequest build(@Nullable ReadableMap map) {
-        LocationRequest.Builder builder = new LocationRequest.Builder(DEFAULT_PRIORITY, DEFAULT_INTERVAL);
-        builder.setMinUpdateDistanceMeters(DEFAULT_DISTANCE_FILTER);
+        LocationRequest.Builder builder = new LocationRequest.Builder(DEFAULT_PRIORITY, DEFAULT_INTERVAL)
+                .setMinUpdateDistanceMeters(DEFAULT_DISTANCE_FILTER);
 
         if (map != null) {
+            // Priority
+            if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
+                String priority = map.getString("priority");
+                if (Objects.equals(priority, "highAccuracy")) {
+                    builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+                } else if (Objects.equals(priority, "balancedPowerAccuracy")) {
+                    builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
+                } else if (Objects.equals(priority, "lowPower")) {
+                    builder.setPriority(Priority.PRIORITY_LOW_POWER);
+                } else if (Objects.equals(priority, "passive")) {
+                    builder.setPriority(Priority.PRIORITY_PASSIVE);
+                }
+            }
+
             // Distance filter
             if (map.hasKey("distanceFilter") && map.getType("distanceFilter") == ReadableType.Number) {
                 double distanceFilter = map.getDouble("distanceFilter");
                 builder.setMinUpdateDistanceMeters((float) distanceFilter);
-            }
-
-            // Priority
-            if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
-                String priority = map.getString("priority");
-                switch (priority) {
-                    case "balancedPowerAccuracy":
-                        builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
-                        break;
-                    case "lowPower":
-                        builder.setPriority(Priority.PRIORITY_LOW_POWER);
-                        break;
-                    case "passive":
-                        builder.setPriority(Priority.PRIORITY_PASSIVE);
-                        break;
-                    default:
-                        builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
-                        break;
-                }
             }
 
             // Interval
@@ -75,8 +72,7 @@ public class RNLocationPlayServicesHelper {
 
     @NonNull
     public static LocationRequest buildCurrent(@Nullable ReadableMap map) {
-        LocationRequest.Builder builder = new LocationRequest.Builder(DEFAULT_CURRENT_PRIORITY, DEFAULT_CURRENT_INTERVAL);
-        builder
+        LocationRequest.Builder builder = new LocationRequest.Builder(DEFAULT_CURRENT_PRIORITY, DEFAULT_CURRENT_INTERVAL)
                 .setMinUpdateDistanceMeters(DEFAULT_CURRENT_DISTANCE_FILTER)
                 .setDurationMillis(DEFAULT_CURRENT_DURATION)
                 .setMaxUpdateAgeMillis(0L);
@@ -85,19 +81,14 @@ public class RNLocationPlayServicesHelper {
             // Priority
             if (map.hasKey("priority") && map.getType("priority") == ReadableType.String) {
                 String priority = map.getString("priority");
-                switch (priority) {
-                    case "balancedPowerAccuracy":
-                        builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
-                        break;
-                    case "lowPower":
-                        builder.setPriority(Priority.PRIORITY_LOW_POWER);
-                        break;
-                    case "passive":
-                        builder.setPriority(Priority.PRIORITY_PASSIVE);
-                        break;
-                    default:
-                        builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
-                        break;
+                if (Objects.equals(priority, "highAccuracy")) {
+                    builder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+                } else if (Objects.equals(priority, "balancedPowerAccuracy")) {
+                    builder.setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY);
+                } else if (Objects.equals(priority, "lowPower")) {
+                    builder.setPriority(Priority.PRIORITY_LOW_POWER);
+                } else if (Objects.equals(priority, "passive")) {
+                    builder.setPriority(Priority.PRIORITY_PASSIVE);
                 }
             }
 

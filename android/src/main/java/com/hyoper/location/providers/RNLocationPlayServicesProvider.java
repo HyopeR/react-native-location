@@ -60,8 +60,13 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
         locationProvider.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
+    @SuppressLint("MissingPermission")
     private void unregister() {
-        locationProvider.removeLocationUpdates(locationCallback);
+        try {
+            locationProvider.removeLocationUpdates(locationCallback);
+        } catch (Exception e) {
+            // Ignore permission crash.
+        }
     }
 
     private final LocationCallback locationCallback = new LocationCallback() {
@@ -103,11 +108,11 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
         LocationCallback callback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                if (resolved.get()) return;
-
                 Location location = locationResult.getLastLocation();
                 if (location != null) {
+                    if (resolved.get()) return;
                     resolved.set(true);
+
                     locationProvider.removeLocationUpdates(this);
                     handler.post(() -> promise.resolve(RNLocationUtils.locationToMap(location)));
                 }
@@ -122,13 +127,17 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
 
             handler.postDelayed(() -> {
                 if (resolved.get()) return;
-
                 resolved.set(true);
+
                 locationProvider.removeLocationUpdates(callback);
                 promise.reject(RNLocationConstants.ERROR_UNKNOWN, "Location timed out.");
             }, request.getDurationMillis());
 
         } catch (Exception e) {
+            if (resolved.get()) return;
+            resolved.set(true);
+
+            locationProvider.removeLocationUpdates(callback);
             String message = (e.getMessage() != null) ? e.getMessage() : "Unknown error.";
             handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, message));
         }

@@ -76,8 +76,6 @@ public class RNLocation extends NativeRNLocationSpec {
 
         if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
             locationBackground = options.getBoolean("allowsBackgroundLocationUpdates");
-        } else {
-            locationBackground = false;
         }
 
         if (locationBackground) {

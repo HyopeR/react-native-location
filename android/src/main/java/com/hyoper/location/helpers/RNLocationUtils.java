@@ -22,6 +22,12 @@ public class RNLocationUtils {
         eventEmitter = _eventEmitter;
     }
 
+    public static void emitChange(@Nullable Object body) {
+        if (eventEmitter == null) return;
+
+        eventEmitter.invoke(RNLocationConstants.EVENT_CHANGE, body);
+    }
+
     public static void emitError(String type, String message, boolean critical) {
         if (eventEmitter == null) return;
 
@@ -30,17 +36,11 @@ public class RNLocationUtils {
         map.putString("message", message);
         map.putBoolean("critical", critical);
 
-        eventEmitter.invoke("onError", map);
+        eventEmitter.invoke(RNLocationConstants.EVENT_ERROR, map);
     }
 
     public static void emitError(String type, String message) {
         emitError(type, message, false);
-    }
-
-    public static void emitChange(@Nullable Object body) {
-        if (eventEmitter == null) return;
-
-        eventEmitter.invoke("onChange", body);
     }
 
     public static void handleException(Exception exception, @Nullable Promise promise) {

@@ -55,18 +55,24 @@ public class RNLocationStandardProvider implements RNLocationProvider {
 
     @SuppressLint("MissingPermission")
     private void register() {
+        locationProvider = RNLocationManager.provider;
         RNLocationManager.manager.requestLocationUpdates(
                 RNLocationManager.provider,
                 locationOptions.interval(),
                 locationOptions.distanceFilter(),
                 locationListener
         );
-        locationProvider = RNLocationManager.provider;
     }
 
+    @SuppressLint("MissingPermission")
     private void unregister() {
-        RNLocationManager.manager.removeUpdates(locationListener);
-        locationProvider = null;
+        try {
+            locationProvider = null;
+            RNLocationManager.manager.removeUpdates(locationListener);
+
+        } catch (Exception ex) {
+            // Ignore permission crash.
+        }
     }
 
     private final LocationListener locationListener = new LocationListener() {
@@ -112,8 +118,8 @@ public class RNLocationStandardProvider implements RNLocationProvider {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 if (resolved.get()) return;
-
                 resolved.set(true);
+
                 RNLocationManager.manager.removeUpdates(this);
                 handler.post(() -> promise.resolve(RNLocationUtils.locationToMap(location)));
             }
@@ -138,13 +144,17 @@ public class RNLocationStandardProvider implements RNLocationProvider {
 
             handler.postDelayed(() -> {
                 if (resolved.get()) return;
-
                 resolved.set(true);
+
                 RNLocationManager.manager.removeUpdates(listener);
                 promise.reject(RNLocationConstants.ERROR_UNKNOWN, "Location timed out.");
             }, options.duration());
 
         } catch (Exception e) {
+            if (resolved.get()) return;
+            resolved.set(true);
+
+            RNLocationManager.manager.removeUpdates(listener);
             String message = (e.getMessage() != null) ? e.getMessage() : "Unknown error.";
             handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, message));
         }
