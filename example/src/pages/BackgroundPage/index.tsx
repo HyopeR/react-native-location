@@ -51,7 +51,7 @@ export const BackgroundPage = ({back}: PageProps) => {
 
   const onError = useCallback<OnErrorEvent>(error => {
     console.log(error);
-    switch (error.type) {
+    switch (error.code) {
       case 'ERROR_PROVIDER':
         // Location services are disabled.
         break;
