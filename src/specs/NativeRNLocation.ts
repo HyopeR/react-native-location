@@ -27,7 +27,7 @@ type Location = {
 
 type LocationError = {
   message: string;
-  type: string;
+  code: string;
   critical: boolean;
 };
 
