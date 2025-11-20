@@ -23,6 +23,12 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     eventEmitter = _eventEmitter;
 }
 
++ (void)emitChange:(nullable NSObject *)body {
+    if (!eventEmitter) return;
+
+    eventEmitter([RNLocationEventChange UTF8String], body);
+}
+
 + (void)emitError:(NSString *)type message:(NSString *)message critical:(BOOL)critical {
     if (!eventEmitter) return;
 
@@ -31,17 +37,11 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     map[@"message"] = message;
     map[@"critical"] = @(critical);
 
-    eventEmitter([@"onError" UTF8String], map);
+    eventEmitter([RNLocationEventError UTF8String], map);
 }
 
 + (void)emitError:(NSString *)type message:(NSString *)message {
     [self emitError:type message:message critical:NO];
-}
-
-+ (void)emitChange:(nullable NSObject *)body {
-    if (!eventEmitter) return;
-
-    eventEmitter([@"onChange" UTF8String], body);
 }
 
 + (void)handleException:(NSException *)exception

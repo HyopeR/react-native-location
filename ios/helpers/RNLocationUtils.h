@@ -10,9 +10,9 @@
 @property(class, nonatomic, strong, nonnull) NSString *name;
 @property(class, nonatomic, assign, nullable) facebook::react::EventEmitterCallback eventEmitter;
 
++ (void)emitChange:(nullable NSObject *)body;
 + (void)emitError:(NSString *_Nonnull)type message:(NSString *_Nonnull)message critical:(BOOL)critical;
 + (void)emitError:(NSString *_Nonnull)type message:(NSString *_Nonnull)message;
-+ (void)emitChange:(nullable NSObject *)body;
 
 + (void)handleException:(NSException *_Nonnull)exception
                 resolve:(nullable RCTPromiseResolveBlock)resolve
