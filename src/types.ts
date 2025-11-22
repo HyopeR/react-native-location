@@ -169,7 +169,7 @@ export type CurrentIosOptions = CurrentSharedOptions & {
 export type CurrentOptions = {
   /**
    * Desired accuracy level.
-   * @default 'best'
+   * @default 'high'
    */
   accuracy?: Accuracy;
   /**
