@@ -16,68 +16,71 @@ import static com.hyoper.location.helpers.RNLocationConstants.Error;
 import static com.hyoper.location.helpers.RNLocationConstants.PermissionStatus;
 
 public class RNLocationPermission {
-    public static void ensure(@NonNull Context context, @Nullable Activity activity, boolean background) throws RNLocationException {
-        String permissionStatus = checkLocation(context, activity);
-        if (!permissionStatus.equals(PermissionStatus.GRANTED)) {
+    public static void ensure(@NonNull Context context, boolean background) throws RNLocationException {
+        boolean permissionAllowed = checkLocationGrant(context);
+        if (!permissionAllowed) {
             throw new RNLocationException(Error.PERMISSION, "Location (Coarse/Fine) permission is not granted.", true);
         }
 
         if (background) {
-            String permissionAlwaysStatus = checkLocationAlways(context, activity);
-            if (!permissionAlwaysStatus.equals(PermissionStatus.GRANTED)) {
+            boolean permissionAlwaysAllowed = checkLocationAlwaysGrant(context);
+            if (!permissionAlwaysAllowed) {
                 throw new RNLocationException(Error.PERMISSION_ALWAYS, "Location (Background) permission is not granted.", true);
             }
         }
     }
 
-    public static String checkLocation(@NonNull Context context, @Nullable Activity activity) throws RNLocationException {
+    public static void ensureActivity(@Nullable Activity activity) throws RNLocationException {
         if (activity == null) {
             throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
         }
+    }
 
+    public static String checkLocation(@NonNull Context context, @NonNull Activity activity) {
+        if (checkLocationGrant(context)) return PermissionStatus.GRANTED;
+        if (checkLocationRationale(activity)) return PermissionStatus.DENIED;
+        else return PermissionStatus.BLOCKED;
+    }
+
+    private static boolean checkLocationGrant(@NonNull Context context) {
         int permissionCoarse = ContextCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION);
         int permissionFine = ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION);
         int permissionBackground = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                 ? ContextCompat.checkSelfPermission(context, permission.ACCESS_BACKGROUND_LOCATION)
                 : PackageManager.PERMISSION_DENIED;
 
-        boolean permissionAllowed = permissionCoarse == PackageManager.PERMISSION_GRANTED ||
-                                    permissionFine == PackageManager.PERMISSION_GRANTED ||
-                                    permissionBackground == PackageManager.PERMISSION_GRANTED;
-
-        if (permissionAllowed) {
-            return PermissionStatus.GRANTED;
-        }
-
-        boolean permissionRationaleCoarse = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.ACCESS_COARSE_LOCATION);
-        boolean permissionRationaleFine = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.ACCESS_FINE_LOCATION);
-        return permissionRationaleCoarse || permissionRationaleFine
-                ? PermissionStatus.DENIED
-                : PermissionStatus.BLOCKED;
+        return permissionCoarse == PackageManager.PERMISSION_GRANTED ||
+               permissionFine == PackageManager.PERMISSION_GRANTED ||
+               permissionBackground == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static String checkLocationAlways(@NonNull Context context, @Nullable Activity activity) throws RNLocationException {
-        if (activity == null) {
-            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
-        }
+    private static boolean checkLocationRationale(@NonNull Activity activity) {
+        boolean permissionRationaleCoarse = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.ACCESS_COARSE_LOCATION);
+        boolean permissionRationaleFine = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.ACCESS_FINE_LOCATION);
+        return permissionRationaleCoarse || permissionRationaleFine;
+    }
 
-        String permissionStatus = checkLocation(context, activity);
-        if (!permissionStatus.equals(PermissionStatus.GRANTED)) {
-            return permissionStatus;
-        }
+    public static String checkLocationAlways(@NonNull Context context, @NonNull Activity activity) {
+        if (checkLocationAlwaysGrant(context)) return PermissionStatus.GRANTED;
+        if (checkLocationAlwaysRationale(activity)) return PermissionStatus.DENIED;
+        else return PermissionStatus.BLOCKED;
+    }
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return PermissionStatus.GRANTED;
+    private static boolean checkLocationAlwaysGrant(@NonNull Context context) {
+        if (!checkLocationGrant(context)) return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            int permissionBackground = ContextCompat.checkSelfPermission(context, permission.ACCESS_BACKGROUND_LOCATION);
+            return permissionBackground == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return true;
         }
+    }
 
-        int permissionBackground = ContextCompat.checkSelfPermission(context, permission.ACCESS_BACKGROUND_LOCATION);
-        if (permissionBackground == PackageManager.PERMISSION_GRANTED) {
-            return PermissionStatus.GRANTED;
+    private static boolean checkLocationAlwaysRationale(@NonNull Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.ACCESS_BACKGROUND_LOCATION);
+        } else {
+            return true;
         }
-
-        boolean permissionRationaleBackground = ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.ACCESS_BACKGROUND_LOCATION);
-        return permissionRationaleBackground
-                ? PermissionStatus.DENIED
-                : PermissionStatus.BLOCKED;
     }
 }

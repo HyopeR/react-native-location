@@ -1,6 +1,5 @@
 package com.hyoper.location;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 
@@ -16,6 +15,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.hyoper.location.helpers.RNLocationUtils;
 import com.hyoper.location.manager.RNLocationManager;
 import com.hyoper.location.permissions.RNLocationPermission;
+import com.hyoper.location.permissions.RNLocationPermissionImpl;
 import com.hyoper.location.providers.RNLocationPlayServicesProvider;
 import com.hyoper.location.providers.RNLocationProvider;
 import com.hyoper.location.providers.RNLocationStandardProvider;
@@ -24,12 +24,14 @@ import com.hyoper.location.providers.RNLocationStandardProvider;
 public class RNLocation extends NativeRNLocationSpec {
     public static final String NAME = "RNLocation";
     private RNLocationProvider provider = null;
+    private RNLocationPermissionImpl permission = null;
     private boolean locationHighAccuracy = true;
     private boolean locationBackground = false;
 
     public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
         provider = createDefaultLocationProvider();
+        permission = new RNLocationPermissionImpl();
         RNLocationUtils.setName(NAME);
     }
 
@@ -37,6 +39,7 @@ public class RNLocation extends NativeRNLocationSpec {
     public void invalidate() {
         stop();
         provider = null;
+        permission = null;
         RNLocationManager.reset();
         RNLocationUtils.reset();
     }
@@ -78,20 +81,15 @@ public class RNLocation extends NativeRNLocationSpec {
         if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
             locationBackground = options.getBoolean("allowsBackgroundLocationUpdates");
         }
-
-        if (locationBackground) {
-            RNLocationForegroundService.setLocationProvider(provider);
-        }
     }
 
     public void start() {
         try {
             ReactApplicationContext context = getReactApplicationContext();
-            Activity activity = getCurrentActivity();
 
             RNLocationManager.ensure(context, locationHighAccuracy);
 
-            RNLocationPermission.ensure(context, activity, locationBackground);
+            RNLocationPermission.ensure(context, locationBackground);
 
             if (locationBackground) {
                 startForegroundService();
@@ -124,13 +122,12 @@ public class RNLocation extends NativeRNLocationSpec {
 
         try {
             ReactApplicationContext context = getReactApplicationContext();
-            Activity activity = getCurrentActivity();
 
             RNLocationManager.ensure(context, currentHighAccuracy);
 
-            RNLocationPermission.ensure(context, activity, currentBackground);
+            RNLocationPermission.ensure(context, currentBackground);
 
-            provider.getCurrent(activity, options, promise);
+            provider.getCurrent(getCurrentActivity(), options, promise);
         } catch (Exception e) {
             RNLocationUtils.handleException(e, promise);
         }
@@ -174,5 +171,21 @@ public class RNLocation extends NativeRNLocationSpec {
 
     private RNLocationStandardProvider createStandardLocationProvider() {
         return new RNLocationStandardProvider(getReactApplicationContext());
+    }
+
+    public void checkLocation(final Promise promise) {
+        this.permission.checkLocation(getReactApplicationContext(), getCurrentActivity(), promise);
+    }
+
+    public void checkLocationAlways(final Promise promise) {
+        this.permission.checkLocationAlways(getReactApplicationContext(), getCurrentActivity(), promise);
+    }
+
+    public void requestLocation(final Promise promise) {
+        this.permission.requestLocation(getReactApplicationContext(), getCurrentActivity(), promise);
+    }
+
+    public void requestLocationAlways(final Promise promise) {
+        this.permission.requestLocationAlways(getReactApplicationContext(), getCurrentActivity(), promise);
     }
 }
