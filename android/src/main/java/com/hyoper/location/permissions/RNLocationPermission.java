@@ -1,10 +1,10 @@
 package com.hyoper.location.permissions;
 
-import static android.Manifest.permission;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import static android.Manifest.permission;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
