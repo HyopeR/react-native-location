@@ -8,4 +8,10 @@ public class RNLocationConstants {
     public static final String ERROR_PERMISSION = "ERROR_PERMISSION";
     public static final String ERROR_PERMISSION_ALWAYS = "ERROR_PERMISSION_ALWAYS";
     public static final String ERROR_UNKNOWN = "ERROR_UNKNOWN";
+
+    public static class PermissionStatus {
+        public static final String GRANTED = "granted";
+        public static final String DENIED = "denied";
+        public static final String BLOCKED = "blocked";
+    }
 }

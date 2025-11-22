@@ -1,5 +1,6 @@
 package com.hyoper.location;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 
@@ -86,10 +87,11 @@ public class RNLocation extends NativeRNLocationSpec {
     public void start() {
         try {
             ReactApplicationContext context = getReactApplicationContext();
+            Activity activity = getCurrentActivity();
 
             RNLocationManager.ensure(context, locationHighAccuracy);
 
-            RNLocationPermission.ensure(context, locationBackground);
+            RNLocationPermission.ensure(context, activity, locationBackground);
 
             if (locationBackground) {
                 startForegroundService();
@@ -122,12 +124,13 @@ public class RNLocation extends NativeRNLocationSpec {
 
         try {
             ReactApplicationContext context = getReactApplicationContext();
+            Activity activity = getCurrentActivity();
 
             RNLocationManager.ensure(context, currentHighAccuracy);
 
-            RNLocationPermission.ensure(context, currentBackground);
+            RNLocationPermission.ensure(context, activity, currentBackground);
 
-            provider.getCurrent(getCurrentActivity(), options, promise);
+            provider.getCurrent(activity, options, promise);
         } catch (Exception e) {
             RNLocationUtils.handleException(e, promise);
         }
