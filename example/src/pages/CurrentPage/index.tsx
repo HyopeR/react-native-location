@@ -11,6 +11,7 @@ import {PageProps} from '../types';
 const OPTIONS: CurrentOptions = {
   accuracy: 'high',
   timeout: 10000,
+  background: false,
 };
 
 export const CurrentPage = ({back}: PageProps) => {
