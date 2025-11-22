@@ -69,9 +69,9 @@
     }
     
     bool currentBackground = false;
-    NSNumber *background = options[@"background"];
-    if (background != nil) {
-        currentBackground = [background boolValue];
+    NSNumber *allowsBackgroundLocationUpdates = options[@"allowsBackgroundLocationUpdates"];
+    if (allowsBackgroundLocationUpdates != nil) {
+        currentBackground = [allowsBackgroundLocationUpdates boolValue];
     }
     
     @try {

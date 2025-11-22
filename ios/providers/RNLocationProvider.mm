@@ -77,19 +77,24 @@
         reject:(nonnull RCTPromiseRejectBlock)reject
 {
     NSString *requestId = [[NSUUID UUID] UUIDString];
+    
+    // The location-manager's settings are changed temporarily and are restored after the request is completed.
     RNLocationRequest *request = [[RNLocationRequest alloc] initWithOptions:options resolve:^(id result) {
         resolve(result);
         self.manager.desiredAccuracy = self.options.desiredAccuracy;
+        self.manager.allowsBackgroundLocationUpdates = self.options.allowsBackgroundLocationUpdates;
         [self.requests removeObjectForKey:requestId];
         [self stopForCurrent];
     } reject:^(NSString *code, NSString *message, NSError *error) {
         reject(code, message, error);
         self.manager.desiredAccuracy = self.options.desiredAccuracy;
+        self.manager.allowsBackgroundLocationUpdates = self.options.allowsBackgroundLocationUpdates;
         [self.requests removeObjectForKey:requestId];
         [self stopForCurrent];
     }];
 
     self.manager.desiredAccuracy = request.options.desiredAccuracy;
+    self.manager.allowsBackgroundLocationUpdates = request.options.allowsBackgroundLocationUpdates;
     self.requests[requestId] = request;
     [self startForCurrent];
     [request run];

@@ -116,8 +116,8 @@ public class RNLocation extends NativeRNLocationSpec {
         }
 
         boolean currentBackground = false;
-        if (options.hasKey("background") && options.getType("background") == ReadableType.Boolean) {
-            currentBackground = options.getBoolean("background");
+        if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
+            currentBackground = options.getBoolean("allowsBackgroundLocationUpdates");
         }
 
         try {
