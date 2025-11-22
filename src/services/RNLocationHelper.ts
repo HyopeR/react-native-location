@@ -48,7 +48,7 @@ export class RNLocationModuleHelper {
   }
 
   protected getPlatformCurrentOptions(options?: CurrentOptions) {
-    const {accuracy, timeout} = this.getSafeCurrentOptions(options);
+    const {accuracy, timeout, background} = this.getSafeCurrentOptions(options);
 
     const platform = Platform.OS;
     switch (platform) {
@@ -56,17 +56,20 @@ export class RNLocationModuleHelper {
         return {
           priority: accuracy ? ACCURACY[platform][accuracy] : undefined,
           duration: timeout,
+          allowsBackgroundLocationUpdates: background,
         } as CurrentAndroidOptions;
 
       case 'ios':
         return {
           desiredAccuracy: accuracy ? ACCURACY[platform][accuracy] : undefined,
           duration: timeout,
+          allowsBackgroundLocationUpdates: background,
         } as CurrentIosOptions;
 
       default:
         return {
           duration: timeout,
+          allowsBackgroundLocationUpdates: background,
         } as CurrentSharedOptions;
     }
   }

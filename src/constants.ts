@@ -29,6 +29,7 @@ export const CONFIGURE_OPTIONS: ConfigureOptions = {
 export const CURRENT_OPTIONS: CurrentOptions = {
   accuracy: 'high',
   timeout: 10000,
+  background: false,
 };
 
 export const ACCURACY = {
