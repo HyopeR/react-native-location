@@ -11,36 +11,28 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.hyoper.location.helpers.RNLocationConstants;
 import com.hyoper.location.helpers.RNLocationException;
+import static com.hyoper.location.helpers.RNLocationConstants.Error;
 import static com.hyoper.location.helpers.RNLocationConstants.PermissionStatus;
 
 public class RNLocationPermission {
     public static void ensure(@NonNull Context context, @Nullable Activity activity, boolean background) throws RNLocationException {
         String permissionStatus = checkLocation(context, activity);
         if (!permissionStatus.equals(PermissionStatus.GRANTED)) {
-            throw new RNLocationException(
-                    RNLocationConstants.ERROR_PERMISSION,
-                    "Location (Coarse/Fine) permission is not granted.",
-                    true
-            );
+            throw new RNLocationException(Error.PERMISSION, "Location (Coarse/Fine) permission is not granted.", true);
         }
 
         if (background) {
             String permissionAlwaysStatus = checkLocationAlways(context, activity);
             if (!permissionAlwaysStatus.equals(PermissionStatus.GRANTED)) {
-                throw new RNLocationException(
-                        RNLocationConstants.ERROR_PERMISSION_ALWAYS,
-                        "Location (Background) permission is not granted.",
-                        true
-                );
+                throw new RNLocationException(Error.PERMISSION_ALWAYS, "Location (Background) permission is not granted.", true);
             }
         }
     }
 
     public static String checkLocation(@NonNull Context context, @Nullable Activity activity) throws RNLocationException {
         if (activity == null) {
-            throw new RNLocationException(RNLocationConstants.ERROR_UNKNOWN, "Current activity is not available.", false);
+            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
         }
 
         int permissionCoarse = ContextCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION);
@@ -66,7 +58,7 @@ public class RNLocationPermission {
 
     public static String checkLocationAlways(@NonNull Context context, @Nullable Activity activity) throws RNLocationException {
         if (activity == null) {
-            throw new RNLocationException(RNLocationConstants.ERROR_UNKNOWN, "Current activity is not available.", false);
+            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
         }
 
         String permissionStatus = checkLocation(context, activity);

@@ -18,9 +18,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 
-import com.hyoper.location.helpers.RNLocationConstants;
 import com.hyoper.location.helpers.RNLocationUtils;
 import com.hyoper.location.manager.RNLocationManager;
+import static com.hyoper.location.helpers.RNLocationConstants.Error;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -90,11 +90,7 @@ public class RNLocationStandardProvider implements RNLocationProvider {
             if (!tracking) return;
 
             if (status == LocationProvider.OUT_OF_SERVICE || status == LocationProvider.TEMPORARILY_UNAVAILABLE) {
-                RNLocationUtils.emitError(
-                        RNLocationConstants.ERROR_UNKNOWN,
-                        "Provider is temporarily unavailable.",
-                        false
-                );
+                RNLocationUtils.emitError(Error.UNKNOWN, "Provider is temporarily unavailable.", false);
             }
         }
 
@@ -147,7 +143,7 @@ public class RNLocationStandardProvider implements RNLocationProvider {
                 resolved.set(true);
 
                 RNLocationManager.manager.removeUpdates(listener);
-                promise.reject(RNLocationConstants.ERROR_UNKNOWN, "Location timed out.");
+                promise.reject(Error.UNKNOWN, "Location timed out.");
             }, options.duration());
 
         } catch (Exception e) {
@@ -156,7 +152,7 @@ public class RNLocationStandardProvider implements RNLocationProvider {
 
             RNLocationManager.manager.removeUpdates(listener);
             String message = (e.getMessage() != null) ? e.getMessage() : "Unknown error.";
-            handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, message));
+            handler.post(() -> promise.reject(Error.UNKNOWN, message));
         }
     }
 }

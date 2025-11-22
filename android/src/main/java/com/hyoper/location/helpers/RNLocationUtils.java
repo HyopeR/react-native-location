@@ -10,6 +10,9 @@ import com.facebook.react.bridge.CxxCallbackImpl;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.WritableMap;
 
+import static com.hyoper.location.helpers.RNLocationConstants.Event;
+import static com.hyoper.location.helpers.RNLocationConstants.Error;
+
 public class RNLocationUtils {
     public static String name = "RNLocation";
     public static CxxCallbackImpl eventEmitter = null;
@@ -25,7 +28,7 @@ public class RNLocationUtils {
     public static void emitChange(@Nullable Object body) {
         if (eventEmitter == null) return;
 
-        eventEmitter.invoke(RNLocationConstants.EVENT_CHANGE, body);
+        eventEmitter.invoke(Event.ON_CHANGE, body);
     }
 
     public static void emitError(String code, String message, boolean critical) {
@@ -36,7 +39,7 @@ public class RNLocationUtils {
         map.putString("message", message);
         map.putBoolean("critical", critical);
 
-        eventEmitter.invoke(RNLocationConstants.EVENT_ERROR, map);
+        eventEmitter.invoke(Event.ON_ERROR, map);
     }
 
     public static void emitError(String code, String message) {
@@ -51,8 +54,8 @@ public class RNLocationUtils {
             if (hasPromise) promise.reject(e.code, message);
             else emitError(e.code, message, e.critical);
         } else {
-            if (hasPromise) promise.reject(RNLocationConstants.ERROR_UNKNOWN, message);
-            else emitError(RNLocationConstants.ERROR_UNKNOWN, message);
+            if (hasPromise) promise.reject(Error.UNKNOWN, message);
+            else emitError(Error.UNKNOWN, message);
         }
     }
 
