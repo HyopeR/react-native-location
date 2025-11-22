@@ -38,6 +38,10 @@
 {
     [self.options reset];
     [self.options configure:options];
+}
+
+- (void)configureApply
+{
     self.manager.desiredAccuracy = self.options.desiredAccuracy;
     self.manager.distanceFilter = self.options.distanceFilter;
     self.manager.activityType = self.options.activityType;
@@ -51,6 +55,7 @@
 - (void)start
 {
     self.tracking = YES;
+    [self configureApply];
     [self.manager startUpdatingLocation];
 }
 
