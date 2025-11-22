@@ -12,17 +12,7 @@
 - (instancetype)initWithOptions:(NSDictionary *)options
 {
     if (self = [super init]) {
-        _desiredAccuracy = kCLLocationAccuracyBest;
-        _distanceFilter = kCLDistanceFilterNone;
-        _duration = 10000;
-        _activityType = CLActivityTypeOther;
-        _headingFilter = kCLHeadingFilterNone;
-        _headingOrientation = CLDeviceOrientationPortrait;
-        _allowsBackgroundLocationUpdates = NO;
-        _pausesLocationUpdatesAutomatically = YES;
-        if (@available(iOS 11.0, *)) {
-            _showsBackgroundLocationIndicator = NO;
-        }
+        [self reset];
         [self configure:options];
     }
     return self;
