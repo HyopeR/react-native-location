@@ -13,6 +13,8 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.hyoper.location.providers.RNLocationProvider;
+
 public class RNLocationForegroundService extends Service {
     private static final String CHANNEL_ID = "RNLocationForegroundService";
     private static final int NOTIFICATION_ID = 1001;
@@ -22,14 +24,6 @@ public class RNLocationForegroundService extends Service {
     public static void setLocationProvider(RNLocationProvider provider) {
         locationProvider = provider;
     }
-
-    public static void restartLocationProvider() {
-        if (locationProvider != null && locationProviderRunning) {
-            locationProvider.stopUpdatingLocation();
-            locationProvider.startUpdatingLocation();
-        }
-    }
-
 
     @Override
     public void onCreate() {
@@ -42,7 +36,7 @@ public class RNLocationForegroundService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (locationProvider != null) {
             locationProviderRunning = true;
-            locationProvider.startUpdatingLocation();
+            locationProvider.start();
         }
 
         return START_STICKY;
@@ -52,7 +46,7 @@ public class RNLocationForegroundService extends Service {
     public void onDestroy() {
         if (locationProvider != null) {
             locationProviderRunning = false;
-            locationProvider.stopUpdatingLocation();
+            locationProvider.stop();
         }
 
         super.onDestroy();
@@ -64,7 +58,7 @@ public class RNLocationForegroundService extends Service {
     public void onTaskRemoved(Intent intent) {
         if (locationProvider != null) {
             locationProviderRunning = false;
-            locationProvider.stopUpdatingLocation();
+            locationProvider.stop();
         }
 
         super.onTaskRemoved(intent);

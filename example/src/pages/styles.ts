@@ -16,4 +16,7 @@ export const PageStyle = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
+  button: {
+    marginBottom: 8,
+  },
 });

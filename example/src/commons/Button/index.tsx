@@ -12,10 +12,15 @@ export type ButtonProps = {
   onPress?: () => void;
 } & Omit<TouchableOpacityProps, 'children'>;
 
-export const Button = ({title, style, ...props}: ButtonProps) => {
+export const Button = ({title, style, disabled, ...props}: ButtonProps) => {
   return (
     <TouchableOpacity
-      style={StyleSheet.flatten([styles.root, style])}
+      style={StyleSheet.flatten([
+        styles.root,
+        disabled && styles.disabled,
+        style,
+      ])}
+      disabled={disabled}
       {...props}>
       <View style={styles.container}>
         <Text style={styles.title}>{title}</Text>
@@ -36,5 +41,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#FFF',
+  },
+  disabled: {
+    backgroundColor: '#BABABA',
   },
 });

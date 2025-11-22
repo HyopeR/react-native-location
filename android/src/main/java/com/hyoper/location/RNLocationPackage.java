@@ -1,26 +1,44 @@
 package com.hyoper.location;
 
-import com.facebook.react.ReactPackage;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.facebook.react.BaseReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class RNLocationPackage implements ReactPackage {
+public class RNLocationPackage extends BaseReactPackage {
+    @Nullable
     @Override
-    public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+    public NativeModule getModule(@NonNull String name, @NonNull ReactApplicationContext reactContext) {
+        if (name.equals(RNLocation.NAME)) {
+            return new RNLocation(reactContext);
+        }
+        return null;
     }
 
+    @NonNull
     @Override
-    public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-        List<NativeModule> modules = new ArrayList<>();
-
-        modules.add(new RNLocationModule(reactContext));
-
-        return modules;
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+        return () -> {
+            Map<String, ReactModuleInfo> map = new HashMap<>();
+            map.put(
+                    RNLocation.NAME,
+                    new ReactModuleInfo(
+                            RNLocation.NAME,
+                            RNLocation.NAME,
+                            false,
+                            false,
+                            true,
+                            true
+                    )
+            );
+            return map;
+        };
     }
 }

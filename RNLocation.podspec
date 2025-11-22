@@ -17,9 +17,5 @@ Pod::Spec.new do |s|
   s.source_files   = "ios/**/*.{h,m,mm}"
   s.requires_arc   = true
 
-  if defined?(install_modules_dependencies()) != nil
-    install_modules_dependencies(s);
-  else
-    s.dependency "React-Core"
-  end
+  install_modules_dependencies(s);
 end
