@@ -1,10 +1,27 @@
 import RNLocationNative from '../specs/NativeRNLocation';
 import {RNLocationModuleHelper} from './RNLocationHelper';
+import {RNLocationPermission} from './RNLocationPermission';
 import {RNLocationSubscription} from './RNLocationSubscription';
-import {CurrentOptions, ConfigureOptions, Subscription} from '../types';
+import {
+  CurrentOptions,
+  ConfigureOptions,
+  Subscription,
+  Permission,
+} from '../types';
 
 class RNLocationModule extends RNLocationModuleHelper {
-  private subscriptions = new Map<string, RNLocationSubscription>();
+  private readonly _permission;
+  private _subscriptions;
+
+  constructor() {
+    super();
+    this._permission = new RNLocationPermission();
+    this._subscriptions = new Map<string, RNLocationSubscription>();
+  }
+
+  get permission(): Permission {
+    return this._permission;
+  }
 
   configure(options?: ConfigureOptions) {
     const opts = this.getPlatformConfigureOptions(options);
@@ -36,7 +53,7 @@ class RNLocationModule extends RNLocationModuleHelper {
   }
 
   unsubscribe(id: string) {
-    const subscription = this.subscriptions.get(id);
+    const subscription = this._subscriptions.get(id);
 
     if (!subscription) return;
 
@@ -44,21 +61,21 @@ class RNLocationModule extends RNLocationModuleHelper {
   }
 
   private onSubscribe = (subscription: RNLocationSubscription) => {
-    const exist = this.subscriptions.has(subscription.id);
+    const exist = this._subscriptions.has(subscription.id);
     if (exist) return;
 
-    this.subscriptions.set(subscription.id, subscription);
-    if (this.subscriptions.size === 1) {
+    this._subscriptions.set(subscription.id, subscription);
+    if (this._subscriptions.size === 1) {
       this.start();
     }
   };
 
   private onUnsubscribe = (subscription: RNLocationSubscription) => {
-    const exist = this.subscriptions.has(subscription.id);
+    const exist = this._subscriptions.has(subscription.id);
     if (!exist) return;
 
-    this.subscriptions.delete(subscription.id);
-    if (this.subscriptions.size === 0) {
+    this._subscriptions.delete(subscription.id);
+    if (this._subscriptions.size === 0) {
       this.stop();
     }
   };

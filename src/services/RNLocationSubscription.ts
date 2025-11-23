@@ -1,13 +1,13 @@
 import {EventSubscription} from 'react-native';
 import RNLocationNative from '../specs/NativeRNLocation';
 import {getRandomId} from '../utils';
-import {OnChangeEvent, OnErrorEvent} from '../types';
+import {OnChangeEvent, OnErrorEvent, Subscription} from '../types';
 
 type SubscriptionLifeCycleEvent = (
   subscription: RNLocationSubscription,
 ) => void;
 
-export class RNLocationSubscription {
+export class RNLocationSubscription implements Subscription {
   readonly #id: string;
   private readonly onSubscribe: SubscriptionLifeCycleEvent;
   private readonly onUnsubscribe: SubscriptionLifeCycleEvent;
