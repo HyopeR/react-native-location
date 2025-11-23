@@ -8,10 +8,10 @@ import static android.Manifest.permission;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Promise;
+import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
 import com.hyoper.location.helpers.RNLocationUtils;
@@ -62,7 +62,8 @@ public class RNLocationPermissionImpl implements ActivityEventListener, Permissi
             RNLocationPermission.ensureActivity(activity);
             locationHandlers.add(() -> promise.resolve(RNLocationPermission.checkLocation(context, activity)));
             String[] permissions = { permission.ACCESS_FINE_LOCATION, permission.ACCESS_COARSE_LOCATION };
-            ActivityCompat.requestPermissions(activity, permissions, REQUEST_CODE_LOCATION);
+            PermissionAwareActivity awareActivity = (PermissionAwareActivity) activity;
+            awareActivity.requestPermissions(permissions, REQUEST_CODE_LOCATION, this);
         } catch (Exception e) {
             RNLocationUtils.handleException(e, promise);
         }
@@ -82,7 +83,8 @@ public class RNLocationPermissionImpl implements ActivityEventListener, Permissi
             RNLocationPermission.ensureActivity(activity);
             locationAlwaysHandlers.add(() -> promise.resolve(RNLocationPermission.checkLocationAlways(context, activity)));
             String[] permissions = { permission.ACCESS_BACKGROUND_LOCATION };
-            ActivityCompat.requestPermissions(activity, permissions, REQUEST_CODE_LOCATION_ALWAYS);
+            PermissionAwareActivity awareActivity = (PermissionAwareActivity) activity;
+            awareActivity.requestPermissions(permissions, REQUEST_CODE_LOCATION_ALWAYS, this);
         } catch (Exception e) {
             RNLocationUtils.handleException(e, promise);
         }
