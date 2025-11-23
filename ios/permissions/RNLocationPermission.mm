@@ -25,7 +25,7 @@
 #pragma mark - Public
 
 + (void)ensure:(BOOL)background {
-    bool locationAllowed = [self checkLocation];
+    bool locationAllowed = [self checkLocationGrant];
     if (!locationAllowed) {
         @throw [[RNLocationException alloc]
                 initWithCode:RNLocationError.PERMISSION
@@ -34,7 +34,7 @@
     }
     
     if (background) {
-        bool locationAlwaysAllowed = [self checkLocationAlways];
+        bool locationAlwaysAllowed = [self checkLocationAlwaysGrant];
         if (!locationAlwaysAllowed) {
             @throw [[RNLocationException alloc]
                     initWithCode:RNLocationError.PERMISSION_ALWAYS
@@ -44,16 +44,29 @@
     }
 }
 
-+ (BOOL)checkLocation {
++ (NSString *)checkLocation {
+    if ([self checkLocationGrant]) return RNLocationPermissionStatus.GRANTED;
+    
+    CLAuthorizationStatus status = [self getCurrentStatus];
+    if (status == kCLAuthorizationStatusNotDetermined) return RNLocationPermissionStatus.DENIED;
+    else return RNLocationPermissionStatus.BLOCKED;
+}
+
++ (BOOL)checkLocationGrant {
     CLAuthorizationStatus status = [self getCurrentStatus];
     return status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusAuthorizedAlways;
 }
 
-+ (BOOL)checkLocationAlways {
-    if (![self checkLocation]) {
-        return NO;
-    }
++ (NSString *)checkLocationAlways {
+    if ([self checkLocationAlwaysGrant]) return RNLocationPermissionStatus.GRANTED;
+    
+    CLAuthorizationStatus status = [self getCurrentStatus];
+    if (status == kCLAuthorizationStatusNotDetermined) return RNLocationPermissionStatus.DENIED;
+    else return RNLocationPermissionStatus.BLOCKED;
+}
 
++ (BOOL)checkLocationAlwaysGrant {
+    if (![self checkLocationGrant]) return NO;
     CLAuthorizationStatus status = [self getCurrentStatus];
     return status == kCLAuthorizationStatusAuthorizedAlways;
 }

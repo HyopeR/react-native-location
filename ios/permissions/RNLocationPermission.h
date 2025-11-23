@@ -3,7 +3,7 @@
 @interface RNLocationPermission : NSObject
 
 + (void)ensure:(BOOL)background;
-+ (BOOL)checkLocation;
-+ (BOOL)checkLocationAlways;
++ (NSString *)checkLocation;
++ (NSString *)checkLocationAlways;
 
 @end
