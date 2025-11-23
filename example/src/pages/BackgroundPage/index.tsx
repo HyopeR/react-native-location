@@ -10,7 +10,7 @@ import {
 import {Screen} from '../../commons/Screen';
 import {Button} from '../../commons/Button';
 import {CardLocation} from '../../commons/CardLocation';
-import {openAlert, openSettings, Permission} from '../../utils';
+import {openAlert, openSettings} from '../../utils';
 import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
@@ -71,7 +71,8 @@ export const BackgroundPage = ({back}: PageProps) => {
 
   useEffect(() => {
     RNLocation.configure(OPTIONS);
-    Permission.LocationAlways.check()
+    RNLocation.permission
+      .checkLocationAlways()
       .then(status => setLocationAllow(status === 'granted'))
       .catch(() => setLocationAllow(false));
   }, []);
@@ -96,10 +97,10 @@ export const BackgroundPage = ({back}: PageProps) => {
 
   const request = async () => {
     try {
-      const status = await Permission.Location.request();
+      const status = await RNLocation.permission.requestLocation();
       if (status !== 'granted') throw new Error('When in use not granted.');
 
-      const statusAlways = await Permission.LocationAlways.request();
+      const statusAlways = await RNLocation.permission.requestLocationAlways();
       if (statusAlways !== 'granted') throw new Error('Always not granted.');
 
       setLocationAllow(true);

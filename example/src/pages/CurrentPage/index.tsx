@@ -4,7 +4,7 @@ import {CurrentOptions, Location, RNLocation} from '@hyoper/rn-location';
 import {Screen} from '../../commons/Screen';
 import {Button} from '../../commons/Button';
 import {CardLocation} from '../../commons/CardLocation';
-import {openAlert, openSettings, Permission} from '../../utils';
+import {openAlert, openSettings} from '../../utils';
 import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
@@ -21,7 +21,8 @@ export const CurrentPage = ({back}: PageProps) => {
   const [locationLoading, setLocationLoading] = useState(false);
 
   useEffect(() => {
-    Permission.Location.check()
+    RNLocation.permission
+      .checkLocation()
       .then(status => setLocationAllow(status === 'granted'))
       .catch(() => setLocationAllow(false));
   }, []);
@@ -44,7 +45,7 @@ export const CurrentPage = ({back}: PageProps) => {
 
   const request = async () => {
     try {
-      const status = await Permission.Location.request();
+      const status = await RNLocation.permission.requestLocation();
       if (status !== 'granted') throw new Error('When in use not granted.');
       setLocationAllow(true);
     } catch (err) {
