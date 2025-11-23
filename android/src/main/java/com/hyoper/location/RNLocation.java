@@ -32,12 +32,16 @@ public class RNLocation extends NativeRNLocationSpec {
         super(reactContext);
         provider = createDefaultLocationProvider();
         permission = new RNLocationPermissionImpl();
+        reactContext.addActivityEventListener(permission);
         RNLocationUtils.setName(NAME);
     }
 
     @Override
     public void invalidate() {
         stop();
+
+        if (permission != null) getReactApplicationContext().removeActivityEventListener(permission);
+
         provider = null;
         permission = null;
         RNLocationManager.reset();
@@ -109,7 +113,7 @@ public class RNLocation extends NativeRNLocationSpec {
         provider.stop();
     }
 
-    public void getCurrent(ReadableMap options, final Promise promise) {
+    public void getCurrent(ReadableMap options, Promise promise) {
         boolean currentHighAccuracy = true;
         if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
             currentHighAccuracy = options.getString("priority").equals("highAccuracy");
@@ -173,19 +177,19 @@ public class RNLocation extends NativeRNLocationSpec {
         return new RNLocationStandardProvider(getReactApplicationContext());
     }
 
-    public void checkLocation(final Promise promise) {
+    public void checkLocation(Promise promise) {
         this.permission.checkLocation(getReactApplicationContext(), getCurrentActivity(), promise);
     }
 
-    public void checkLocationAlways(final Promise promise) {
+    public void checkLocationAlways(Promise promise) {
         this.permission.checkLocationAlways(getReactApplicationContext(), getCurrentActivity(), promise);
     }
 
-    public void requestLocation(final Promise promise) {
+    public void requestLocation(Promise promise) {
         this.permission.requestLocation(getReactApplicationContext(), getCurrentActivity(), promise);
     }
 
-    public void requestLocationAlways(final Promise promise) {
+    public void requestLocationAlways(Promise promise) {
         this.permission.requestLocationAlways(getReactApplicationContext(), getCurrentActivity(), promise);
     }
 }

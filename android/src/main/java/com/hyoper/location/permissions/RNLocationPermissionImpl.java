@@ -2,6 +2,7 @@ package com.hyoper.location.permissions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import static android.Manifest.permission;
 
@@ -9,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.modules.core.PermissionListener;
 
@@ -16,7 +18,7 @@ import com.hyoper.location.helpers.RNLocationUtils;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class RNLocationPermissionImpl implements PermissionListener {
+public class RNLocationPermissionImpl implements ActivityEventListener, PermissionListener {
     private final int REQUEST_CODE_LOCATION = 0x1000 + 1;
     private final int REQUEST_CODE_LOCATION_ALWAYS = 0x1000 + 2;
 
@@ -110,4 +112,10 @@ public class RNLocationPermissionImpl implements PermissionListener {
 
         return false;
     }
+
+    @Override
+    public void onActivityResult(Activity activity, int i, int i1, @Nullable Intent intent) {}
+
+    @Override
+    public void onNewIntent(Intent intent) {}
 }
