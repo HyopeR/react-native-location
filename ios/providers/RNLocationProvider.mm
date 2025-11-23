@@ -132,7 +132,7 @@
 {
     if (self.tracking) {
         NSString *message = error.localizedDescription;
-        [RNLocationUtils emitError:RNLocationErrorUnknown message:message];
+        [RNLocationUtils emitError:RNLocationError.UNKNOWN message:message];
     }
 }
 

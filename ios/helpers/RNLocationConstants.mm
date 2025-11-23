@@ -1,9 +1,19 @@
 #import "RNLocationConstants.h"
 
-NSString * const RNLocationEventChange = @"onChange";
-NSString * const RNLocationEventError = @"onError";
+const RNLocationEventConst RNLocationEvent = {
+    .ON_CHANGE = @"onChange",
+    .ON_ERROR = @"onError"
+};
 
-NSString * const RNLocationErrorProvider = @"ERROR_PROVIDER";
-NSString * const RNLocationErrorPermission = @"ERROR_PERMISSION";
-NSString * const RNLocationErrorPermissionAlways = @"ERROR_PERMISSION_ALWAYS";
-NSString * const RNLocationErrorUnknown = @"ERROR_UNKNOWN";
+const RNLocationErrorConst RNLocationError = {
+    .PROVIDER = @"ERROR_PROVIDER",
+    .PERMISSION = @"ERROR_PERMISSION",
+    .PERMISSION_ALWAYS = @"ERROR_PERMISSION_ALWAYS",
+    .UNKNOWN = @"ERROR_UNKNOWN"
+};
+
+const RNLocationPermissionStatusConst RNLocationPermissionStatus = {
+    .GRANTED = @"granted",
+    .DENIED = @"denied",
+    .BLOCKED = @"blocked"
+};

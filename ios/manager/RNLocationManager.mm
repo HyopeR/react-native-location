@@ -8,7 +8,7 @@
 + (void)ensure:(BOOL)highAccuracy {
     if (![CLLocationManager locationServicesEnabled]) {
         @throw [[RNLocationException alloc]
-                initWithCode:RNLocationErrorProvider
+                initWithCode:RNLocationError.PROVIDER
                 message:@"No location manager is available."
                 critical:YES];
     }

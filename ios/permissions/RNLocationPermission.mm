@@ -28,7 +28,7 @@
     bool locationAllowed = [self checkLocation];
     if (!locationAllowed) {
         @throw [[RNLocationException alloc]
-                initWithCode:RNLocationErrorPermission
+                initWithCode:RNLocationError.PERMISSION
                 message:@"Location (Coarse/Fine) permission is not granted."
                 critical:YES];
     }
@@ -37,7 +37,7 @@
         bool locationAlwaysAllowed = [self checkLocationAlways];
         if (!locationAlwaysAllowed) {
             @throw [[RNLocationException alloc]
-                    initWithCode:RNLocationErrorPermissionAlways
+                    initWithCode:RNLocationError.PERMISSION_ALWAYS
                     message:@"Location (Background) permission is not granted."
                     critical:YES];
         }
