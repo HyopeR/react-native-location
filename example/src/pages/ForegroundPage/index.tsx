@@ -73,7 +73,10 @@ export const ForegroundPage = ({back}: PageProps) => {
     RNLocation.configure(OPTIONS);
     RNLocation.permission
       .checkLocation()
-      .then(status => setLocationAllow(status === 'granted'))
+      .then(status => {
+        console.log('check status', status);
+        setLocationAllow(status === 'granted');
+      })
       .catch(() => setLocationAllow(false));
   }, []);
 
@@ -98,6 +101,7 @@ export const ForegroundPage = ({back}: PageProps) => {
   const request = async () => {
     try {
       const status = await RNLocation.permission.requestLocation();
+      console.log('request status', status);
       if (status !== 'granted') throw new Error('When in use not granted.');
       setLocationAllow(true);
     } catch (err) {

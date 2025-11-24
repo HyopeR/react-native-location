@@ -73,7 +73,10 @@ export const BackgroundPage = ({back}: PageProps) => {
     RNLocation.configure(OPTIONS);
     RNLocation.permission
       .checkLocationAlways()
-      .then(status => setLocationAllow(status === 'granted'))
+      .then(status => {
+        console.log('check status', status);
+        setLocationAllow(status === 'granted');
+      })
       .catch(() => setLocationAllow(false));
   }, []);
 
@@ -98,9 +101,11 @@ export const BackgroundPage = ({back}: PageProps) => {
   const request = async () => {
     try {
       const status = await RNLocation.permission.requestLocation();
+      console.log('request status', status);
       if (status !== 'granted') throw new Error('When in use not granted.');
 
       const statusAlways = await RNLocation.permission.requestLocationAlways();
+      console.log('request statusAlways', statusAlways);
       if (statusAlways !== 'granted') throw new Error('Always not granted.');
 
       setLocationAllow(true);
