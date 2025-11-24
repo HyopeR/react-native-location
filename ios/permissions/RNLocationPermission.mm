@@ -7,8 +7,6 @@
 
 @implementation RNLocationPermission
 
-#pragma mark - Private
-
 + (CLAuthorizationStatus)getCurrentStatus {
     if (@available(iOS 14.0, *)) {
         CLLocationManager *manager = [CLLocationManager new];
@@ -21,8 +19,6 @@
         #pragma clang diagnostic pop
     }
 }
-
-#pragma mark - Public
 
 + (void)ensure:(BOOL)background {
     bool locationAllowed = [self checkLocationGrant];
@@ -61,7 +57,7 @@
     if ([self checkLocationAlwaysGrant]) return RNLocationPermissionStatus.GRANTED;
     
     CLAuthorizationStatus status = [self getCurrentStatus];
-    if (status == kCLAuthorizationStatusNotDetermined) return RNLocationPermissionStatus.DENIED;
+    if (status == kCLAuthorizationStatusNotDetermined || status == kCLAuthorizationStatusAuthorizedWhenInUse) return RNLocationPermissionStatus.DENIED;
     else return RNLocationPermissionStatus.BLOCKED;
 }
 

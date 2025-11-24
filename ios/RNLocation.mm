@@ -1,12 +1,14 @@
 #import "RNLocation.h"
 #import "RNLocationManager.h"
 #import "RNLocationPermission.h"
+#import "RNLocationPermissionImpl.h"
 #import "RNLocationProvider.h"
 #import "RNLocationUtils.h"
 
 @interface RNLocation ()
 
-@property (nonatomic, strong, nonnull) RNLocationProvider *provider;
+@property (nonatomic, strong) RNLocationProvider *provider;
+@property (nonatomic, strong) RNLocationPermissionImpl *permission;
 @property (nonatomic, assign) BOOL locationHighAccuracy;
 @property (nonatomic, assign) BOOL locationBackground;
 
@@ -22,6 +24,7 @@
 {
     if (self = [super init]) {
         _provider = [[RNLocationProvider alloc] init];
+        _permission = [[RNLocationPermissionImpl alloc] init];
         _locationHighAccuracy = YES;
         _locationBackground = NO;
         [RNLocationUtils setName:[[self class] moduleName]];
@@ -33,6 +36,7 @@
 {
     [_provider stop];
     _provider = nil;
+    _permission = nil;
     [RNLocationManager reset];
     [RNLocationUtils reset];
 }
@@ -101,6 +105,26 @@
 - (void)stop
 {
     [self.provider stop];
+}
+
+- (void)checkLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+    [self.permission checkLocation:resolve reject:reject];
+}
+
+- (void)checkLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+    [self.permission checkLocationAlways:resolve reject:reject];
+}
+
+- (void)requestLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+    [self.permission requestLocation:resolve reject:reject];
+}
+
+- (void)requestLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+    [self.permission requestLocationAlways:resolve reject:reject];
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
