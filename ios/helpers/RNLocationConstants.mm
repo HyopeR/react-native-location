@@ -15,5 +15,6 @@ const RNLocationErrorConst RNLocationError = {
 const RNLocationPermissionStatusConst RNLocationPermissionStatus = {
     .GRANTED = @"granted",
     .DENIED = @"denied",
-    .BLOCKED = @"blocked"
+    .BLOCKED = @"blocked",
+    .UPGRADEABLE = @"upgradeable"
 };
