@@ -83,7 +83,7 @@
 }
 
 + (NSString *)toJs:(NSString *)status {
-    if (status == RNLocationPermissionStatus.UPGRADEABLE) return RNLocationPermissionStatus.DENIED;
+    if (status == RNLocationPermissionStatus.UPGRADEABLE) return RNLocationPermissionStatus.BLOCKED;
     return status;
 }
 

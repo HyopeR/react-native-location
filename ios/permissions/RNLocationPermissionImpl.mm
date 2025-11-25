@@ -8,7 +8,7 @@
 @property (nonatomic, strong, readonly) CLLocationManager *manager;
 @property (nonatomic, strong) NSMutableArray<void (^)(void)> *locationHandlers;
 @property (nonatomic, strong) NSMutableArray<void (^)(void)> *locationAlwaysHandlers;
-@property (nonatomic, assign) BOOL locationAlwaysRequestable;
+@property (nonatomic, assign) BOOL locationAlwaysTimerShouldRun;
 
 @end
 
@@ -20,7 +20,7 @@
         _manager.delegate = self;
         _locationHandlers = [NSMutableArray array];
         _locationAlwaysHandlers = [NSMutableArray array];
-        _locationAlwaysRequestable = YES;
+        _locationAlwaysTimerShouldRun = NO;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(onAppWillResignActive)
@@ -107,7 +107,7 @@
         };
         [self.locationAlwaysHandlers addObject: callback];
 
-        self.locationAlwaysRequestable = YES;
+        self.locationAlwaysTimerShouldRun = YES;
         int64_t delta = (int64_t)(0.25 * NSEC_PER_SEC);
         dispatch_queue_t queue = dispatch_get_main_queue();
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), queue, ^{
@@ -131,7 +131,7 @@
 }
 
 - (void)onApplicationWillResignActiveCheck {
-    if (!self.locationAlwaysRequestable || self.locationAlwaysHandlers.count == 0) return;
+    if (!self.locationAlwaysTimerShouldRun || self.locationAlwaysHandlers.count == 0) return;
     [self resolveHandlers:self.locationAlwaysHandlers];
 }
 
@@ -139,7 +139,7 @@
     // Triggered when the application is inactive.
     if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0) return;
     if (self.locationAlwaysHandlers.count > 0) {
-        self.locationAlwaysRequestable = NO;
+        self.locationAlwaysTimerShouldRun = NO;
     }
 }
 
