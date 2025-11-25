@@ -121,8 +121,6 @@
 }
 
 - (void)resolveHandlers:(NSMutableArray<void (^)(void)> *)handlers {
-    if (handlers.count == 0) return;
-
     for (void (^callback)(void) in handlers) {
         callback();
     }
@@ -131,13 +129,17 @@
 }
 
 - (void)onApplicationWillResignActiveCheck {
-    if (!self.locationAlwaysTimerShouldRun || self.locationAlwaysHandlers.count == 0) return;
-    [self resolveHandlers:self.locationAlwaysHandlers];
+    if (!self.locationAlwaysTimerShouldRun) return;
+
+    if (self.locationAlwaysHandlers.count > 0) {
+        [self resolveHandlers:self.locationAlwaysHandlers];
+    }
 }
 
 - (void)onAppWillResignActive {
     // Triggered when the application is inactive.
     if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0) return;
+
     if (self.locationAlwaysHandlers.count > 0) {
         self.locationAlwaysTimerShouldRun = NO;
     }
@@ -146,8 +148,14 @@
 - (void)onAppDidBecomeActive {
     // Triggered when the application is active.
     if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0) return;
-    [self resolveHandlers:self.locationHandlers];
-    [self resolveHandlers:self.locationAlwaysHandlers];
+
+    if (self.locationHandlers.count > 0) {
+        [self resolveHandlers:self.locationHandlers];
+    }
+    
+    if (self.locationAlwaysHandlers.count > 0) {
+        [self resolveHandlers:self.locationAlwaysHandlers];
+    }
 }
 
 @end
