@@ -41,11 +41,16 @@
 }
 
 + (NSString *)checkLocation {
-    if ([self checkLocationGrant]) return RNLocationPermissionStatus.GRANTED;
+    if ([self checkLocationGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    }
     
     CLAuthorizationStatus status = [self getCurrentStatus];
-    if (status == kCLAuthorizationStatusNotDetermined) return RNLocationPermissionStatus.DENIED;
-    else return RNLocationPermissionStatus.BLOCKED;
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        return RNLocationPermissionStatus.DENIED;
+    } else {
+        return RNLocationPermissionStatus.BLOCKED;
+    }
 }
 
 + (BOOL)checkLocationGrant {
@@ -54,17 +59,32 @@
 }
 
 + (NSString *)checkLocationAlways {
-    if ([self checkLocationAlwaysGrant]) return RNLocationPermissionStatus.GRANTED;
+    if ([self checkLocationAlwaysGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    }
     
     CLAuthorizationStatus status = [self getCurrentStatus];
-    if (status == kCLAuthorizationStatusNotDetermined || status == kCLAuthorizationStatusAuthorizedWhenInUse) return RNLocationPermissionStatus.DENIED;
-    else return RNLocationPermissionStatus.BLOCKED;
+    if (status == kCLAuthorizationStatusAuthorizedWhenInUse) {
+        return RNLocationPermissionStatus.UPGRADEABLE;
+    } else if (status == kCLAuthorizationStatusNotDetermined) {
+        return RNLocationPermissionStatus.DENIED;
+    } else {
+        return RNLocationPermissionStatus.BLOCKED;
+    }
 }
 
 + (BOOL)checkLocationAlwaysGrant {
-    if (![self checkLocationGrant]) return NO;
+    if (![self checkLocationGrant]) {
+        return NO;
+    }
+
     CLAuthorizationStatus status = [self getCurrentStatus];
     return status == kCLAuthorizationStatusAuthorizedAlways;
+}
+
++ (NSString *)toJs:(NSString *)status {
+    if (status == RNLocationPermissionStatus.UPGRADEABLE) return RNLocationPermissionStatus.DENIED;
+    return status;
 }
 
 @end
