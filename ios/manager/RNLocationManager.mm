@@ -3,12 +3,14 @@
 #import "RNLocationException.h"
 #import "RNLocationUtils.h"
 
+#import <CoreLocation/CoreLocation.h>
+
 @implementation RNLocationManager
 
 + (void)ensure:(BOOL)highAccuracy {
     if (![CLLocationManager locationServicesEnabled]) {
         @throw [[RNLocationException alloc]
-                initWithCode:RNLocationErrorProvider
+                initWithCode:RNLocationError.PROVIDER
                 message:@"No location manager is available."
                 critical:YES];
     }

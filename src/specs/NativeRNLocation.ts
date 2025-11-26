@@ -38,6 +38,11 @@ export interface Spec extends TurboModule {
   getCurrent(options: UnsafeObject): Promise<Location>;
   readonly onChange: EventEmitter<Location[]>;
   readonly onError: EventEmitter<LocationError>;
+
+  checkLocation(): Promise<string>;
+  checkLocationAlways(): Promise<string>;
+  requestLocation(): Promise<string>;
+  requestLocationAlways(): Promise<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNLocation');

@@ -5,8 +5,7 @@
 
 - (instancetype)initWithOptions:(NSDictionary *)options
                         resolve:(RCTPromiseResolveBlock)resolve
-                        reject:(RCTPromiseRejectBlock)reject
-{
+                         reject:(RCTPromiseRejectBlock)reject {
     if (self = [super init]) {
         _options = [[RNLocationOptions alloc] initWithOptions:options];
         _resolve = resolve;
@@ -16,15 +15,13 @@
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     _options = nil;
     _resolve = nil;
     _reject = nil;
 }
 
-- (void)run
-{
+- (void)run {
     @try {
         __weak __typeof__(self) weakSelf = self;
 
@@ -36,7 +33,7 @@
             if (strongSelf.resolved) return;
             strongSelf.resolved = YES;
             dispatch_async(dispatch_get_main_queue(), ^{
-                strongSelf.reject(RNLocationErrorUnknown, @"Location timed out.", nil);
+                strongSelf.reject(RNLocationError.UNKNOWN, @"Location timed out.", nil);
             });
         });
     } @catch (NSException *e) {
@@ -44,7 +41,7 @@
         self.resolved = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
             NSString *message = e.reason ?: @"Unknown error.";
-            self.reject(RNLocationErrorUnknown, message, nil);
+            self.reject(RNLocationError.UNKNOWN, message, nil);
         });
     }
 }

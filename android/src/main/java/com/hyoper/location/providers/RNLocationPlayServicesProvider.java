@@ -21,8 +21,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-import com.hyoper.location.helpers.RNLocationConstants;
 import com.hyoper.location.helpers.RNLocationUtils;
+import static com.hyoper.location.helpers.RNLocationConstants.Error;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -87,11 +87,7 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
             if (!tracking) return;
 
             if (!locationAvailability.isLocationAvailable()) {
-                RNLocationUtils.emitError(
-                        RNLocationConstants.ERROR_UNKNOWN,
-                        "Provider is temporarily unavailable.",
-                        false
-                );
+                RNLocationUtils.emitError(Error.UNKNOWN, "Provider is temporarily unavailable.",false);
             }
         }
     };
@@ -130,7 +126,7 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
                 resolved.set(true);
 
                 locationProvider.removeLocationUpdates(callback);
-                promise.reject(RNLocationConstants.ERROR_UNKNOWN, "Location timed out.");
+                promise.reject(Error.UNKNOWN, "Location timed out.");
             }, request.getDurationMillis());
 
         } catch (Exception e) {
@@ -139,7 +135,7 @@ public class RNLocationPlayServicesProvider implements RNLocationProvider {
 
             locationProvider.removeLocationUpdates(callback);
             String message = (e.getMessage() != null) ? e.getMessage() : "Unknown error.";
-            handler.post(() -> promise.reject(RNLocationConstants.ERROR_UNKNOWN, message));
+            handler.post(() -> promise.reject(Error.UNKNOWN, message));
         }
     }
 }

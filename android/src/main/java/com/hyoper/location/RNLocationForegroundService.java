@@ -47,6 +47,7 @@ public class RNLocationForegroundService extends Service {
         if (locationProvider != null) {
             locationProviderRunning = false;
             locationProvider.stop();
+            locationProvider = null;
         }
 
         super.onDestroy();
@@ -59,6 +60,7 @@ public class RNLocationForegroundService extends Service {
         if (locationProvider != null) {
             locationProviderRunning = false;
             locationProvider.stop();
+            locationProvider = null;
         }
 
         super.onTaskRemoved(intent);

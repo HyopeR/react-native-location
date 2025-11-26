@@ -14,6 +14,6 @@
 - (void)stop;
 - (void)getCurrent:(NSDictionary *_Nonnull)options
            resolve:(_Nonnull RCTPromiseResolveBlock)resolve
-           reject:(_Nonnull RCTPromiseRejectBlock)reject;
+            reject:(_Nonnull RCTPromiseRejectBlock)reject;
 
 @end

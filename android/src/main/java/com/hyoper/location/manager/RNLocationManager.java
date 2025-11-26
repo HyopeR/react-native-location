@@ -6,8 +6,8 @@ import android.location.LocationManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hyoper.location.helpers.RNLocationConstants;
 import com.hyoper.location.helpers.RNLocationException;
+import static com.hyoper.location.helpers.RNLocationConstants.Error;
 
 public class RNLocationManager {
     public static LocationManager manager = null;
@@ -16,12 +16,12 @@ public class RNLocationManager {
     public static void ensure(@NonNull Context context, boolean highAccuracy) throws RNLocationException {
         manager = getLocationManager(context);
         if (manager == null) {
-            throw new RNLocationException(RNLocationConstants.ERROR_PROVIDER, "No location manager is available.", true);
+            throw new RNLocationException(Error.PROVIDER, "No location manager is available.", true);
         }
 
         provider = getProvider(manager, highAccuracy);
         if (provider == null) {
-            throw new RNLocationException(RNLocationConstants.ERROR_PROVIDER, "No location provider is available.", true);
+            throw new RNLocationException(Error.PROVIDER, "No location provider is available.", true);
         }
     }
 

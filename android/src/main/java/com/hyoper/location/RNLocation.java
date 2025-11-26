@@ -15,6 +15,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.hyoper.location.helpers.RNLocationUtils;
 import com.hyoper.location.manager.RNLocationManager;
 import com.hyoper.location.permissions.RNLocationPermission;
+import com.hyoper.location.permissions.RNLocationPermissionImpl;
 import com.hyoper.location.providers.RNLocationPlayServicesProvider;
 import com.hyoper.location.providers.RNLocationProvider;
 import com.hyoper.location.providers.RNLocationStandardProvider;
@@ -23,19 +24,26 @@ import com.hyoper.location.providers.RNLocationStandardProvider;
 public class RNLocation extends NativeRNLocationSpec {
     public static final String NAME = "RNLocation";
     private RNLocationProvider provider = null;
+    private RNLocationPermissionImpl permission = null;
     private boolean locationHighAccuracy = true;
     private boolean locationBackground = false;
 
     public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
         provider = createDefaultLocationProvider();
+        permission = new RNLocationPermissionImpl();
+        reactContext.addActivityEventListener(permission);
         RNLocationUtils.setName(NAME);
     }
 
     @Override
     public void invalidate() {
         stop();
+
+        if (permission != null) getReactApplicationContext().removeActivityEventListener(permission);
+
         provider = null;
+        permission = null;
         RNLocationManager.reset();
         RNLocationUtils.reset();
     }
@@ -77,10 +85,6 @@ public class RNLocation extends NativeRNLocationSpec {
         if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
             locationBackground = options.getBoolean("allowsBackgroundLocationUpdates");
         }
-
-        if (locationBackground) {
-            RNLocationForegroundService.setLocationProvider(provider);
-        }
     }
 
     public void start() {
@@ -109,7 +113,7 @@ public class RNLocation extends NativeRNLocationSpec {
         provider.stop();
     }
 
-    public void getCurrent(ReadableMap options, final Promise promise) {
+    public void getCurrent(ReadableMap options, Promise promise) {
         boolean currentHighAccuracy = true;
         if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
             currentHighAccuracy = options.getString("priority").equals("highAccuracy");
@@ -171,5 +175,21 @@ public class RNLocation extends NativeRNLocationSpec {
 
     private RNLocationStandardProvider createStandardLocationProvider() {
         return new RNLocationStandardProvider(getReactApplicationContext());
+    }
+
+    public void checkLocation(Promise promise) {
+        this.permission.checkLocation(getReactApplicationContext(), promise);
+    }
+
+    public void checkLocationAlways(Promise promise) {
+        this.permission.checkLocationAlways(getReactApplicationContext(), promise);
+    }
+
+    public void requestLocation(Promise promise) {
+        this.permission.requestLocation(getReactApplicationContext(), getCurrentActivity(), promise);
+    }
+
+    public void requestLocationAlways(Promise promise) {
+        this.permission.requestLocationAlways(getReactApplicationContext(), getCurrentActivity(), promise);
     }
 }

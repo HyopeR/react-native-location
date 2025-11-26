@@ -23,9 +23,7 @@ export const openAlert = (title: string) => {
     [
       {
         text: 'Go Settings',
-        onPress: () => {
-          openSettings();
-        },
+        onPress: () => openSettings(),
       },
       {
         style: 'cancel',

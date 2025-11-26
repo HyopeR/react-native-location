@@ -4,13 +4,11 @@
 
 @implementation RNLocationOptions
 
-- (instancetype)init
-{
+- (instancetype)init {
     return [self initWithOptions:@{}];
 }
 
-- (instancetype)initWithOptions:(NSDictionary *)options
-{
+- (instancetype)initWithOptions:(NSDictionary *)options {
     if (self = [super init]) {
         [self reset];
         [self configure:options];
@@ -18,8 +16,7 @@
     return self;
 }
 
-- (void)configure:(NSDictionary *)options
-{
+- (void)configure:(NSDictionary *)options {
     // Desired accuracy
     NSString *desiredAccuracy = [RCTConvert NSString:options[@"desiredAccuracy"]];
     if ([desiredAccuracy isEqualToString:@"bestForNavigation"]) {
@@ -103,8 +100,7 @@
     }
 }
 
-- (void)reset
-{
+- (void)reset {
     self.desiredAccuracy = kCLLocationAccuracyBest;
     self.distanceFilter = kCLDistanceFilterNone;
     self.duration = 10000;

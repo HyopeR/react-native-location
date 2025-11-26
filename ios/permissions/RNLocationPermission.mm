@@ -7,7 +7,25 @@
 
 @implementation RNLocationPermission
 
-#pragma mark - Private
++ (void)ensure:(BOOL)background {
+    bool locationAllowed = [self checkLocationGrant];
+    if (!locationAllowed) {
+        @throw [[RNLocationException alloc]
+                initWithCode:RNLocationError.PERMISSION
+                message:@"Location (Coarse/Fine) permission is not granted."
+                critical:YES];
+    }
+    
+    if (background) {
+        bool locationAlwaysAllowed = [self checkLocationAlwaysGrant];
+        if (!locationAlwaysAllowed) {
+            @throw [[RNLocationException alloc]
+                    initWithCode:RNLocationError.PERMISSION_ALWAYS
+                    message:@"Location (Background) permission is not granted."
+                    critical:YES];
+        }
+    }
+}
 
 + (CLAuthorizationStatus)getCurrentStatus {
     if (@available(iOS 14.0, *)) {
@@ -22,40 +40,64 @@
     }
 }
 
-#pragma mark - Public
+#pragma mark - Location
 
-+ (void)ensure:(BOOL)background {
-    bool locationAllowed = [self checkLocation];
-    if (!locationAllowed) {
-        @throw [[RNLocationException alloc]
-                initWithCode:RNLocationErrorPermission
-                message:@"Location (Coarse/Fine) permission is not granted."
-                critical:YES];
-    }
-    
-    if (background) {
-        bool locationAlwaysAllowed = [self checkLocationAlways];
-        if (!locationAlwaysAllowed) {
-            @throw [[RNLocationException alloc]
-                    initWithCode:RNLocationErrorPermissionAlways
-                    message:@"Location (Background) permission is not granted."
-                    critical:YES];
-        }
-    }
-}
-
-+ (BOOL)checkLocation {
++ (BOOL)checkLocationGrant {
     CLAuthorizationStatus status = [self getCurrentStatus];
     return status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusAuthorizedAlways;
 }
 
-+ (BOOL)checkLocationAlways {
-    if (![self checkLocation]) {
++ (NSString *)checkLocation {
+    if ([self checkLocationGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    } else {
+        return RNLocationPermissionStatus.DENIED;
+    }
+}
+
++ (NSString *)checkLocationForRequest {
+    if ([self checkLocationGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    }
+    
+    CLAuthorizationStatus status = [self getCurrentStatus];
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        return RNLocationPermissionStatus.DENIED;
+    } else {
+        return RNLocationPermissionStatus.BLOCKED;
+    }
+}
+
+#pragma mark - Location Always
+
++ (BOOL)checkLocationAlwaysGrant {
+    if (![self checkLocationGrant]) {
         return NO;
     }
 
     CLAuthorizationStatus status = [self getCurrentStatus];
     return status == kCLAuthorizationStatusAuthorizedAlways;
+}
+
++ (NSString *)checkLocationAlways {
+    if ([self checkLocationAlwaysGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    } else {
+        return RNLocationPermissionStatus.DENIED;
+    }
+}
+
++ (NSString *)checkLocationAlwaysForRequest {
+    if ([self checkLocationAlwaysGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    }
+    
+    CLAuthorizationStatus status = [self getCurrentStatus];
+    if (status == kCLAuthorizationStatusNotDetermined) {
+        return RNLocationPermissionStatus.DENIED;
+    } else {
+        return RNLocationPermissionStatus.BLOCKED;
+    }
 }
 
 @end

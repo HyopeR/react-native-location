@@ -1,7 +1,7 @@
 import {
-  Accuracy,
   AndroidPriority,
   ConfigureOptions,
+  CurrentAccuracy,
   CurrentOptions,
   IosAccuracy,
 } from './types';
@@ -37,10 +37,10 @@ export const ACCURACY = {
     high: 'highAccuracy',
     balanced: 'balancedPowerAccuracy',
     low: 'lowPower',
-  } as Record<Accuracy, AndroidPriority>,
+  } as Record<CurrentAccuracy, AndroidPriority>,
   ios: {
     high: 'best',
     balanced: 'nearestTenMeters',
     low: 'hundredMeters',
-  } as Record<Accuracy, IosAccuracy>,
+  } as Record<CurrentAccuracy, IosAccuracy>,
 };
