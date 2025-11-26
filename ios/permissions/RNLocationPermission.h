@@ -4,7 +4,8 @@
 
 + (void)ensure:(BOOL)background;
 + (NSString *)checkLocation;
++ (NSString *)checkLocationForRequest;
 + (NSString *)checkLocationAlways;
-+ (NSString *)toJs:(NSString *)status;
++ (NSString *)checkLocationAlwaysForRequest;
 
 @end

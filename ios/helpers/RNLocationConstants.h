@@ -16,7 +16,6 @@ typedef struct {
     __unsafe_unretained NSString * _Nonnull GRANTED;
     __unsafe_unretained NSString * _Nonnull DENIED;
     __unsafe_unretained NSString * _Nonnull BLOCKED;
-    __unsafe_unretained NSString * _Nonnull UPGRADEABLE;
 } RNLocationPermissionStatusConst;
 
 

@@ -8,6 +8,7 @@
 @property (nonatomic, strong, readonly) CLLocationManager *manager;
 @property (nonatomic, strong) NSMutableArray<void (^)(void)> *locationHandlers;
 @property (nonatomic, strong) NSMutableArray<void (^)(void)> *locationAlwaysHandlers;
+@property (nonatomic, assign) BOOL locationTimerShouldRun;
 @property (nonatomic, assign) BOOL locationAlwaysTimerShouldRun;
 
 @end
@@ -20,6 +21,7 @@
         _manager.delegate = self;
         _locationHandlers = [NSMutableArray array];
         _locationAlwaysHandlers = [NSMutableArray array];
+        _locationTimerShouldRun = NO;
         _locationAlwaysTimerShouldRun = NO;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -52,7 +54,8 @@
 
 - (void)checkLocation:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
-        NSString *status = [RNLocationPermission toJs:[RNLocationPermission checkLocation]];
+        NSLog(@"checkLocationAlways");
+        NSString *status = [RNLocationPermission checkLocation];
         resolve(status);
     } @catch (NSException *e) {
         [RNLocationUtils handleException: e resolve: resolve reject: reject];
@@ -61,7 +64,8 @@
 
 - (void)checkLocationAlways:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
-        NSString *status = [RNLocationPermission toJs:[RNLocationPermission checkLocationAlways]];
+        NSLog(@"checkLocationAlways");
+        NSString *status = [RNLocationPermission checkLocationAlways];
         resolve(status);
     } @catch (NSException *e) {
         [RNLocationUtils handleException: e resolve: resolve reject: reject];
@@ -70,19 +74,17 @@
 
 - (void)requestLocation:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
-        NSString *status = [RNLocationPermission checkLocation];
-        NSString *statusJs = [RNLocationPermission toJs:status];
-        if (status != RNLocationPermissionStatus.DENIED) {
-            resolve(statusJs);
-            return;
-        }
+        [self.locationHandlers addObject:^{
+            NSString *callbackStatus = [RNLocationPermission checkLocationForRequest];
+            resolve(callbackStatus);
+        }];
         
-        void (^callback)(void) = ^{
-            NSString *callbackStatus = [RNLocationPermission checkLocation];
-            NSString *callbackStatusJs = [RNLocationPermission toJs:callbackStatus];
-            resolve(callbackStatusJs);
-        };
-        [self.locationHandlers addObject:callback];
+        self.locationTimerShouldRun = YES;
+        int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
+            [self onAppWillResignActiveLocationCheck];
+        });
+        
         [self.manager requestWhenInUseAuthorization];
     } @catch (NSException *e) {
         [RNLocationUtils handleException: e resolve: resolve reject: reject];
@@ -91,27 +93,22 @@
 
 - (void)requestLocationAlways:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
-        NSString *status = [RNLocationPermission checkLocationAlways];
-        NSString *statusJs = [RNLocationPermission toJs:status];
-        if (status != RNLocationPermissionStatus.UPGRADEABLE) {
-            resolve(statusJs);
+        NSString *status = [RNLocationPermission checkLocation];
+        if (status != RNLocationPermissionStatus.GRANTED) {
+            resolve(RNLocationPermissionStatus.BLOCKED);
             return;
         }
-
-        void (^callback)(void) = ^{
-            NSString *callbackStatus = [RNLocationPermission checkLocationAlways];
-            NSString *callbackStatusJs = callbackStatus == RNLocationPermissionStatus.GRANTED
-                ? RNLocationPermissionStatus.GRANTED
-                : RNLocationPermissionStatus.BLOCKED;
-            resolve(callbackStatusJs);
-        };
-        [self.locationAlwaysHandlers addObject: callback];
-
+        
+        
+        [self.locationAlwaysHandlers addObject: ^{
+            NSString *callbackStatus = [RNLocationPermission checkLocationAlwaysForRequest];
+            resolve(callbackStatus);
+        }];
+        
         self.locationAlwaysTimerShouldRun = YES;
-        int64_t delta = (int64_t)(0.25 * NSEC_PER_SEC);
-        dispatch_queue_t queue = dispatch_get_main_queue();
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), queue, ^{
-            [self onApplicationWillResignActiveCheck];
+        int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
+            [self onAppWillResignActiveLocationAlwaysCheck];
         });
         
         [self.manager requestAlwaysAuthorization];
@@ -128,10 +125,14 @@
     [handlers removeAllObjects];
 }
 
-- (void)onApplicationWillResignActiveCheck {
-    if (!self.locationAlwaysTimerShouldRun) return;
+- (void)onAppWillResignActiveLocationCheck {
+    if (self.locationTimerShouldRun && self.locationHandlers.count > 0) {
+        [self resolveHandlers:self.locationHandlers];
+    }
+}
 
-    if (self.locationAlwaysHandlers.count > 0) {
+- (void)onAppWillResignActiveLocationAlwaysCheck {
+    if (self.locationAlwaysTimerShouldRun && self.locationAlwaysHandlers.count > 0) {
         [self resolveHandlers:self.locationAlwaysHandlers];
     }
 }
@@ -139,6 +140,10 @@
 - (void)onAppWillResignActive {
     // Triggered when the application is inactive.
     if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0) return;
+    
+    if (self.locationHandlers.count > 0) {
+        self.locationTimerShouldRun = NO;
+    }
 
     if (self.locationAlwaysHandlers.count > 0) {
         self.locationAlwaysTimerShouldRun = NO;
