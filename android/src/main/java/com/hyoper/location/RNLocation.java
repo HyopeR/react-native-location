@@ -178,11 +178,11 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void checkLocation(Promise promise) {
-        this.permission.checkLocation(getReactApplicationContext(), getCurrentActivity(), promise);
+        this.permission.checkLocation(getReactApplicationContext(), promise);
     }
 
     public void checkLocationAlways(Promise promise) {
-        this.permission.checkLocationAlways(getReactApplicationContext(), getCurrentActivity(), promise);
+        this.permission.checkLocationAlways(getReactApplicationContext(), promise);
     }
 
     public void requestLocation(Promise promise) {

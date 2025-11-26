@@ -36,12 +36,6 @@ public class RNLocationPermission {
         }
     }
 
-    public static String checkLocation(@NonNull Context context, @NonNull Activity activity) {
-        if (checkLocationGrant(context)) return PermissionStatus.GRANTED;
-        if (checkLocationRationale(activity)) return PermissionStatus.DENIED;
-        else return PermissionStatus.BLOCKED;
-    }
-
     private static boolean checkLocationGrant(@NonNull Context context) {
         int permissionCoarse = ContextCompat.checkSelfPermission(context, permission.ACCESS_COARSE_LOCATION);
         int permissionFine = ContextCompat.checkSelfPermission(context, permission.ACCESS_FINE_LOCATION);
@@ -50,8 +44,8 @@ public class RNLocationPermission {
                 : PackageManager.PERMISSION_DENIED;
 
         return permissionCoarse == PackageManager.PERMISSION_GRANTED ||
-               permissionFine == PackageManager.PERMISSION_GRANTED ||
-               permissionBackground == PackageManager.PERMISSION_GRANTED;
+                permissionFine == PackageManager.PERMISSION_GRANTED ||
+                permissionBackground == PackageManager.PERMISSION_GRANTED;
     }
 
     private static boolean checkLocationRationale(@NonNull Activity activity) {
@@ -60,10 +54,24 @@ public class RNLocationPermission {
         return permissionRationaleCoarse || permissionRationaleFine;
     }
 
-    public static String checkLocationAlways(@NonNull Context context, @NonNull Activity activity) {
-        if (checkLocationAlwaysGrant(context)) return PermissionStatus.GRANTED;
-        if (checkLocationAlwaysRationale(activity)) return PermissionStatus.DENIED;
-        else return PermissionStatus.BLOCKED;
+    public static String checkLocation(@NonNull Context context) {
+        if (checkLocationGrant(context)) {
+            return PermissionStatus.GRANTED;
+        } else {
+            return PermissionStatus.DENIED;
+        }
+    }
+
+    public static String checkLocationForRequest(@NonNull Context context, @NonNull Activity activity) {
+        if (checkLocationGrant(context)) {
+            return PermissionStatus.GRANTED;
+        }
+
+        if (checkLocationRationale(activity)) {
+            return PermissionStatus.DENIED;
+        } else {
+            return PermissionStatus.BLOCKED;
+        }
     }
 
     private static boolean checkLocationAlwaysGrant(@NonNull Context context) {
@@ -81,6 +89,26 @@ public class RNLocationPermission {
             return ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.ACCESS_BACKGROUND_LOCATION);
         } else {
             return true;
+        }
+    }
+
+    public static String checkLocationAlways(@NonNull Context context) {
+        if (checkLocationAlwaysGrant(context)) {
+            return PermissionStatus.GRANTED;
+        } else {
+            return PermissionStatus.DENIED;
+        }
+    }
+
+    public static String checkLocationAlwaysForRequest(@NonNull Context context, @NonNull Activity activity) {
+        if (checkLocationAlwaysGrant(context)) {
+            return PermissionStatus.GRANTED;
+        }
+
+        if (checkLocationAlwaysRationale(activity)) {
+            return PermissionStatus.DENIED;
+        } else {
+            return PermissionStatus.BLOCKED;
         }
     }
 }
