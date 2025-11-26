@@ -16,7 +16,7 @@
 
 + (void)handleException:(NSException *_Nonnull)exception
                 resolve:(nullable RCTPromiseResolveBlock)resolve
-                reject:(nullable RCTPromiseRejectBlock)reject;
+                 reject:(nullable RCTPromiseRejectBlock)reject;
 + (void)handleException:(NSException *_Nonnull)exception;
 
 + (NSDictionary *_Nonnull)locationToMap:(CLLocation *_Nonnull)location;

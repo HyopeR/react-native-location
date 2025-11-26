@@ -46,8 +46,7 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
 
 + (void)handleException:(NSException *)exception
                 resolve:(nullable RCTPromiseResolveBlock)resolve
-                reject:(nullable RCTPromiseRejectBlock)reject
-{
+                 reject:(nullable RCTPromiseRejectBlock)reject {
     BOOL hasPromise = (reject != nil);
     NSString *message = exception.reason ?: @"Unknown error.";
 
@@ -61,8 +60,7 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
     }
 }
 
-+ (void)handleException:(NSException *)exception
-{
++ (void)handleException:(NSException *)exception {
     [self handleException:exception resolve:nil reject:nil];
 }
 

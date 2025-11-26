@@ -3,6 +3,8 @@
 #import "RNLocationException.h"
 #import "RNLocationUtils.h"
 
+#import <CoreLocation/CoreLocation.h>
+
 @implementation RNLocationManager
 
 + (void)ensure:(BOOL)highAccuracy {

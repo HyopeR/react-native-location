@@ -10,10 +10,10 @@
 - (void)checkLocation:(_Nonnull RCTPromiseResolveBlock)resolve
                reject:(_Nonnull RCTPromiseRejectBlock)reject;
 - (void)checkLocationAlways:(_Nonnull RCTPromiseResolveBlock)resolve
-               reject:(_Nonnull RCTPromiseRejectBlock)reject;
+                     reject:(_Nonnull RCTPromiseRejectBlock)reject;
 - (void)requestLocation:(_Nonnull RCTPromiseResolveBlock)resolve
-               reject:(_Nonnull RCTPromiseRejectBlock)reject;
+                 reject:(_Nonnull RCTPromiseRejectBlock)reject;
 - (void)requestLocationAlways:(_Nonnull RCTPromiseResolveBlock)resolve
-               reject:(_Nonnull RCTPromiseRejectBlock)reject;
+                       reject:(_Nonnull RCTPromiseRejectBlock)reject;
 
 @end

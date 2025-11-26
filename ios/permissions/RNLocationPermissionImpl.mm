@@ -5,9 +5,9 @@
 
 @interface RNLocationPermissionImpl ()
 
-@property (nonatomic, strong, readonly) CLLocationManager *manager;
-@property (nonatomic, strong) NSMutableArray<void (^)(void)> *locationHandlers;
-@property (nonatomic, strong) NSMutableArray<void (^)(void)> *locationAlwaysHandlers;
+@property (nonatomic, strong, readonly, nonnull) CLLocationManager *manager;
+@property (nonatomic, strong, nonnull) NSMutableArray<void (^)(void)> *locationHandlers;
+@property (nonatomic, strong, nonnull) NSMutableArray<void (^)(void)> *locationAlwaysHandlers;
 @property (nonatomic, assign) BOOL locationTimerShouldRun;
 @property (nonatomic, assign) BOOL locationAlwaysTimerShouldRun;
 
@@ -52,27 +52,28 @@
                                                   object:nil];
 }
 
-- (void)checkLocation:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+- (void)checkLocation:(nonnull RCTPromiseResolveBlock)resolve
+               reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
-        NSLog(@"checkLocationAlways");
         NSString *status = [RNLocationPermission checkLocation];
         resolve(status);
     } @catch (NSException *e) {
-        [RNLocationUtils handleException: e resolve: resolve reject: reject];
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }
 }
 
-- (void)checkLocationAlways:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+- (void)checkLocationAlways:(nonnull RCTPromiseResolveBlock)resolve
+                     reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
-        NSLog(@"checkLocationAlways");
         NSString *status = [RNLocationPermission checkLocationAlways];
         resolve(status);
     } @catch (NSException *e) {
-        [RNLocationUtils handleException: e resolve: resolve reject: reject];
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }
 }
 
-- (void)requestLocation:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+- (void)requestLocation:(nonnull RCTPromiseResolveBlock)resolve
+                 reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
         [self.locationHandlers addObject:^{
             NSString *callbackStatus = [RNLocationPermission checkLocationForRequest];
@@ -87,11 +88,12 @@
         
         [self.manager requestWhenInUseAuthorization];
     } @catch (NSException *e) {
-        [RNLocationUtils handleException: e resolve: resolve reject: reject];
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }
 }
 
-- (void)requestLocationAlways:(nonnull RCTPromiseResolveBlock)resolve reject:(nonnull RCTPromiseRejectBlock)reject {
+- (void)requestLocationAlways:(nonnull RCTPromiseResolveBlock)resolve
+                       reject:(nonnull RCTPromiseRejectBlock)reject {
     @try {
         NSString *status = [RNLocationPermission checkLocation];
         if (status != RNLocationPermissionStatus.GRANTED) {
@@ -113,7 +115,7 @@
         
         [self.manager requestAlwaysAuthorization];
     } @catch (NSException *e) {
-        [RNLocationUtils handleException: e resolve: resolve reject: reject];
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }
 }
 

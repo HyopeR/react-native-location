@@ -12,8 +12,8 @@
 @property (nonatomic, assign) BOOL resolved;
 
 - (instancetype _Nonnull)initWithOptions:(NSDictionary *_Nonnull)options
-                        resolve:(_Nonnull RCTPromiseResolveBlock)resolve
-                        reject:(_Nonnull RCTPromiseRejectBlock)reject;
+                                 resolve:(_Nonnull RCTPromiseResolveBlock)resolve
+                                  reject:(_Nonnull RCTPromiseRejectBlock)reject;
 - (void)run;
 
 @end

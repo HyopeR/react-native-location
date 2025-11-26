@@ -7,8 +7,8 @@
 
 @interface RNLocation ()
 
-@property (nonatomic, strong) RNLocationProvider *provider;
-@property (nonatomic, strong) RNLocationPermissionImpl *permission;
+@property (nonatomic, strong, nonnull) RNLocationProvider *provider;
+@property (nonatomic, strong, nonnull) RNLocationPermissionImpl *permission;
 @property (nonatomic, assign) BOOL locationHighAccuracy;
 @property (nonatomic, assign) BOOL locationBackground;
 
@@ -20,8 +20,7 @@
   return @"RNLocation";
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     if (self = [super init]) {
         _provider = [[RNLocationProvider alloc] init];
         _permission = [[RNLocationPermissionImpl alloc] init];
@@ -32,8 +31,7 @@
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [_provider stop];
     _provider = nil;
     _permission = nil;
@@ -41,14 +39,12 @@
     [RNLocationUtils reset];
 }
 
-- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper
-{
+- (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper {
     [super setEventEmitterCallback:eventEmitterCallbackWrapper];
     [RNLocationUtils setEventEmitter:_eventEmitterCallback];
 }
 
-- (void)configure:(nonnull NSDictionary *)options
-{
+- (void)configure:(nonnull NSDictionary *)options {
     [self.provider configure:options];
     
     NSString *desiredAccuracy = options[@"desiredAccuracy"];
@@ -63,16 +59,15 @@
 }
 
 - (void)getCurrent:(nonnull NSDictionary *)options
-        resolve:(nonnull RCTPromiseResolveBlock)resolve
-        reject:(nonnull RCTPromiseRejectBlock)reject
-{
-    bool currentHighAccuracy = true;
+           resolve:(nonnull RCTPromiseResolveBlock)resolve
+            reject:(nonnull RCTPromiseRejectBlock)reject {
+    bool currentHighAccuracy = YES;
     NSString *desiredAccuracy = options[@"desiredAccuracy"];
     if (desiredAccuracy != nil) {
         currentHighAccuracy = [desiredAccuracy isEqualToString:@"bestForNavigation"] || [desiredAccuracy isEqualToString:@"best"];
     }
     
-    bool currentBackground = false;
+    bool currentBackground = NO;
     NSNumber *allowsBackgroundLocationUpdates = options[@"allowsBackgroundLocationUpdates"];
     if (allowsBackgroundLocationUpdates != nil) {
         currentBackground = [allowsBackgroundLocationUpdates boolValue];
@@ -89,8 +84,7 @@
     }
 }
 
-- (void)start
-{
+- (void)start {
     @try {
         [RNLocationManager ensure:self.locationHighAccuracy];
 
@@ -102,28 +96,23 @@
     }
 }
 
-- (void)stop
-{
+- (void)stop {
     [self.provider stop];
 }
 
-- (void)checkLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
-{
+- (void)checkLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [self.permission checkLocation:resolve reject:reject];
 }
 
-- (void)checkLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
-{
+- (void)checkLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [self.permission checkLocationAlways:resolve reject:reject];
 }
 
-- (void)requestLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
-{
+- (void)requestLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [self.permission requestLocation:resolve reject:reject];
 }
 
-- (void)requestLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
-{
+- (void)requestLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     [self.permission requestLocationAlways:resolve reject:reject];
 }
 

@@ -5,8 +5,7 @@
 
 - (instancetype)initWithOptions:(NSDictionary *)options
                         resolve:(RCTPromiseResolveBlock)resolve
-                        reject:(RCTPromiseRejectBlock)reject
-{
+                         reject:(RCTPromiseRejectBlock)reject {
     if (self = [super init]) {
         _options = [[RNLocationOptions alloc] initWithOptions:options];
         _resolve = resolve;
@@ -16,15 +15,13 @@
     return self;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     _options = nil;
     _resolve = nil;
     _reject = nil;
 }
 
-- (void)run
-{
+- (void)run {
     @try {
         __weak __typeof__(self) weakSelf = self;
 
