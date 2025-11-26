@@ -14,7 +14,6 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
-import com.hyoper.location.helpers.RNLocationUtils;
 import static com.hyoper.location.helpers.RNLocationConstants.PermissionStatus;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -27,75 +26,47 @@ public class RNLocationPermissionImpl implements ActivityEventListener, Permissi
     private final ConcurrentLinkedQueue<Runnable> locationAlwaysHandlers = new ConcurrentLinkedQueue<>();
 
     public void checkLocation(@NonNull Context context, @NonNull Promise promise) {
-        try {
-            String status = RNLocationPermission.checkLocation(context);
-            promise.resolve(status);
-        } catch (Exception e) {
-            RNLocationUtils.handleException(e, promise);
-        }
+        String status = RNLocationPermission.checkLocation(context);
+        promise.resolve(status);
     }
 
     public void checkLocationAlways(@NonNull Context context, @NonNull Promise promise) {
-        try {
-            String status = RNLocationPermission.checkLocationAlways(context);
-            promise.resolve(status);
-        } catch (Exception e) {
-            RNLocationUtils.handleException(e, promise);
-        }
+        String status = RNLocationPermission.checkLocationAlways(context);
+        promise.resolve(status);
     }
 
-    public void requestLocation(
-            @NonNull Context context,
-            @Nullable Activity activity,
-            @NonNull Promise promise
-    ) {
-        try {
-            RNLocationPermission.ensureActivity(activity);
+    public void requestLocation(@NonNull Context context, @NonNull Activity activity, @NonNull Promise promise) {
+        PermissionAwareActivity permissionActivity = (PermissionAwareActivity) activity;
+        String[] permissions = { permission.ACCESS_FINE_LOCATION, permission.ACCESS_COARSE_LOCATION };
 
+        locationHandlers.add(() -> {
+            String callbackStatus = RNLocationPermission.checkLocationForRequest(context, activity);
+            promise.resolve(callbackStatus);
+        });
+
+        permissionActivity.requestPermissions(permissions, REQUEST_CODE_LOCATION, this);
+    }
+
+    public void requestLocationAlways(@NonNull Context context, @NonNull Activity activity, @NonNull Promise promise) {
+        String status = RNLocationPermission.checkLocation(context);
+        if (!status.equals(PermissionStatus.GRANTED)) {
+            promise.resolve(PermissionStatus.BLOCKED);
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             PermissionAwareActivity permissionActivity = (PermissionAwareActivity) activity;
-            String[] permissions = { permission.ACCESS_FINE_LOCATION, permission.ACCESS_COARSE_LOCATION };
+            String[] permissions = { permission.ACCESS_BACKGROUND_LOCATION };
 
-            locationHandlers.add(() -> {
-                String callbackStatus = RNLocationPermission.checkLocationForRequest(context, activity);
+            locationAlwaysHandlers.add(() -> {
+                String callbackStatus = RNLocationPermission.checkLocationAlwaysForRequest(context, activity);
                 promise.resolve(callbackStatus);
             });
 
-            permissionActivity.requestPermissions(permissions, REQUEST_CODE_LOCATION, this);
-        } catch (Exception e) {
-            RNLocationUtils.handleException(e, promise);
-        }
-    }
-
-    public void requestLocationAlways(
-            @NonNull Context context,
-            @Nullable Activity activity,
-            @NonNull Promise promise
-    ) {
-        try {
-            RNLocationPermission.ensureActivity(activity);
-
-            String status = RNLocationPermission.checkLocation(context);
-            if (!status.equals(PermissionStatus.GRANTED)) {
-                promise.resolve(PermissionStatus.BLOCKED);
-                return;
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                PermissionAwareActivity permissionActivity = (PermissionAwareActivity) activity;
-                String[] permissions = { permission.ACCESS_BACKGROUND_LOCATION };
-
-                locationAlwaysHandlers.add(() -> {
-                    String callbackStatus = RNLocationPermission.checkLocationAlwaysForRequest(context, activity);
-                    promise.resolve(callbackStatus);
-                });
-
-                permissionActivity.requestPermissions(permissions, REQUEST_CODE_LOCATION_ALWAYS, this);
-            } else {
-                String callbackStatus = RNLocationPermission.checkLocationForRequest(context, activity);
-                promise.resolve(callbackStatus);
-            }
-        } catch (Exception e) {
-            RNLocationUtils.handleException(e, promise);
+            permissionActivity.requestPermissions(permissions, REQUEST_CODE_LOCATION_ALWAYS, this);
+        } else {
+            String callbackStatus = RNLocationPermission.checkLocationForRequest(context, activity);
+            promise.resolve(callbackStatus);
         }
     }
 
