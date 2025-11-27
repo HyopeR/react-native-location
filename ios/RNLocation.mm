@@ -1,4 +1,5 @@
 #import "RNLocation.h"
+#import "RNLocationGuard.h"
 #import "RNLocationManager.h"
 #import "RNLocationPermission.h"
 #import "RNLocationPermissionImpl.h"
@@ -74,8 +75,8 @@
     }
     
     @try {
+        [RNLocationGuard ensure:currentBackground];
         [RNLocationManager ensure:currentHighAccuracy];
-        
         [RNLocationPermission ensure:currentBackground];
         
         [self.provider getCurrent:options resolve:resolve reject:reject];
@@ -86,8 +87,8 @@
 
 - (void)start {
     @try {
+        [RNLocationGuard ensure:self.locationBackground];
         [RNLocationManager ensure:self.locationHighAccuracy];
-
         [RNLocationPermission ensure:self.locationBackground];
 
         [self.provider start];
@@ -101,19 +102,43 @@
 }
 
 - (void)checkLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    [self.permission checkLocation:resolve reject:reject];
+    @try {
+        [RNLocationGuard ensureLocationDefinition];
+
+        [self.permission checkLocation:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
 }
 
 - (void)checkLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    [self.permission checkLocationAlways:resolve reject:reject];
+    @try {
+        [RNLocationGuard ensureLocationAlwaysDefinition];
+
+        [self.permission checkLocationAlways:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
 }
 
 - (void)requestLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    [self.permission requestLocation:resolve reject:reject];
+    @try {
+        [RNLocationGuard ensureLocationDefinition];
+
+        [self.permission requestLocation:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
 }
 
 - (void)requestLocationAlways:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-    [self.permission requestLocationAlways:resolve reject:reject];
+    @try {
+        [RNLocationGuard ensureLocationAlwaysDefinition];
+
+        [self.permission requestLocationAlways:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
