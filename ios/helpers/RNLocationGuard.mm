@@ -31,7 +31,7 @@ static NSString * const kUIBackgroundModeLocation = @"location";
             [self throwException:missing];
         }
     } @catch (NSException *e) {
-        [self handleException:e];
+        [self throwHandleException:e];
     }
 }
 
@@ -65,7 +65,7 @@ static NSString * const kUIBackgroundModeLocation = @"location";
             [self throwException:missing];
         }
     } @catch (NSException *e) {
-        [self handleException:e];
+        [self throwHandleException:e];
     }
 }
 
@@ -81,16 +81,16 @@ static NSString * const kUIBackgroundModeLocation = @"location";
             critical:YES];
 }
 
-+ (void)handleException:(NSException *)exception {
-    if (![exception isKindOfClass:[RNLocationException class]]) {
++ (void)throwHandleException:(NSException *)exception {
+    if ([exception isKindOfClass:[RNLocationException class]]) {
+        @throw exception;
+    } else {
         NSString *message = exception.reason ?: @"Unknown error.";
         @throw [[RNLocationException alloc]
                 initWithCode:RNLocationError.SETUP
                 message:[@"Setup runtine issue: " stringByAppendingString:message]
                 critical:YES];
     }
-    
-    @throw exception;
 }
 
 @end
