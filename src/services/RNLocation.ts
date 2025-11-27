@@ -1,5 +1,6 @@
 import RNLocationNative from '../specs/NativeRNLocation';
 import {RNLocationModuleHelper} from './RNLocationHelper';
+import {RNLocationManager} from './RNLocationManager';
 import {RNLocationPermission} from './RNLocationPermission';
 import {RNLocationSubscription} from './RNLocationSubscription';
 import {
@@ -7,16 +8,23 @@ import {
   ConfigureOptions,
   Subscription,
   Permission,
+  Manager,
 } from '../types';
 
 class RNLocationModule extends RNLocationModuleHelper {
+  private readonly _manager;
   private readonly _permission;
   private _subscriptions;
 
   constructor() {
     super();
+    this._manager = new RNLocationManager();
     this._permission = new RNLocationPermission();
     this._subscriptions = new Map<string, RNLocationSubscription>();
+  }
+
+  get manager(): Manager {
+    return this._manager;
   }
 
   get permission(): Permission {
