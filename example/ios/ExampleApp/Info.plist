@@ -33,8 +33,6 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location access when the app is in the foreground.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location access when the app is in the background.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Location access when the app is in the foreground and background.</string>
 	<key>UIBackgroundModes</key>
