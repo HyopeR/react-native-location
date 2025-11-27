@@ -1,5 +1,6 @@
 package com.hyoper.location;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 
@@ -12,6 +13,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
 
+import com.hyoper.location.helpers.RNLocationGuard;
 import com.hyoper.location.helpers.RNLocationUtils;
 import com.hyoper.location.manager.RNLocationManager;
 import com.hyoper.location.permissions.RNLocationPermission;
@@ -91,8 +93,8 @@ public class RNLocation extends NativeRNLocationSpec {
         try {
             ReactApplicationContext context = getReactApplicationContext();
 
+            RNLocationGuard.ensure(context, locationBackground);
             RNLocationManager.ensure(context, locationHighAccuracy);
-
             RNLocationPermission.ensure(context, locationBackground);
 
             if (locationBackground) {
@@ -127,8 +129,8 @@ public class RNLocation extends NativeRNLocationSpec {
         try {
             ReactApplicationContext context = getReactApplicationContext();
 
+            RNLocationGuard.ensure(context, currentBackground);
             RNLocationManager.ensure(context, currentHighAccuracy);
-
             RNLocationPermission.ensure(context, currentBackground);
 
             provider.getCurrent(getCurrentActivity(), options, promise);
@@ -162,7 +164,7 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     private RNLocationProvider createDefaultLocationProvider() {
-        if (RNLocationUtils.hasFusedLocationProvider()) {
+        if (RNLocationGuard.hasFusedLocationProvider()) {
             return createPlayServicesLocationProvider();
         } else {
             return createStandardLocationProvider();
@@ -178,18 +180,54 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void checkLocation(Promise promise) {
-        this.permission.checkLocation(getReactApplicationContext(), promise);
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+
+            RNLocationGuard.ensureLocationDefinition(context);
+
+            this.permission.checkLocation(context, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
     }
 
     public void checkLocationAlways(Promise promise) {
-        this.permission.checkLocationAlways(getReactApplicationContext(), promise);
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+
+            RNLocationGuard.ensureLocationAlwaysDefinition(context);
+
+            this.permission.checkLocationAlways(context, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
     }
 
     public void requestLocation(Promise promise) {
-        this.permission.requestLocation(getReactApplicationContext(), getCurrentActivity(), promise);
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+            Activity activity = getCurrentActivity();
+
+            RNLocationGuard.ensureLocationDefinition(context);
+            RNLocationPermission.ensureActivity(activity);
+
+            this.permission.requestLocation(context, activity, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
     }
 
     public void requestLocationAlways(Promise promise) {
-        this.permission.requestLocationAlways(getReactApplicationContext(), getCurrentActivity(), promise);
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+            Activity activity = getCurrentActivity();
+
+            RNLocationGuard.ensureLocationAlwaysDefinition(context);
+            RNLocationPermission.ensureActivity(activity);
+
+            this.permission.requestLocationAlways(context, activity, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
     }
 }

@@ -6,6 +6,7 @@ const RNLocationEventConst RNLocationEvent = {
 };
 
 const RNLocationErrorConst RNLocationError = {
+    .SETUP = @"ERROR_SETUP",
     .PROVIDER = @"ERROR_PROVIDER",
     .PERMISSION = @"ERROR_PERMISSION",
     .PERMISSION_ALWAYS = @"ERROR_PERMISSION_ALWAYS",

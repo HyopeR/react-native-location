@@ -23,8 +23,14 @@ export const CurrentPage = ({back}: PageProps) => {
   useEffect(() => {
     RNLocation.permission
       .checkLocation()
-      .then(status => setLocationAllow(status === 'granted'))
-      .catch(() => setLocationAllow(false));
+      .then(status => {
+        console.log('check status', status);
+        setLocationAllow(status === 'granted');
+      })
+      .catch(error => {
+        console.log('check', error);
+        setLocationAllow(false);
+      });
   }, []);
 
   const getCurrentLocation = async () => {
@@ -46,11 +52,17 @@ export const CurrentPage = ({back}: PageProps) => {
   const request = async () => {
     try {
       const status = await RNLocation.permission.requestLocation();
-      if (status !== 'granted') throw new Error('When in use not granted.');
+      console.log('request status', status);
+
+      if (status === 'blocked') openAlert('Location Permission');
+      if (status !== 'granted') {
+        setLocationAllow(false);
+        return;
+      }
+
       setLocationAllow(true);
     } catch (err) {
-      openAlert('Location Permission');
-      setLocationAllow(false);
+      console.log('request', err);
     }
   };
 
@@ -79,7 +91,7 @@ export const CurrentPage = ({back}: PageProps) => {
           />
 
           <Button
-            disabled={!locationAllow || locationLoading}
+            // disabled={!locationAllow || locationLoading}
             title={'Get Current Location'}
             onPress={getCurrentLocation}
             style={PageStyle.button}

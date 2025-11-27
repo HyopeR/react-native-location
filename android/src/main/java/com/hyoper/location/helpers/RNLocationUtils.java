@@ -93,15 +93,6 @@ public class RNLocationUtils {
         return map;
     }
 
-    public static boolean hasFusedLocationProvider() {
-        try {
-            Class.forName("com.google.android.gms.location.FusedLocationProviderClient");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
     public static void reset() {
         name = "RNLocation";
         eventEmitter = null;

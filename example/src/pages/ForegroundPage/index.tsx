@@ -52,6 +52,10 @@ export const ForegroundPage = ({back}: PageProps) => {
   const onError = useCallback<OnErrorEvent>(error => {
     console.log(error);
     switch (error.code) {
+      case 'ERROR_SETUP':
+        // The installation instructions are incomplete.
+        // Permission information was not added, etc.
+        break;
       case 'ERROR_PROVIDER':
         // Location services are disabled.
         break;
@@ -77,7 +81,10 @@ export const ForegroundPage = ({back}: PageProps) => {
         console.log('check status', status);
         setLocationAllow(status === 'granted');
       })
-      .catch(() => setLocationAllow(false));
+      .catch(error => {
+        console.log('check', error);
+        setLocationAllow(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -102,11 +109,16 @@ export const ForegroundPage = ({back}: PageProps) => {
     try {
       const status = await RNLocation.permission.requestLocation();
       console.log('request status', status);
-      if (status !== 'granted') throw new Error('When in use not granted.');
+
+      if (status === 'blocked') openAlert('Location Permission');
+      if (status !== 'granted') {
+        setLocationAllow(false);
+        return;
+      }
+
       setLocationAllow(true);
     } catch (err) {
-      openAlert('Location Permission');
-      setLocationAllow(false);
+      console.log('request', err);
     }
   };
 
@@ -136,14 +148,14 @@ export const ForegroundPage = ({back}: PageProps) => {
 
           {!locationTracking ? (
             <Button
-              disabled={!locationAllow}
+              // disabled={!locationAllow}
               title={'Start'}
               onPress={start}
               style={PageStyle.button}
             />
           ) : (
             <Button
-              disabled={!locationAllow}
+              // disabled={!locationAllow}
               title={'Stop'}
               onPress={stop}
               style={PageStyle.button}

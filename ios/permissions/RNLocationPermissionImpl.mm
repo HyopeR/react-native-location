@@ -1,7 +1,6 @@
 #import "RNLocationPermissionImpl.h"
 #import "RNLocationPermission.h"
 #import "RNLocationConstants.h"
-#import "RNLocationUtils.h"
 
 @interface RNLocationPermissionImpl ()
 
@@ -54,69 +53,53 @@
 
 - (void)checkLocation:(nonnull RCTPromiseResolveBlock)resolve
                reject:(nonnull RCTPromiseRejectBlock)reject {
-    @try {
-        NSString *status = [RNLocationPermission checkLocation];
-        resolve(status);
-    } @catch (NSException *e) {
-        [RNLocationUtils handleException:e resolve:resolve reject:reject];
-    }
+    NSString *status = [RNLocationPermission checkLocation];
+    resolve(status);
 }
 
 - (void)checkLocationAlways:(nonnull RCTPromiseResolveBlock)resolve
                      reject:(nonnull RCTPromiseRejectBlock)reject {
-    @try {
-        NSString *status = [RNLocationPermission checkLocationAlways];
-        resolve(status);
-    } @catch (NSException *e) {
-        [RNLocationUtils handleException:e resolve:resolve reject:reject];
-    }
+    NSString *status = [RNLocationPermission checkLocationAlways];
+    resolve(status);
 }
 
 - (void)requestLocation:(nonnull RCTPromiseResolveBlock)resolve
                  reject:(nonnull RCTPromiseRejectBlock)reject {
-    @try {
-        [self.locationHandlers addObject:^{
-            NSString *callbackStatus = [RNLocationPermission checkLocationForRequest];
-            resolve(callbackStatus);
-        }];
-        
-        self.locationTimerShouldRun = YES;
-        int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
-            [self onAppWillResignActiveLocationCheck];
-        });
-        
-        [self.manager requestWhenInUseAuthorization];
-    } @catch (NSException *e) {
-        [RNLocationUtils handleException:e resolve:resolve reject:reject];
-    }
+    [self.locationHandlers addObject:^{
+        NSString *callbackStatus = [RNLocationPermission checkLocationForRequest];
+        resolve(callbackStatus);
+    }];
+    
+    self.locationTimerShouldRun = YES;
+    int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
+        [self onAppWillResignActiveLocationCheck];
+    });
+    
+    [self.manager requestWhenInUseAuthorization];
 }
 
 - (void)requestLocationAlways:(nonnull RCTPromiseResolveBlock)resolve
                        reject:(nonnull RCTPromiseRejectBlock)reject {
-    @try {
-        NSString *status = [RNLocationPermission checkLocation];
-        if (status != RNLocationPermissionStatus.GRANTED) {
-            resolve(RNLocationPermissionStatus.BLOCKED);
-            return;
-        }
-        
-        
-        [self.locationAlwaysHandlers addObject: ^{
-            NSString *callbackStatus = [RNLocationPermission checkLocationAlwaysForRequest];
-            resolve(callbackStatus);
-        }];
-        
-        self.locationAlwaysTimerShouldRun = YES;
-        int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
-            [self onAppWillResignActiveLocationAlwaysCheck];
-        });
-        
-        [self.manager requestAlwaysAuthorization];
-    } @catch (NSException *e) {
-        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    NSString *status = [RNLocationPermission checkLocation];
+    if (status != RNLocationPermissionStatus.GRANTED) {
+        resolve(RNLocationPermissionStatus.BLOCKED);
+        return;
     }
+    
+    
+    [self.locationAlwaysHandlers addObject: ^{
+        NSString *callbackStatus = [RNLocationPermission checkLocationAlwaysForRequest];
+        resolve(callbackStatus);
+    }];
+    
+    self.locationAlwaysTimerShouldRun = YES;
+    int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
+        [self onAppWillResignActiveLocationAlwaysCheck];
+    });
+    
+    [self.manager requestAlwaysAuthorization];
 }
 
 - (void)resolveHandlers:(NSMutableArray<void (^)(void)> *)handlers {

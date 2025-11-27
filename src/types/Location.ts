@@ -76,6 +76,7 @@ export type Location = {
 };
 
 export type LocationErrorCode =
+  | 'ERROR_SETUP'
   | 'ERROR_PROVIDER'
   | 'ERROR_PERMISSION'
   | 'ERROR_PERMISSION_ALWAYS'
