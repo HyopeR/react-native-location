@@ -16,6 +16,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.hyoper.location.helpers.RNLocationGuard;
 import com.hyoper.location.helpers.RNLocationUtils;
 import com.hyoper.location.manager.RNLocationManager;
+import com.hyoper.location.manager.RNLocationManagerImpl;
 import com.hyoper.location.permissions.RNLocationPermission;
 import com.hyoper.location.permissions.RNLocationPermissionImpl;
 import com.hyoper.location.providers.RNLocationPlayServicesProvider;
@@ -27,6 +28,7 @@ public class RNLocation extends NativeRNLocationSpec {
     public static final String NAME = "RNLocation";
     private RNLocationProvider provider = null;
     private RNLocationPermissionImpl permission = null;
+    private RNLocationManagerImpl manager = null;
     private boolean locationHighAccuracy = true;
     private boolean locationBackground = false;
 
@@ -34,7 +36,9 @@ public class RNLocation extends NativeRNLocationSpec {
         super(reactContext);
         provider = createDefaultLocationProvider();
         permission = new RNLocationPermissionImpl();
+        manager = new RNLocationManagerImpl();
         reactContext.addActivityEventListener(permission);
+        reactContext.addActivityEventListener(manager);
         RNLocationUtils.setName(NAME);
     }
 
@@ -43,9 +47,11 @@ public class RNLocation extends NativeRNLocationSpec {
         stop();
 
         if (permission != null) getReactApplicationContext().removeActivityEventListener(permission);
+        if (manager != null) getReactApplicationContext().removeActivityEventListener(manager);
 
         provider = null;
         permission = null;
+        manager = null;
         RNLocationManager.reset();
         RNLocationUtils.reset();
     }
@@ -209,7 +215,7 @@ public class RNLocation extends NativeRNLocationSpec {
             Activity activity = getCurrentActivity();
 
             RNLocationGuard.ensureLocationDefinition(context);
-            RNLocationPermission.ensureActivity(activity);
+            RNLocationGuard.ensureActivity(activity);
 
             this.permission.requestLocation(context, activity, promise);
         } catch (Exception e) {
@@ -223,9 +229,32 @@ public class RNLocation extends NativeRNLocationSpec {
             Activity activity = getCurrentActivity();
 
             RNLocationGuard.ensureLocationAlwaysDefinition(context);
-            RNLocationPermission.ensureActivity(activity);
+            RNLocationGuard.ensureActivity(activity);
 
             this.permission.requestLocationAlways(context, activity, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
+    }
+
+    public void checkGps(Promise promise) {
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+
+            this.manager.checkGps(context, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
+    }
+
+    public void openGps(Promise promise) {
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+            Activity activity = getCurrentActivity();
+
+            RNLocationGuard.ensureActivity(activity);
+
+            this.manager.openGps(context, activity, promise);
         } catch (Exception e) {
             RNLocationUtils.handleException(e, promise);
         }

@@ -1,5 +1,6 @@
 package com.hyoper.location.helpers;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -8,6 +9,7 @@ import android.os.Build;
 import static android.Manifest.permission;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import static com.hyoper.location.helpers.RNLocationConstants.Error;
@@ -88,6 +90,12 @@ public final class RNLocationGuard {
             }
         } catch (PackageManager.NameNotFoundException e) {
             throwHandleException(e);
+        }
+    }
+
+    public static void ensureActivity(@Nullable Activity activity) throws RNLocationException {
+        if (activity == null) {
+            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
         }
     }
 

@@ -7,7 +7,6 @@ import android.os.Build;
 import static android.Manifest.permission;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -27,12 +26,6 @@ public class RNLocationPermission {
             if (!permissionAlwaysAllowed) {
                 throw new RNLocationException(Error.PERMISSION_ALWAYS, "Location (Background) permission is not granted.", true);
             }
-        }
-    }
-
-    public static void ensureActivity(@Nullable Activity activity) throws RNLocationException {
-        if (activity == null) {
-            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
         }
     }
 
