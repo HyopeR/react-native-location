@@ -5,6 +5,7 @@
 A **high-performance** React Native location library built with **New Architecture** and **TurboModules**. Provides reliable **foreground & background tracking**, simple **permission & GPS management**, and a clear, developer-friendly API. For full API documentation and usage examples, check out the [📖 API](https://hyoper.github.io/react-native-location/).
 
 ## ✨ Features
+- Supports **Android** and **IOS** platforms.
 - **Location tracking** in foreground or background.
 - **Get current location** in foreground or background.
 - Help class for **managing location permissions**.
