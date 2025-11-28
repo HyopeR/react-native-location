@@ -91,7 +91,7 @@ export const CurrentPage = ({back}: PageProps) => {
           />
 
           <Button
-            // disabled={!locationAllow || locationLoading}
+            disabled={!locationAllow || locationLoading}
             title={'Get Current Location'}
             onPress={getCurrentLocation}
             style={PageStyle.button}
