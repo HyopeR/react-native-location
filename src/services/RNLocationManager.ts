@@ -19,7 +19,7 @@ export class RNLocationManager implements Manager {
       ios: 'App-Prefs:Privacy&path=LOCATION',
     };
 
-    return new Promise<boolean>(async (resolve, reject) => {
+    return new Promise<boolean>(async resolve => {
       try {
         if (platform === 'android') {
           await Linking.sendIntent(platformUri.android);
@@ -28,7 +28,7 @@ export class RNLocationManager implements Manager {
           await Linking.openURL(platformUri.ios);
           resolve(true);
         } else {
-          reject(false);
+          resolve(false);
         }
       } catch (e) {
         resolve(false);
