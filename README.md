@@ -45,9 +45,10 @@ import {RNLocation} from '@hyoper/rn-location';
 
 const Example = () => {
   useEffect(() => {
-    // Configure your subscription. This is completely optional.
-    // If allowsBackgroundLocationUpdates is set to true, the permission will "always" be required.
-    // See the documentation for more information.
+    // You can configure the subscription. This stage doesn't require permissions directly, 
+    // but the configurations made at this stage determine which permissions the onChange callback should use.
+    // allowsBackgroundLocationUpdates: false -> requires the "when-in-use" permission.
+    // allowsBackgroundLocationUpdates: true -> requires the "always" permission.
     RNLocation.configure({allowsBackgroundLocationUpdates: false});
 
     // You can create a subscription without obtaining location permissions.
@@ -55,7 +56,7 @@ const Example = () => {
     const subscription = RNLocation.subscribe();
 
     // onChange Location will be triggered when it arrives.
-    // The "when-in-use" or "always" Location permission must be taken.
+    // The "when-in-use" or "always" Location permission must be granted.
     subscription.onChange(locations => {
       if (locations.length > 0) {
         // Use location information.
@@ -107,7 +108,8 @@ const Example = () => {
   useEffect(() => {
     // Retrieve current location information asynchronously.
     // The configurations are completely optional.
-    // Setting background to true requires the "always" permission.
+    // background: false -> requires the "when-in-use" permission.
+    // background: true -> requires the "always" permission.
     RNLocation.getCurrent({
       accuracy: 'high',
       timeout: 10000,
