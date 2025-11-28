@@ -5,7 +5,10 @@
 @property (nonatomic, strong, nonnull) NSString *code;
 @property (nonatomic, assign) BOOL critical;
 
-- (instancetype)initWithCode:(NSString *)code message:(NSString *)message critical:(BOOL)critical;
-- (instancetype)initWithCode:(NSString *)code message:(NSString *)message;
+- (instancetype _Nonnull)initWithCode:(NSString *_Nonnull)code
+                              message:(NSString *_Nonnull)message
+                             critical:(BOOL)critical;
+- (instancetype _Nonnull)initWithCode:(NSString *_Nonnull)code
+                              message:(NSString *_Nonnull)message;
 
 @end
