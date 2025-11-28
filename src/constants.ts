@@ -7,7 +7,7 @@ import {
   ManagerRedirectOptions,
 } from './types';
 
-export const CONFIGURE_OPTIONS: ConfigureOptions = {
+export const CONFIGURE_OPTIONS: Required<ConfigureOptions> = {
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
   android: {
@@ -27,7 +27,7 @@ export const CONFIGURE_OPTIONS: ConfigureOptions = {
   },
 };
 
-export const CURRENT_OPTIONS: CurrentOptions = {
+export const CURRENT_OPTIONS: Required<CurrentOptions> = {
   accuracy: 'high',
   timeout: 10000,
   background: false,
