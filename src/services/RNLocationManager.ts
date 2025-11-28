@@ -1,5 +1,6 @@
 import {Alert, Linking, Platform} from 'react-native';
 import RNLocationNative from '../specs/NativeRNLocation';
+import {REDIRECT} from '../constants';
 import {Manager, ManagerRedirectOptions} from '../types';
 
 export class RNLocationManager implements Manager {
@@ -11,49 +12,49 @@ export class RNLocationManager implements Manager {
     return RNLocationNative.openGps();
   }
 
-  redirectGps(options?: ManagerRedirectOptions) {
-    const title = options?.title || 'Location Settings';
-    const message =
-      options?.message ||
-      'GPS is required to use Location. Go to settings to enable it.';
-    const cancelText = options?.cancelText || 'Cancel';
-    const confirmText = options?.confirmText || 'Go to settings';
-
-    Alert.alert(title, message, [
-      {
-        text: cancelText,
-        onPress: async () => {
-          options?.onCancel && options?.onCancel();
-        },
-        style: 'cancel',
-      },
-      {
-        text: confirmText,
-        onPress: async () => {
-          this.redirectGpsSettings()
-            .then(() => options?.onConfirm && options.onConfirm(true))
-            .catch(() => options?.onConfirm && options.onConfirm(false));
-        },
-      },
-    ]);
-  }
-
-  private async redirectGpsSettings() {
+  async redirectGps() {
     const platform = Platform.OS;
     const platformUri = {
       android: 'android.settings.LOCATION_SOURCE_SETTINGS',
       ios: 'App-Prefs:Privacy&path=LOCATION',
     };
 
-    switch (platform) {
-      case 'android':
-        return Linking.sendIntent(platformUri.android);
-      case 'ios':
-        return Linking.openURL(platformUri.ios);
-      default:
-        return new Promise((resolve, reject) => {
-          reject('Unsupported platform.');
-        });
-    }
+    return new Promise<boolean>(async (resolve, reject) => {
+      try {
+        if (platform === 'android') {
+          await Linking.sendIntent(platformUri.android);
+          resolve(true);
+        } else if (platform === 'ios') {
+          await Linking.openURL(platformUri.ios);
+          resolve(true);
+        } else {
+          reject(false);
+        }
+      } catch (e) {
+        resolve(false);
+      }
+    });
+  }
+
+  redirectGpsAlert(options?: ManagerRedirectOptions) {
+    const title = options?.title || REDIRECT.title;
+    const message = options?.message || REDIRECT.message;
+    const cancel = options?.cancel || REDIRECT.cancel;
+    const confirm = options?.confirm || REDIRECT.confirm;
+
+    const onCancel = async () => {
+      options?.onCancel && options?.onCancel();
+    };
+
+    const onConfirm = async () => {
+      this.redirectGps()
+        .then(() => options?.onConfirm && options.onConfirm(true))
+        .catch(() => options?.onConfirm && options.onConfirm(false));
+    };
+
+    Alert.alert(title, message, [
+      {text: cancel, onPress: onCancel, style: 'cancel'},
+      {text: confirm, onPress: onConfirm},
+    ]);
   }
 }

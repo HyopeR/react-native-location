@@ -4,7 +4,8 @@
 export interface Manager {
   checkGps: () => Promise<boolean>;
   openGps: () => Promise<boolean>;
-  redirectGps: (options?: ManagerRedirectOptions) => void;
+  redirectGps: () => Promise<boolean>;
+  redirectGpsAlert: (options?: ManagerRedirectOptions) => void;
 }
 
 /**
@@ -13,8 +14,8 @@ export interface Manager {
 export type ManagerRedirectOptions = {
   title?: string;
   message?: string;
-  cancelText?: string;
+  cancel?: string;
   onCancel?: () => void;
-  confirmText?: string;
-  onConfirm?: (success: boolean) => void;
+  confirm?: string;
+  onConfirm?: (redirected: boolean) => void;
 };

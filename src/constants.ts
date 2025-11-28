@@ -4,6 +4,7 @@ import {
   CurrentAccuracy,
   CurrentOptions,
   IosAccuracy,
+  ManagerRedirectOptions,
 } from './types';
 
 export const CONFIGURE_OPTIONS: ConfigureOptions = {
@@ -32,7 +33,7 @@ export const CURRENT_OPTIONS: CurrentOptions = {
   background: false,
 };
 
-export const ACCURACY = {
+export const CURRENT_ACCURACY = {
   android: {
     high: 'highAccuracy',
     balanced: 'balancedPowerAccuracy',
@@ -43,4 +44,13 @@ export const ACCURACY = {
     balanced: 'nearestTenMeters',
     low: 'hundredMeters',
   } as Record<CurrentAccuracy, IosAccuracy>,
+};
+
+export const REDIRECT: Required<
+  Omit<ManagerRedirectOptions, 'onConfirm' | 'onCancel'>
+> = {
+  title: 'Location Settings',
+  message: 'GPS is required to use Location. Go to settings to enable it.',
+  cancel: 'Cancel',
+  confirm: 'Settings',
 };

@@ -1,5 +1,9 @@
 import {Platform} from 'react-native';
-import {ACCURACY, CONFIGURE_OPTIONS, CURRENT_OPTIONS} from '../constants';
+import {
+  CONFIGURE_OPTIONS,
+  CURRENT_ACCURACY,
+  CURRENT_OPTIONS,
+} from '../constants';
 import {
   ConfigureOptions,
   ConfigureAndroidOptions,
@@ -54,14 +58,16 @@ export class RNLocationModuleHelper {
     switch (platform) {
       case 'android':
         return {
-          priority: accuracy ? ACCURACY[platform][accuracy] : undefined,
+          priority: accuracy ? CURRENT_ACCURACY[platform][accuracy] : undefined,
           duration: timeout,
           allowsBackgroundLocationUpdates: background,
         } as CurrentAndroidOptions;
 
       case 'ios':
         return {
-          desiredAccuracy: accuracy ? ACCURACY[platform][accuracy] : undefined,
+          desiredAccuracy: accuracy
+            ? CURRENT_ACCURACY[platform][accuracy]
+            : undefined,
           duration: timeout,
           allowsBackgroundLocationUpdates: background,
         } as CurrentIosOptions;
