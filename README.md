@@ -36,8 +36,8 @@ This package works **only** with **React Native 0.75+** and **requires New Archi
 
 ## 🧩 Example - Location Tracking
 This example demonstrates how to **configure RNLocation**, **subscribe to location updates**, handle **location changes**, manage **errors**, and **unsubscribe** when done. See examples for Foreground and Background location-tracking;
-- [📂 Foreground Example](https://github.com/HyopeR/react-native-location/tree/master/example/src/pages/ForegroundPage/index.tsx).
-- [📂 Background Example](https://github.com/HyopeR/react-native-location/tree/master/example/src/pages/BackgroubdPage/index.tsx).
+- [📂 Foreground Example](https://github.com/HyopeR/react-native-location/tree/master/example/src/pages/ForegroundPage/index.tsx)
+- [📂 Background Example](https://github.com/HyopeR/react-native-location/tree/master/example/src/pages/BackgroundPage/index.tsx)
 
 ```typescript jsx
 import React, {useEffect} from 'react';
@@ -97,8 +97,7 @@ const Example = () => {
 
 ## 🧩 Example - Location Get
 This example shows how to **retrieve the current location** with optional configuration, handle the resolved **location data**, and manage **errors** returned by the location request. See examples for location-get;
-- [📂 Current Example](https://github.com/HyopeR/react-native-location/tree/master/example/src/pages/CurrentPage/index.tsx). 
-
+- [📂 Current Example](https://github.com/HyopeR/react-native-location/tree/master/example/src/pages/CurrentPage/index.tsx)
 
 ```typescript jsx
 import React, {useEffect} from 'react';
