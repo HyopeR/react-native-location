@@ -1,13 +1,51 @@
 import {AndroidPriority, AndroidProvider} from './Android';
 import {IosAccuracy, IosActivityType, IosHeadingOrientation} from './Ios';
 
-type SharedKeys = 'allowsBackgroundLocationUpdates' | 'distanceFilter';
-export type ConfigureSharedOptions = Pick<ConfigureOptions, SharedKeys>;
+/**
+ * @hidden
+ */
+export type ConfigureSharedOptions = Pick<
+  ConfigureOptions,
+  'allowsBackgroundLocationUpdates' | 'distanceFilter'
+>;
+
+/**
+ * @hidden
+ */
 export type ConfigureAndroidOptions = ConfigureSharedOptions &
   ConfigureOptions['android'];
+
+/**
+ * @hidden
+ */
 export type ConfigureIosOptions = ConfigureSharedOptions &
   ConfigureOptions['ios'];
 
+/**
+ * This configuration is used for location-tracking. It contains platform-specific configurations.
+ * @default
+ * ```
+ * {
+ *   allowsBackgroundLocationUpdates: false,
+ *   distanceFilter: 0,
+ *   android: {
+ *     priority: 'highAccuracy',
+ *     provider: 'auto',
+ *     interval: 5000,
+ *     minWaitTime: undefined,
+ *     maxWaitTime: undefined,
+ *   },
+ *   ios: {
+ *     desiredAccuracy: 'best',
+ *     activityType: 'other',
+ *     headingFilter: 0,
+ *     headingOrientation: 'portrait',
+ *     pausesLocationUpdatesAutomatically: false,
+ *     showsBackgroundLocationIndicator: false,
+ *   },
+ * }
+ * ```
+ */
 export type ConfigureOptions = {
   /**
    * A Boolean value indicating whether the app should receive location updates when suspended. Requires permissions to always access the users location.

@@ -8,5 +8,5 @@ module.exports = {
   navigationLinks: {
     Github: "https://github.com/hyoper/react-native-location"
   },
-  customCss: ['./typedoc.css']
+  customCss: ['./typedoc.css'],
 };

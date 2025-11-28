@@ -9,9 +9,10 @@ import {
   Subscription,
   Permission,
   Manager,
+  Module,
 } from '../types';
 
-class RNLocationModule extends RNLocationModuleHelper {
+class RNLocationModule extends RNLocationModuleHelper implements Module {
   private readonly _manager;
   private readonly _permission;
   private _subscriptions;
@@ -89,4 +90,4 @@ class RNLocationModule extends RNLocationModuleHelper {
   };
 }
 
-export const RNLocation = new RNLocationModule();
+export const RNLocation: Module = new RNLocationModule();
