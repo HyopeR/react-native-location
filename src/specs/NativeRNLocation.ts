@@ -43,6 +43,9 @@ export interface Spec extends TurboModule {
   checkLocationAlways(): Promise<string>;
   requestLocation(): Promise<string>;
   requestLocationAlways(): Promise<string>;
+
+  checkGps(): Promise<boolean>;
+  openGps(): Promise<boolean>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RNLocation');

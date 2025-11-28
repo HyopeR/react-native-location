@@ -148,14 +148,14 @@ export const ForegroundPage = ({back}: PageProps) => {
 
           {!locationTracking ? (
             <Button
-              // disabled={!locationAllow}
+              disabled={!locationAllow}
               title={'Start'}
               onPress={start}
               style={PageStyle.button}
             />
           ) : (
             <Button
-              // disabled={!locationAllow}
+              disabled={!locationAllow}
               title={'Stop'}
               onPress={stop}
               style={PageStyle.button}

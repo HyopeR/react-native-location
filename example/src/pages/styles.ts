@@ -11,7 +11,7 @@ export const PageStyle = StyleSheet.create({
     marginBottom: 16,
   },
   description: {
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 20,
     textAlign: 'center',
     marginBottom: 16,

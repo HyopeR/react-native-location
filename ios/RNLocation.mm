@@ -1,6 +1,7 @@
 #import "RNLocation.h"
 #import "RNLocationGuard.h"
 #import "RNLocationManager.h"
+#import "RNLocationManagerImpl.h"
 #import "RNLocationPermission.h"
 #import "RNLocationPermissionImpl.h"
 #import "RNLocationProvider.h"
@@ -10,6 +11,7 @@
 
 @property (nonatomic, strong, nonnull) RNLocationProvider *provider;
 @property (nonatomic, strong, nonnull) RNLocationPermissionImpl *permission;
+@property (nonatomic, strong, nonnull) RNLocationManagerImpl *manager;
 @property (nonatomic, assign) BOOL locationHighAccuracy;
 @property (nonatomic, assign) BOOL locationBackground;
 
@@ -25,6 +27,7 @@
     if (self = [super init]) {
         _provider = [[RNLocationProvider alloc] init];
         _permission = [[RNLocationPermissionImpl alloc] init];
+        _manager = [[RNLocationManagerImpl alloc] init];
         _locationHighAccuracy = YES;
         _locationBackground = NO;
         [RNLocationUtils setName:[[self class] moduleName]];
@@ -36,6 +39,7 @@
     [_provider stop];
     _provider = nil;
     _permission = nil;
+    _manager = nil;
     [RNLocationManager reset];
     [RNLocationUtils reset];
 }
@@ -136,6 +140,22 @@
         [RNLocationGuard ensureLocationAlwaysDefinition];
 
         [self.permission requestLocationAlways:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
+}
+
+- (void)checkGps:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    @try {
+        [self.manager checkGps:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
+}
+
+- (void)openGps:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    @try {
+        [self.manager openGps:resolve reject:reject];
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }
