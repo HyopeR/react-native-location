@@ -16,7 +16,7 @@ A **high-performance** React Native location library built with **New Architectu
 ---
 
 ## 🛠️️ Installation
-Install the package in your React Native project.
+1- Install the package in your React Native project.
 
 ```bash
 npm install @hyoper/rn-location
@@ -24,6 +24,10 @@ npm install @hyoper/rn-location
 ```bash
 yarn add @hyoper/rn-location
 ```
+
+2- Follow the [INSTALLATION](https://github.com/HyopeR/react-native-location/tree/master/instructions/INSTALLATION.md) instructions.
+
+3- Please review to learn more details about the package; [GUIDELINES](https://github.com/HyopeR/react-native-location/tree/master/instructions/GUIDELINES.md) and [HELPERS](https://github.com/HyopeR/react-native-location/tree/master/instructions/HELPERS.md).
 
 ## ⚙️ Requirements
 This package works **only** with **React Native 0.75+** and **requires New Architecture** to be enabled. Make sure your project meets the following requirements:
