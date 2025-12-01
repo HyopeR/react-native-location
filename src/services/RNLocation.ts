@@ -34,7 +34,15 @@ class RNLocationModule extends RNLocationModuleHelper implements Module {
 
   configure(options?: ConfigureOptions) {
     const opts = this.getPlatformConfigureOptions(options);
-    return RNLocationNative.configure(opts);
+    RNLocationNative.configure(opts);
+  }
+
+  configureWithRestart(options?: ConfigureOptions) {
+    this.configure(options);
+    if (this._subscriptions.size > 0) {
+      this.stop();
+      this.start();
+    }
   }
 
   private start() {

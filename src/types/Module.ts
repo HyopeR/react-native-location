@@ -23,6 +23,10 @@ export interface Module {
    */
   configure: (options?: ConfigureOptions) => void;
   /**
+   * Apply configure and reboot to force the new options.
+   */
+  configureWithRestart: (options?: ConfigureOptions) => void;
+  /**
    * Gets the current location of the user.
    */
   getCurrent: (options?: CurrentOptions) => Promise<Location>;
