@@ -4,66 +4,51 @@ In this section, you will see what you need to pay attention to when using the p
 ## Behaviors
 At this stage you will find examples of side effects that you may experience while using the package.
 
-### Permission & Configure & Subscription Relationship
+### Configuration: Override Behaviour
 ```typescript ts
-// Foreground tracking mode: app can run without "When-In-Use" permission, 
-// but location onChange event will NOT be triggered if permission is missing.
-RNLocation.configure({ allowsBackgroundLocationUpdates: false });
-RNLocation.subscribe()
-  .onChange(locations => console.log('Foreground:', locations))
-  .onError(error => console.log('Foreground error:', error));
+  // RNLocation.configure() does NOT merge your new configuration
+  // with any previously set configuration.
+  //
+  // Every configure() call starts from the DEFAULT values again,
+  // and only the fields you provide will override those defaults.
+  //
+  // This means configuration is NOT cumulative. If you want to keep
+  // previous values, you MUST merge them yourself before calling configure().
+  // RNLocation.configure({ ...prevConfig, ...nextConfig })
 
-// Background tracking mode: app can run without "Always" permission,
-// but location onChange event will NOT be triggered if permission is missing.
-RNLocation.configure({ allowsBackgroundLocationUpdates: true });
-RNLocation.subscribe()
-  .onChange(locations => console.log('Background:', locations))
-  .onError(error => console.log('Background error:', error));
-```
+const OPTIONS = {
+  allowsBackgroundLocationUpdates: false,
+  distanceFilter: 0,
+  android: {
+    priority: 'highAccuracy',
+    provider: 'auto',
+    interval: 5000,
+    minWaitTime: undefined,
+    maxWaitTime: undefined,
+  },
+  ios: {
+    desiredAccuracy: 'best',
+    activityType: 'other',
+    headingFilter: 0,
+    headingOrientation: 'portrait',
+    pausesLocationUpdatesAutomatically: false,
+    showsBackgroundLocationIndicator: false,
+  },
+};
 
-### Permission & GetCurrent Relationship
-```typescript ts
-// Foreground location request: will resolve only if "When-In-Use" permission granted.
-RNLocation.getCurrent({ background: false })
-  .then(location => console.log('Foreground:', location))
-  .catch(error => console.log('Foreground error:', error));
+// Example 1: A single configure() call.
+// Only the provided field overrides the defaults.
+RNLocation.configure({allowsBackgroundLocationUpdates: true});
 
-// Background location request: will resolve only if "Always" permission granted.
-RNLocation.getCurrent({ background: true })
-  .then(location => console.log('Background:', location))
-  .catch(error => console.log('Background error:', error));
-```
+// Resulting internal configuration will be:
+const options1 = {...OPTIONS, allowsBackgroundLocationUpdates: true};
 
-### Helper Class Relationship
-```typescript ts
-// Step 1: Check if GPS are enabled.
-const isGpsOpened = await RNLocation.manager.checkGps();
-if (!isGpsOpened) {
-  // If GPS is not enabled, redirect the user to the device's location settings.
-  RNLocation.manager.redirectGpsAlert({
-    onCancel: () => console.log('User cancelled.'),
-    onConfirm: (redirected) => console.log('User redirect status:', redirected),
-  });
-  // Stop further execution, location cannot be used until GPS is enabled.
-  return;
-}
+// Example 2: A new configure() call replaces ALL previous settings.
+// Defaults are restored, then your new fields override them again.
+RNLocation.configure({android: {interval: 2000}});
 
-// Step 2: Check if foreground ("When-In-Use") permission is granted.
-const isPermissionGranted = await RNLocation.permission.checkLocation();
-if (!isPermissionGranted) {
-  // If permission is not granted, request it from the user.
-  RNLocation.permission
-    .requestLocation()
-    .then(() => console.log('Permission granted'))
-    .catch(() => console.log('Permission denied'));
-  // Stop further execution, location cannot be used until permission is granted.
-  return;
-}
-
-// Step 3: All checks passed.
-RNLocation.getCurrent()
-  .then(() => {})
-  .catch(() => {});
+// Resulting internal configuration becomes:
+const options2 = {...OPTIONS, android: {...OPTIONS.android, interval: 2000}};
 ```
 
 ### Subscription
@@ -84,7 +69,6 @@ useEffect(() => {
     // RNLocation.unsubscribe(subscription.id);
   };
 }, []);
-
 ```
 
 ### Subscription & Location-Service Relationship
@@ -110,7 +94,7 @@ subscription2.unsubscribe();
 ```typescript ts
 // Step 1: Apply the initial config.
 // This will be used when the native service starts.
-RNLocation.configure({ distanceFilter: 0 });
+RNLocation.configure({distanceFilter: 0});
 
 // Step 2: First subscription is created.
 // Because this is the FIRST subscription, the location-service starts
@@ -124,10 +108,60 @@ const subscription1 = RNLocation.subscribe();
 // configureWithRestart(), however, *will* restart the service immediately.
 // After the restart, ALL active and future subscriptions will use
 // distanceFilter: 10.
-RNLocation.configureWithRestart({ distanceFilter: 10 });
+RNLocation.configureWithRestart({distanceFilter: 10});
 
 // Step 4: A second subscription is created.
 // Since the service was restarted in Step 3, both subscription1 and
 // subscription2 now run with distanceFilter: 10.
 const subscription2 = RNLocation.subscribe();
+```
+
+## Permissions
+At this stage you will find instructions on where and when permissions are required.
+
+### Permission Behaviour on Configure
+```typescript ts
+// Foreground tracking mode: app can run without "When-In-Use" permission,
+// but location onChange event will NOT be triggered if permission is missing.
+RNLocation.configure({allowsBackgroundLocationUpdates: false});
+RNLocation.subscribe()
+  .onChange(locations => console.log('Foreground:', locations))
+  .onError(error => console.log('Foreground error:', error));
+
+// Background tracking mode: app can run without "Always" permission,
+// but location onChange event will NOT be triggered if permission is missing.
+RNLocation.configure({allowsBackgroundLocationUpdates: true});
+RNLocation.subscribe()
+  .onChange(locations => console.log('Background:', locations))
+  .onError(error => console.log('Background error:', error));
+```
+
+### Permission Behaviour on GetCurrent
+```typescript ts
+// Foreground location request: will resolve only if "When-In-Use" permission granted.
+RNLocation.getCurrent({background: false})
+  .then(location => console.log('Foreground:', location))
+  .catch(error => console.log('Foreground error:', error));
+
+// Background location request: will resolve only if "Always" permission granted.
+RNLocation.getCurrent({background: true})
+  .then(location => console.log('Background:', location))
+  .catch(error => console.log('Background error:', error));
+```
+
+### How to get "Always" location permission?
+```typescript ts
+// To obtain "always" permission on Android and iOS platforms, you must 
+// first obtain the "when-in-use" permission from the user.
+
+// If the user has granted "when-in-use" permission, you will have a chance to 
+// upgrade to "always."
+try {
+  const status = await RNLocation.permission.requestLocation();
+  console.log(status);
+  const statusAlways = await RNLocation.permission.requestLocationAlways();
+  console.log(statusAlways);
+} catch (error) {
+  console.log(error);
+}
 ```

@@ -2,7 +2,7 @@
 This section covers the helper classes included in the package.<br/>
 These helper classes provide helper functions that simplify permission management and GPS management for Android and iOS.
 
-## Permission Helpers
+## 🔐 Permission Helpers
 The Permission class provides methods to check and request foreground and background location permissions.
 
 - **checkLocation()**
@@ -44,7 +44,7 @@ RNLocation.permission
   .catch(error => console.log('Request Location Always', error));
 ```
 
-## Manager Helpers
+## ⚙️ Manager Helpers
 The Manager class provides methods for checking, opening, and redirecting users to GPS settings.
 
 - **checkGps()**
