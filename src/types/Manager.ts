@@ -19,7 +19,7 @@ export interface Manager {
    * Shows an alert to the user that requests them to enable GPS,
    * and optionally provides customization via options.
    */
-  redirectGpsAlert: (options?: ManagerRedirectOptions) => void;
+  redirectGpsAlert: (options?: ManagerRedirectOptions) => Promise<boolean>;
 }
 
 /**
@@ -29,7 +29,5 @@ export type ManagerRedirectOptions = {
   title?: string;
   message?: string;
   cancel?: string;
-  onCancel?: () => void;
   confirm?: string;
-  onConfirm?: (redirected: boolean) => void;
 };

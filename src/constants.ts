@@ -46,9 +46,7 @@ export const CURRENT_ACCURACY = {
   } as Record<CurrentAccuracy, IosAccuracy>,
 };
 
-export const REDIRECT: Required<
-  Omit<ManagerRedirectOptions, 'onConfirm' | 'onCancel'>
-> = {
+export const REDIRECT: Required<ManagerRedirectOptions> = {
   title: 'Location Settings',
   message: 'GPS is required to use Location. Go to settings to enable it.',
   cancel: 'Cancel',
