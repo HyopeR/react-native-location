@@ -9,9 +9,10 @@ import {
   Subscription,
   Permission,
   Manager,
+  Module,
 } from '../types';
 
-class RNLocationModule extends RNLocationModuleHelper {
+class RNLocationModule extends RNLocationModuleHelper implements Module {
   private readonly _manager;
   private readonly _permission;
   private _subscriptions;
@@ -33,7 +34,14 @@ class RNLocationModule extends RNLocationModuleHelper {
 
   configure(options?: ConfigureOptions) {
     const opts = this.getPlatformConfigureOptions(options);
-    return RNLocationNative.configure(opts);
+    RNLocationNative.configure(opts);
+  }
+
+  configureWithRestart(options?: ConfigureOptions) {
+    this.configure(options);
+    if (this._subscriptions.size > 0) {
+      this.restart();
+    }
   }
 
   private start() {
@@ -42,6 +50,11 @@ class RNLocationModule extends RNLocationModuleHelper {
 
   private stop() {
     RNLocationNative.stop();
+  }
+
+  private restart() {
+    RNLocationNative.stop();
+    RNLocationNative.start();
   }
 
   async getCurrent(options?: CurrentOptions) {
@@ -89,4 +102,4 @@ class RNLocationModule extends RNLocationModuleHelper {
   };
 }
 
-export const RNLocation = new RNLocationModule();
+export const RNLocation: Module = new RNLocationModule();

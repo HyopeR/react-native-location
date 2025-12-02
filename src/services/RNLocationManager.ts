@@ -36,25 +36,24 @@ export class RNLocationManager implements Manager {
     });
   }
 
-  redirectGpsAlert(options?: ManagerRedirectOptions) {
+  async redirectGpsAlert(options?: ManagerRedirectOptions) {
     const title = options?.title || REDIRECT.title;
     const message = options?.message || REDIRECT.message;
     const cancel = options?.cancel || REDIRECT.cancel;
     const confirm = options?.confirm || REDIRECT.confirm;
 
-    const onCancel = async () => {
-      options?.onCancel && options?.onCancel();
-    };
+    return new Promise<boolean>(async resolve => {
+      const onCancel = () => resolve(false);
+      const onConfirm = () => {
+        this.redirectGps()
+          .then(() => resolve(true))
+          .catch(() => resolve(false));
+      };
 
-    const onConfirm = async () => {
-      this.redirectGps()
-        .then(() => options?.onConfirm && options.onConfirm(true))
-        .catch(() => options?.onConfirm && options.onConfirm(false));
-    };
-
-    Alert.alert(title, message, [
-      {text: cancel, onPress: onCancel, style: 'cancel'},
-      {text: confirm, onPress: onConfirm},
-    ]);
+      Alert.alert(title, message, [
+        {text: cancel, onPress: onCancel, style: 'cancel'},
+        {text: confirm, onPress: onConfirm},
+      ]);
+    });
   }
 }

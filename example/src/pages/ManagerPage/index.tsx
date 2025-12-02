@@ -62,14 +62,14 @@ export const ManagerPage = ({back}: PageProps) => {
    */
   const redirectGpsAlert = async () => {
     const name = 'Redirect Gps Alert';
-    RNLocation.manager.redirectGpsAlert({
-      onCancel: () => {
-        console.log(`${name} Cancelled`);
-      },
-      onConfirm: redirected => {
-        console.log(`${name} Confirmed`, redirected);
-      },
-    });
+    RNLocation.manager
+      .redirectGpsAlert()
+      .then(status => {
+        console.log(`${name} Success`, status);
+      })
+      .catch(error => {
+        console.log(name, error);
+      });
   };
 
   return (
