@@ -23,7 +23,7 @@ public final class RNLocationGuard {
     @RequiresApi(Build.VERSION_CODES.Q)
     private static final String BACKGROUND_LOCATION = permission.ACCESS_BACKGROUND_LOCATION;
     @RequiresApi(Build.VERSION_CODES.Q)
-    private static final String FOREGROUND_SERVICE_NAME = ".RNLocationForegroundService";
+    private static final String FOREGROUND_SERVICE_NAME = ".RNLocationForeground";
     @RequiresApi(Build.VERSION_CODES.Q)
     private static final String FOREGROUND_SERVICE = permission.FOREGROUND_SERVICE;
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)

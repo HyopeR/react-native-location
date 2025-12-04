@@ -69,6 +69,30 @@ public class RNLocation extends NativeRNLocationSpec {
         RNLocationUtils.setEmitter(eventEmitterCallback);
     }
 
+    public void getCurrent(ReadableMap options, Promise promise) {
+        boolean currentHighAccuracy = true;
+        if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
+            currentHighAccuracy = options.getString("priority").equals("highAccuracy");
+        }
+
+        boolean currentBackground = false;
+        if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
+            currentBackground = options.getBoolean("allowsBackgroundLocationUpdates");
+        }
+
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+
+            RNLocationGuard.ensure(context, currentBackground);
+            RNLocationManager.ensure(context, currentHighAccuracy);
+            RNLocationPermission.ensure(context, currentBackground);
+
+            provider.getCurrent(getCurrentActivity(), options, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
+    }
+
     public void configure(ReadableMap options) {
         if (options.hasKey("provider") && options.getType("provider") == ReadableType.String) {
             String providerName = options.getString("provider");
@@ -106,9 +130,9 @@ public class RNLocation extends NativeRNLocationSpec {
         }
 
         if (options.hasKey("notification") && options.getType("notification") == ReadableType.Map) {
-            RNLocationForegroundService.setNotification(options.getMap("notification"));
+            RNLocationForeground.setNotification(options.getMap("notification"));
         } else {
-            RNLocationForegroundService.setNotification(null);
+            RNLocationForeground.setNotification(null);
         }
     }
 
@@ -131,43 +155,19 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     public void stop() {
-        if (RNLocationForegroundService.locationProviderRunning) {
+        if (RNLocationForeground.locationProviderRunning) {
             stopForegroundService();
             return;
         }
         provider.stop();
     }
 
-    public void getCurrent(ReadableMap options, Promise promise) {
-        boolean currentHighAccuracy = true;
-        if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
-            currentHighAccuracy = options.getString("priority").equals("highAccuracy");
-        }
-
-        boolean currentBackground = false;
-        if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
-            currentBackground = options.getBoolean("allowsBackgroundLocationUpdates");
-        }
-
-        try {
-            ReactApplicationContext context = getReactApplicationContext();
-
-            RNLocationGuard.ensure(context, currentBackground);
-            RNLocationManager.ensure(context, currentHighAccuracy);
-            RNLocationPermission.ensure(context, currentBackground);
-
-            provider.getCurrent(getCurrentActivity(), options, promise);
-        } catch (Exception e) {
-            RNLocationUtils.handleException(e, promise);
-        }
-    }
-
     private void startForegroundService() {
-        if (!RNLocationForegroundService.locationProviderRunning) {
+        if (!RNLocationForeground.locationProviderRunning) {
             ReactApplicationContext context = getReactApplicationContext();
-            Intent intent = new Intent(context, RNLocationForegroundService.class);
+            Intent intent = new Intent(context, RNLocationForeground.class);
 
-            RNLocationForegroundService.setLocationProvider(provider);
+            RNLocationForeground.setLocationProvider(provider);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent);
@@ -178,9 +178,9 @@ public class RNLocation extends NativeRNLocationSpec {
     }
 
     private void stopForegroundService() {
-        if (RNLocationForegroundService.locationProviderRunning) {
+        if (RNLocationForeground.locationProviderRunning) {
             ReactApplicationContext context = getReactApplicationContext();
-            Intent intent = new Intent(context, RNLocationForegroundService.class);
+            Intent intent = new Intent(context, RNLocationForeground.class);
 
             context.stopService(intent);
         }

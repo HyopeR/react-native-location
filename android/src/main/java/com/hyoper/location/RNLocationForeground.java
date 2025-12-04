@@ -18,8 +18,8 @@ import com.facebook.react.bridge.ReadableType;
 
 import com.hyoper.location.providers.RNLocationProvider;
 
-public class RNLocationForegroundService extends Service {
-    private static final String CHANNEL_ID = "RNLocationForegroundService";
+public class RNLocationForeground extends Service {
+    private static final String CHANNEL_ID = "RNLocationForeground";
     private static final String CHANNEL_NAME = "Location Service";
 
     private static final int NOTIFICATION_ID = 0x2000 + 1;
