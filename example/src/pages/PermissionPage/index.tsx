@@ -9,7 +9,7 @@ import {PageProps} from '../types';
 
 export const PermissionPage = ({back}: PageProps) => {
   /**
-   * Check the "When-In-Use" permission.
+   * Check the Location "When-In-Use" permission.
    */
   const checkLocation = async () => {
     const name = 'Check Location';
@@ -20,7 +20,7 @@ export const PermissionPage = ({back}: PageProps) => {
   };
 
   /**
-   * Check the "Always" permission.
+   * Check the Location "Always" permission.
    */
   const checkLocationAlways = async () => {
     const name = 'Check Location Always';
@@ -31,7 +31,18 @@ export const PermissionPage = ({back}: PageProps) => {
   };
 
   /**
-   * Request the "When-In-Use" permission.
+   * Check the Notification permission.
+   */
+  const checkNotification = async () => {
+    const name = 'Check Notification';
+    RNLocation.permission
+      .checkNotification()
+      .then(status => console.log(`${name} Status`, status))
+      .catch(error => console.log(name, error));
+  };
+
+  /**
+   * Request the Location "When-In-Use" permission.
    */
   const requestLocation = async () => {
     const name = 'Request Location';
@@ -42,14 +53,25 @@ export const PermissionPage = ({back}: PageProps) => {
   };
 
   /**
-   * To get "Always" permission from the user, you must first get "When-In-Use"
-   * permission. If you try to get the "Always" permission without getting the "When-In-Use"
+   * To get Location "Always" permission from the user, you must first get Location "When-In-Use"
+   * permission. If you try to get the Location "Always" permission without getting the Location "When-In-Use"
    * permission, it will always return blocked.
    */
   const requestLocationAlways = async () => {
     const name = 'Request Location Always';
     RNLocation.permission
       .requestLocationAlways()
+      .then(status => console.log(`${name} Status`, status))
+      .catch(error => console.log(name, error));
+  };
+
+  /**
+   * Request the Notification permission.
+   */
+  const requestNotification = async () => {
+    const name = 'Request Notification';
+    RNLocation.permission
+      .requestNotification()
       .then(status => console.log(`${name} Status`, status))
       .catch(error => console.log(name, error));
   };
@@ -71,14 +93,10 @@ export const PermissionPage = ({back}: PageProps) => {
             Use helper methods to check or change permission states.
           </Text>
 
+          <Text style={PageStyle.section}>Location</Text>
           <Button
             title={'Check Location'}
             onPress={checkLocation}
-            style={PageStyle.button}
-          />
-          <Button
-            title={'Check Location Always'}
-            onPress={checkLocationAlways}
             style={PageStyle.button}
           />
           <Button
@@ -86,9 +104,28 @@ export const PermissionPage = ({back}: PageProps) => {
             onPress={requestLocation}
             style={PageStyle.button}
           />
+
+          <Text style={PageStyle.section}>Location Always</Text>
+          <Button
+            title={'Check Location Always'}
+            onPress={checkLocationAlways}
+            style={PageStyle.button}
+          />
           <Button
             title={'Request Location Always'}
             onPress={requestLocationAlways}
+            style={PageStyle.button}
+          />
+
+          <Text style={PageStyle.section}>Notification</Text>
+          <Button
+            title={'Check Notification'}
+            onPress={checkNotification}
+            style={PageStyle.button}
+          />
+          <Button
+            title={'Request Notification'}
+            onPress={requestNotification}
             style={PageStyle.button}
           />
         </View>
