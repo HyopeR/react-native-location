@@ -13,16 +13,45 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
+
 import com.hyoper.location.providers.RNLocationProvider;
 
 public class RNLocationForegroundService extends Service {
     private static final String CHANNEL_ID = "RNLocationForegroundService";
-    private static final int NOTIFICATION_ID = 1001;
+    private static final String CHANNEL_NAME = "Location Service";
+
+    private static final int NOTIFICATION_ID = 0x2000 + 1;
+    private static String notificationIcon = "ic_launcher";
+    private static String notificationTitle = "Location Service Running";
+    private static String notificationContent = "Location is being used by the app.";
+
     private static RNLocationProvider locationProvider = null;
     public static boolean locationProviderRunning = false;
 
     public static void setLocationProvider(RNLocationProvider provider) {
         locationProvider = provider;
+    }
+
+    public static void setNotification(@Nullable ReadableMap map) {
+        if (map != null && map.hasKey("icon") && map.getType("icon") == ReadableType.String) {
+            notificationIcon = map.getString("icon");
+        } else {
+            notificationIcon = "ic_launcher";
+        }
+
+        if (map != null && map.hasKey("title") && map.getType("title") == ReadableType.String) {
+            notificationTitle = map.getString("title");
+        } else {
+            notificationTitle = "Location Service Running";
+        }
+
+        if (map != null && map.hasKey("content") && map.getType("content") == ReadableType.String) {
+            notificationContent = map.getString("content");
+        } else {
+            notificationContent = "Location is being used by the app.";
+        }
     }
 
     @Override
@@ -76,11 +105,7 @@ public class RNLocationForegroundService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                "Location Service",
-                NotificationManager.IMPORTANCE_LOW
-            );
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) {
                 manager.createNotificationChannel(channel);
@@ -96,24 +121,29 @@ public class RNLocationForegroundService extends Service {
         int flag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 ? PendingIntent.FLAG_MUTABLE
                 : PendingIntent.FLAG_UPDATE_CURRENT;
+        int icon = getResourceIdForResourceName(notificationIcon, context);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(context, code, intent, flag);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle("Location Service Running")
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(icon)
+            .setContentTitle(notificationTitle)
+            .setContentText(notificationContent)
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW);
 
-        int iconSource = getResourceIdForResourceName("ic_launcher", context);
-        notificationBuilder.setSmallIcon(iconSource);
-
-        return notificationBuilder.build();
+        return builder.build();
     }
 
     private int getResourceIdForResourceName(String resourceName, Context context) {
         String packageName = context.getPackageName();
-        int resourceIdDrawable = context.getResources().getIdentifier(resourceName, "drawable", packageName);
-        int resourceIdMipmap = context.getResources().getIdentifier(resourceName, "mipmap", packageName);
-        return resourceIdDrawable | resourceIdMipmap;
+        int resourceId = context.getResources().getIdentifier(resourceName, "mipmap", packageName);
+        if (resourceId == 0) {
+            resourceId = context.getResources().getIdentifier(resourceName, "drawable", packageName);
+        }
+        if (resourceId == 0) {
+            resourceId = context.getApplicationInfo().icon;
+        }
+        return resourceId;
     }
 }

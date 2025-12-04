@@ -31,6 +31,7 @@ public class RNLocation extends NativeRNLocationSpec {
     private RNLocationManagerImpl manager = null;
     private boolean locationHighAccuracy = true;
     private boolean locationBackground = false;
+    private boolean locationNotificationMandatory = true;
 
     public RNLocation(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -88,10 +89,26 @@ public class RNLocation extends NativeRNLocationSpec {
 
         if (options.hasKey("priority") && options.getType("priority") == ReadableType.String) {
             locationHighAccuracy = options.getString("priority").equals("highAccuracy");
+        } else {
+            locationHighAccuracy = true;
         }
 
         if (options.hasKey("allowsBackgroundLocationUpdates") && options.getType("allowsBackgroundLocationUpdates") == ReadableType.Boolean) {
             locationBackground = options.getBoolean("allowsBackgroundLocationUpdates");
+        } else {
+            locationBackground = false;
+        }
+
+        if (options.hasKey("notificationMandatory") && options.getType("notificationMandatory") == ReadableType.Boolean) {
+            locationNotificationMandatory = options.getBoolean("notificationMandatory");
+        } else {
+            locationNotificationMandatory = false;
+        }
+
+        if (options.hasKey("notification") && options.getType("notification") == ReadableType.Map) {
+            RNLocationForegroundService.setNotification(options.getMap("notification"));
+        } else {
+            RNLocationForegroundService.setNotification(null);
         }
     }
 
@@ -99,9 +116,9 @@ public class RNLocation extends NativeRNLocationSpec {
         try {
             ReactApplicationContext context = getReactApplicationContext();
 
-            RNLocationGuard.ensure(context, locationBackground);
+            RNLocationGuard.ensure(context, locationBackground, locationNotificationMandatory);
             RNLocationManager.ensure(context, locationHighAccuracy);
-            RNLocationPermission.ensure(context, locationBackground);
+            RNLocationPermission.ensure(context, locationBackground, locationNotificationMandatory);
 
             if (locationBackground) {
                 startForegroundService();
@@ -209,6 +226,18 @@ public class RNLocation extends NativeRNLocationSpec {
         }
     }
 
+    public void checkNotification(Promise promise) {
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+
+            RNLocationGuard.ensureNotificationDefinition(context);
+
+            this.permission.checkNotification(context, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
+    }
+
     public void requestLocation(Promise promise) {
         try {
             ReactApplicationContext context = getReactApplicationContext();
@@ -232,6 +261,20 @@ public class RNLocation extends NativeRNLocationSpec {
             RNLocationGuard.ensureActivity(activity);
 
             this.permission.requestLocationAlways(context, activity, promise);
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e, promise);
+        }
+    }
+
+    public void requestNotification(Promise promise) {
+        try {
+            ReactApplicationContext context = getReactApplicationContext();
+            Activity activity = getCurrentActivity();
+
+            RNLocationGuard.ensureNotificationDefinition(context);
+            RNLocationGuard.ensureActivity(activity);
+
+            this.permission.requestNotification(context, activity, promise);
         } catch (Exception e) {
             RNLocationUtils.handleException(e, promise);
         }

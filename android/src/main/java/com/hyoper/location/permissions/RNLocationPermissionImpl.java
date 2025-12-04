@@ -21,9 +21,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class RNLocationPermissionImpl implements ActivityEventListener, PermissionListener {
     private final int REQUEST_CODE_LOCATION = 0x1000 + 1;
     private final int REQUEST_CODE_LOCATION_ALWAYS = 0x1000 + 2;
+    private final int REQUEST_CODE_NOTIFICATION = 0x1000 + 3;
 
     private final ConcurrentLinkedQueue<Runnable> locationHandlers = new ConcurrentLinkedQueue<>();
     private final ConcurrentLinkedQueue<Runnable> locationAlwaysHandlers = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<Runnable> notificationHandlers = new ConcurrentLinkedQueue<>();
 
     public void checkLocation(@NonNull Context context, @NonNull Promise promise) {
         String status = RNLocationPermission.checkLocation(context);
@@ -32,6 +34,11 @@ public class RNLocationPermissionImpl implements ActivityEventListener, Permissi
 
     public void checkLocationAlways(@NonNull Context context, @NonNull Promise promise) {
         String status = RNLocationPermission.checkLocationAlways(context);
+        promise.resolve(status);
+    }
+
+    public void checkNotification(@NonNull Context context, @NonNull Promise promise) {
+        String status = RNLocationPermission.checkNotification(context);
         promise.resolve(status);
     }
 
@@ -70,6 +77,23 @@ public class RNLocationPermissionImpl implements ActivityEventListener, Permissi
         }
     }
 
+    public void requestNotification(@NonNull Context context, @NonNull Activity activity, @NonNull Promise promise) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PermissionAwareActivity permissionActivity = (PermissionAwareActivity) activity;
+            String[] permissions = { permission.POST_NOTIFICATIONS };
+
+            notificationHandlers.add(() -> {
+                String callbackStatus = RNLocationPermission.checkNotificationForRequest(context, activity);
+                promise.resolve(callbackStatus);
+            });
+
+            permissionActivity.requestPermissions(permissions, REQUEST_CODE_NOTIFICATION, this);
+        } else {
+            String callbackStatus = RNLocationPermission.checkNotificationForRequest(context, activity);
+            promise.resolve(callbackStatus);
+        }
+    }
+
     public void resolveHandlers(@NonNull ConcurrentLinkedQueue<Runnable> handlers) {
         Runnable runnable;
         while ((runnable = handlers.poll()) != null) {
@@ -79,7 +103,7 @@ public class RNLocationPermissionImpl implements ActivityEventListener, Permissi
 
     @Override
     public boolean onRequestPermissionsResult(int code, @NonNull String[] permissions, @NonNull int[] results) {
-        if (locationHandlers.isEmpty() && locationAlwaysHandlers.isEmpty()) {
+        if (locationHandlers.isEmpty() && locationAlwaysHandlers.isEmpty() && notificationHandlers.isEmpty()) {
             return false;
         }
 
@@ -90,6 +114,11 @@ public class RNLocationPermissionImpl implements ActivityEventListener, Permissi
 
         if (code == REQUEST_CODE_LOCATION_ALWAYS) {
             resolveHandlers(locationAlwaysHandlers);
+            return true;
+        }
+
+        if (code == REQUEST_CODE_NOTIFICATION) {
+            resolveHandlers(notificationHandlers);
             return true;
         }
 

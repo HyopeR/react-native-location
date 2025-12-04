@@ -28,12 +28,28 @@ public final class RNLocationGuard {
     private static final String FOREGROUND_SERVICE = permission.FOREGROUND_SERVICE;
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private static final String FOREGROUND_SERVICE_LOCATION = permission.FOREGROUND_SERVICE_LOCATION;
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private static final String POST_NOTIFICATIONS = permission.POST_NOTIFICATIONS;
 
-    public static void ensure(@NonNull Context context, boolean background) throws RNLocationException {
+    public static void ensure(@NonNull Context context, boolean background, boolean notification) throws RNLocationException {
         if (!background) {
             ensureLocationDefinition(context);
         } else {
             ensureLocationAlwaysDefinition(context);
+            ensureForegroundServiceDefinition(context);
+            if (notification) {
+                ensureNotificationDefinition(context);
+            }
+        }
+    }
+
+    public static void ensure(@NonNull Context context, boolean background) throws RNLocationException {
+        ensure(context, background, false);
+    }
+
+    public static void ensureActivity(@Nullable Activity activity) throws RNLocationException {
+        if (activity == null) {
+            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
         }
     }
 
@@ -65,12 +81,29 @@ public final class RNLocationGuard {
             List<String> missing = new ArrayList<>();
 
             PackageInfo info = getPermissionInfo(context);
-            PackageInfo infoService = getServicesInfo(context);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 if (!hasPermission(BACKGROUND_LOCATION, info)) {
                     missing.add(BACKGROUND_LOCATION);
                 }
+            }
+
+            if (!missing.isEmpty()) {
+                throwException(missing);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            throwHandleException(e);
+        }
+    }
+
+    private static void ensureForegroundServiceDefinition(@NonNull Context context) throws RNLocationException {
+        try {
+            List<String> missing = new ArrayList<>();
+
+            PackageInfo info = getPermissionInfo(context);
+            PackageInfo infoService = getServicesInfo(context);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 if (!hasService(FOREGROUND_SERVICE_NAME, infoService)) {
                     missing.add(FOREGROUND_SERVICE_NAME);
                 }
@@ -93,9 +126,23 @@ public final class RNLocationGuard {
         }
     }
 
-    public static void ensureActivity(@Nullable Activity activity) throws RNLocationException {
-        if (activity == null) {
-            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
+    public static void ensureNotificationDefinition(@NonNull Context context) throws RNLocationException {
+        try {
+            List<String> missing = new ArrayList<>();
+
+            PackageInfo info = getPermissionInfo(context);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (!hasPermission(POST_NOTIFICATIONS, info)) {
+                    missing.add(POST_NOTIFICATIONS);
+                }
+            }
+
+            if (!missing.isEmpty()) {
+                throwException(missing);
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            throwHandleException(e);
         }
     }
 
