@@ -10,6 +10,7 @@ typedef struct {
     __unsafe_unretained NSString * _Nonnull PROVIDER;
     __unsafe_unretained NSString * _Nonnull PERMISSION;
     __unsafe_unretained NSString * _Nonnull PERMISSION_ALWAYS;
+    __unsafe_unretained NSString * _Nonnull PERMISSION_NOTIFICATION;
     __unsafe_unretained NSString * _Nonnull UNKNOWN;
 } RNLocationErrorConst;
 
