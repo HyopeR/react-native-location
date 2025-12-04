@@ -1,5 +1,6 @@
 import {AndroidPriority, AndroidProvider} from './Android';
 import {IosAccuracy, IosActivityType, IosHeadingOrientation} from './Ios';
+import {LocationNotification} from './Location';
 
 /**
  * @hidden
@@ -28,6 +29,12 @@ export type ConfigureIosOptions = ConfigureSharedOptions &
  * {
  *   allowsBackgroundLocationUpdates: false,
  *   distanceFilter: 0,
+ *   notificationMandatory: false,
+ *   notification: {
+ *    icon: 'ic_launcher',
+ *    title: 'Location Service Running',
+ *    content: 'Location is being used by the app.',
+ *   },
  *   android: {
  *     priority: 'highAccuracy',
  *     provider: 'auto',
@@ -51,7 +58,7 @@ export type ConfigureOptions = {
    * A Boolean value indicating whether the app should receive location updates when suspended. Requires permissions to always access the users location.
    * @platform android ios
    * @default false
-   * @see [Android Docs](https://developer.android.com/develop/sensors-and-location/location/permissions)
+   * @see [Android Docs](https://developer.android.com/develop/sensors-and-location/location/permissions/background)
    * @see [Apple Docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates)
    */
   allowsBackgroundLocationUpdates?: boolean;
@@ -63,6 +70,26 @@ export type ConfigureOptions = {
    * @see [Apple Docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1423500-distancefilter)
    */
   distanceFilter?: number;
+  /**
+   * Important if you are doing location-tracking in the background.
+   * When location tracking is started in the background, a notification is shown to the user.
+   * This notification is important to prevent Android "foreground-service" from dying.
+   * When true, it will require notification permission to be granted for Android and iOS.
+   * @default false
+   */
+  notificationMandatory?: boolean;
+  /**
+   * Information regarding the notification to be displayed.
+   * @default
+   * ```
+   * {
+   *    icon: 'ic_launcher',
+   *    title: 'Location Service Running',
+   *    content: 'Location is being used by the app.',
+   * }
+   * ```
+   */
+  notification?: LocationNotification;
   android?: {
     /**
      * The accuracy of the location data.

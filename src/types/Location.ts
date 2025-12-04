@@ -80,6 +80,7 @@ export type LocationErrorCode =
   | 'ERROR_PROVIDER'
   | 'ERROR_PERMISSION'
   | 'ERROR_PERMISSION_ALWAYS'
+  | 'ERROR_PERMISSION_NOTIFICATION'
   | 'ERROR_UNKNOWN';
 
 export type LocationError = {
@@ -96,4 +97,19 @@ export type LocationError = {
    * If the error is critical, positioning will not work.
    */
   critical: boolean;
+};
+
+export type LocationNotification = {
+  /**
+   * The icon to be shown in the notification.
+   */
+  icon?: string;
+  /**
+   * The title to display in the notification.
+   */
+  title?: string;
+  /**
+   * The content to display in the notification.
+   */
+  content?: string;
 };

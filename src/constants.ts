@@ -10,6 +10,12 @@ import {
 export const CONFIGURE_OPTIONS: Required<ConfigureOptions> = {
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
+  notificationMandatory: false,
+  notification: {
+    icon: 'ic_launcher',
+    title: 'Location Service Running',
+    content: 'Location is being used by the app.',
+  },
   android: {
     priority: 'highAccuracy',
     provider: 'auto',
