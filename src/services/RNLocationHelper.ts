@@ -18,15 +18,18 @@ import {
 export class RNLocationModuleHelper {
   protected getPlatformConfigureOptions(options?: ConfigureOptions) {
     const defaults = CONFIGURE_OPTIONS;
-    const merge = {
+    const merge: Required<ConfigureOptions> = {
       ...defaults,
       ...options,
+      notification: {...defaults.notification, ...options?.notification},
       android: {...defaults.android, ...options?.android},
       ios: {...defaults.ios, ...options?.ios},
     };
     const share = {
       allowsBackgroundLocationUpdates: merge.allowsBackgroundLocationUpdates,
       distanceFilter: merge.distanceFilter,
+      notificationMandatory: merge.notificationMandatory,
+      notification: merge.notification,
     };
 
     return Platform.select({
@@ -37,7 +40,7 @@ export class RNLocationModuleHelper {
   }
 
   protected getPlatformCurrentOptions(options?: CurrentOptions) {
-    const merge = {...CURRENT_OPTIONS, ...options};
+    const merge: Required<CurrentOptions> = {...CURRENT_OPTIONS, ...options};
     const share = {
       duration: merge.timeout,
       allowsBackgroundLocationUpdates: merge.background,

@@ -10,11 +10,19 @@ export class RNLocationPermission implements Permission {
     return RNLocationNative.checkLocationAlways() as Promise<PermissionStatus>;
   }
 
+  checkNotification() {
+    return RNLocationNative.checkNotification() as Promise<PermissionStatus>;
+  }
+
   requestLocation() {
     return RNLocationNative.requestLocation() as Promise<PermissionStatus>;
   }
 
   requestLocationAlways() {
     return RNLocationNative.requestLocationAlways() as Promise<PermissionStatus>;
+  }
+
+  requestNotification() {
+    return RNLocationNative.requestNotification() as Promise<PermissionStatus>;
   }
 }

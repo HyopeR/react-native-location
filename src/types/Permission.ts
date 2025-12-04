@@ -3,21 +3,29 @@
  */
 export interface Permission {
   /**
-   * Checks the current location permission status for when the app is in use.
+   * Check permission status for "when-in-use" location.
    */
   checkLocation: () => Promise<PermissionStatus>;
   /**
-   * Checks the current location permission status for always-on location access.
+   * Check permission status for "always" location.
    */
   checkLocationAlways: () => Promise<PermissionStatus>;
   /**
-   * Requests location permission from the user for when the app is in use.
+   * Check permission status for notification use.
+   */
+  checkNotification: () => Promise<PermissionStatus>;
+  /**
+   * Request for "when-in-use" location.
    */
   requestLocation: () => Promise<PermissionStatus>;
   /**
-   * Requests location permission from the user for always-on location access.
+   * Request for "always" location.
    */
   requestLocationAlways: () => Promise<PermissionStatus>;
+  /**
+   * Request for notification use.
+   */
+  requestNotification: () => Promise<PermissionStatus>;
 }
 
 /**

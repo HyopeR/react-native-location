@@ -7,7 +7,10 @@ import {LocationNotification} from './Location';
  */
 export type ConfigureSharedOptions = Pick<
   ConfigureOptions,
-  'allowsBackgroundLocationUpdates' | 'distanceFilter'
+  | 'allowsBackgroundLocationUpdates'
+  | 'distanceFilter'
+  | 'notificationMandatory'
+  | 'notification'
 >;
 
 /**
