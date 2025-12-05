@@ -18,7 +18,7 @@ static NSString * const kUIBackgroundModeLocation = @"location";
 }
 
 + (void)ensure:(BOOL)background {
-    [self ensure:background];
+    [self ensure:background notification:NO];
 }
 
 + (void)ensureLocationDefinition {

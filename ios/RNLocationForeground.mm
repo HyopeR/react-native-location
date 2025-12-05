@@ -86,7 +86,7 @@ static BOOL centerWorking = NO;
 + (void)userNotificationCenter:(UNUserNotificationCenter *)center
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
-    completionHandler(UNNotificationPresentationOptionBanner | UNNotificationPresentationOptionList);
+    completionHandler(UNNotificationPresentationOptionList);
 }
 
 @end
