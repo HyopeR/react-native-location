@@ -23,8 +23,7 @@ To use location services in the background on Android, **ACCESS_BACKGROUND_LOCAT
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 ```
 
-On Android, the foreground service includes a notification. This notification prevents the system from forcibly stopping the started foreground service. You can control this behavior with "notificationMandatory".<br/>
-To use notification on Android, **POST_NOTIFICATIONS** permission must be added to the AndroidManifest.xml. **[See Lines](https://github.com/HyopeR/react-native-location/blob/master/example/android/app/src/main/AndroidManifest.xml#L14-L18)**
+On Android, the foreground service includes a notification. This notification prevents the system from forcibly stopping the started foreground service. You can control this behavior with "notificationMandatory". To use notification on Android, **POST_NOTIFICATIONS** permission must be added to the AndroidManifest.xml. **[See Lines](https://github.com/HyopeR/react-native-location/blob/master/example/android/app/src/main/AndroidManifest.xml#L14-L18)**
 ```xml
 <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
