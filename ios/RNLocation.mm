@@ -40,7 +40,7 @@
 }
 
 - (void)dealloc {
-    [_provider stop];
+    [self stop];
     _provider = nil;
     _permission = nil;
     _manager = nil;
@@ -121,8 +121,8 @@
                         notification:self.locationNotificationMandatory];
         
         [self.provider start];
-        if (self.locationBackground) {
-            [RNLocationForeground start:self.locationNotificationMandatory];
+        if (self.locationBackground && self.locationNotificationMandatory) {
+            [RNLocationForeground start];
         }
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e];

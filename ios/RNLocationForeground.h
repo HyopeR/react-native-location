@@ -6,7 +6,7 @@
 
 + (void)setCenter;
 + (void)setNotification:(NSDictionary *)map;
-+ (void)start:(BOOL)notification;
++ (void)start;
 + (void)stop;
 + (void)reset;
 

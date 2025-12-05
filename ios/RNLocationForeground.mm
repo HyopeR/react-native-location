@@ -8,7 +8,7 @@ static NSString *notificationTitle = @"Location Service Running";
 static NSString *notificationContent = @"Location is being used by the app.";
 
 static UNUserNotificationCenter *center = nil;
-static BOOL working = NO;
+static BOOL centerWorking = NO;
 
 /**
  * This class simulates Android's foreground-service behavior on IOS.
@@ -42,38 +42,36 @@ static BOOL working = NO;
     }
 }
 
-+ (void)start:(BOOL)notification {
-    if (center == nil || working) return;
++ (void)start {
+    if (centerWorking) return;
 
-    working = YES;
+    centerWorking = YES;
     
-    if (notification) {
-        UNMutableNotificationContent *content = [self buildNotification];
-        
-        UNTimeIntervalNotificationTrigger *trigger =
-        [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
-        
-        UNNotificationRequest *request =
-        [UNNotificationRequest requestWithIdentifier:CHANNEL_ID
-                                             content:content
-                                             trigger:trigger];
-        
-        [center addNotificationRequest:request withCompletionHandler:nil];
-    }
+    UNMutableNotificationContent *content = [self buildNotification];
+    
+    UNTimeIntervalNotificationTrigger *trigger =
+    [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
+    
+    UNNotificationRequest *request =
+    [UNNotificationRequest requestWithIdentifier:CHANNEL_ID
+                                         content:content
+                                         trigger:trigger];
+    
+    [center addNotificationRequest:request withCompletionHandler:nil];
 }
 
 + (void)stop {
-    if (center == nil || !working) return;
+    if (!centerWorking) return;
     
-    working = NO;
+    centerWorking = NO;
     
     [center removeDeliveredNotificationsWithIdentifiers:@[CHANNEL_ID]];
 }
 
 + (void)reset {
-    [self stop];
     center.delegate = nil;
     center = nil;
+    centerWorking = NO;
 }
 
 + (UNMutableNotificationContent *)buildNotification {
