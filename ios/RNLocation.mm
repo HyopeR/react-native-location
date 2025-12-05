@@ -1,4 +1,5 @@
 #import "RNLocation.h"
+#import "RNLocationForeground.h"
 #import "RNLocationGuard.h"
 #import "RNLocationManager.h"
 #import "RNLocationManagerImpl.h"
@@ -14,13 +15,14 @@
 @property (nonatomic, strong, nonnull) RNLocationManagerImpl *manager;
 @property (nonatomic, assign) BOOL locationHighAccuracy;
 @property (nonatomic, assign) BOOL locationBackground;
+@property (nonatomic, assign) BOOL locationNotificationMandatory;
 
 @end
 
 @implementation RNLocation
 
 + (NSString *)moduleName {
-  return @"RNLocation";
+    return @"RNLocation";
 }
 
 - (instancetype)init {
@@ -30,37 +32,26 @@
         _manager = [[RNLocationManagerImpl alloc] init];
         _locationHighAccuracy = YES;
         _locationBackground = NO;
+        _locationNotificationMandatory = NO;
         [RNLocationUtils setName:[[self class] moduleName]];
+        [RNLocationForeground setCenter];
     }
     return self;
 }
 
 - (void)dealloc {
-    [_provider stop];
+    [self stop];
     _provider = nil;
     _permission = nil;
     _manager = nil;
     [RNLocationManager reset];
     [RNLocationUtils reset];
+    [RNLocationForeground reset];
 }
 
 - (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper {
     [super setEventEmitterCallback:eventEmitterCallbackWrapper];
     [RNLocationUtils setEventEmitter:_eventEmitterCallback];
-}
-
-- (void)configure:(nonnull NSDictionary *)options {
-    [self.provider configure:options];
-    
-    NSString *desiredAccuracy = options[@"desiredAccuracy"];
-    if (desiredAccuracy != nil) {
-        self.locationHighAccuracy = [desiredAccuracy isEqualToString:@"bestForNavigation"] || [desiredAccuracy isEqualToString:@"best"];
-    }
-    
-    NSNumber *allowsBackgroundLocationUpdates = options[@"allowsBackgroundLocationUpdates"];
-    if (allowsBackgroundLocationUpdates != nil) {
-        self.locationBackground = [allowsBackgroundLocationUpdates boolValue];
-    }
 }
 
 - (void)getCurrent:(nonnull NSDictionary *)options
@@ -89,13 +80,50 @@
     }
 }
 
+- (void)configure:(nonnull NSDictionary *)options {
+    [self.provider configure:options];
+    
+    NSString *desiredAccuracy = options[@"desiredAccuracy"];
+    if (desiredAccuracy != nil) {
+        self.locationHighAccuracy = [desiredAccuracy isEqualToString:@"bestForNavigation"] || [desiredAccuracy isEqualToString:@"best"];
+    } else {
+        self.locationHighAccuracy = YES;
+    }
+    
+    NSNumber *allowsBackgroundLocationUpdates = options[@"allowsBackgroundLocationUpdates"];
+    if (allowsBackgroundLocationUpdates != nil) {
+        self.locationBackground = [allowsBackgroundLocationUpdates boolValue];
+    } else {
+        self.locationBackground = NO;
+    }
+    
+    NSNumber *notificationMandatory = options[@"notificationMandatory"];
+    if (notificationMandatory != nil) {
+        self.locationNotificationMandatory = [notificationMandatory boolValue];
+    } else {
+        self.locationNotificationMandatory = NO;
+    }
+    
+    NSDictionary *notification = options[@"notification"];
+    if ([notification isKindOfClass:[NSDictionary class]]) {
+        [RNLocationForeground setNotification:notification];
+    } else {
+        [RNLocationForeground setNotification:nil];
+    }
+}
+
 - (void)start {
     @try {
-        [RNLocationGuard ensure:self.locationBackground];
+        [RNLocationGuard ensure:self.locationBackground
+                   notification:self.locationNotificationMandatory];
         [RNLocationManager ensure:self.locationHighAccuracy];
-        [RNLocationPermission ensure:self.locationBackground];
-
+        [RNLocationPermission ensure:self.locationBackground
+                        notification:self.locationNotificationMandatory];
+        
         [self.provider start];
+        if (self.locationBackground && self.locationNotificationMandatory) {
+            [RNLocationForeground start];
+        }
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e];
     }
@@ -103,6 +131,7 @@
 
 - (void)stop {
     [self.provider stop];
+    [RNLocationForeground stop];
 }
 
 - (void)checkLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
@@ -125,6 +154,14 @@
     }
 }
 
+- (void)checkNotification:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    @try {
+        [self.permission checkNotification:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
+}
+
 - (void)requestLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
     @try {
         [RNLocationGuard ensureLocationDefinition];
@@ -140,6 +177,14 @@
         [RNLocationGuard ensureLocationAlwaysDefinition];
 
         [self.permission requestLocationAlways:resolve reject:reject];
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e resolve:resolve reject:reject];
+    }
+}
+
+- (void)requestNotification:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    @try {
+        [self.permission requestNotification:resolve reject:reject];
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e resolve:resolve reject:reject];
     }

@@ -9,12 +9,16 @@ static NSString * const kNSLocationAlwaysAndWhenInUseUsageDescription = @"NSLoca
 static NSString * const kUIBackgroundModes = @"UIBackgroundModes";
 static NSString * const kUIBackgroundModeLocation = @"location";
 
-+ (void)ensure:(BOOL)background {
++ (void)ensure:(BOOL)background notification:(BOOL)notification {
     if (!background) {
         [self ensureLocationDefinition];
     } else {
         [self ensureLocationAlwaysDefinition];
     }
+}
+
++ (void)ensure:(BOOL)background {
+    [self ensure:background notification:NO];
 }
 
 + (void)ensureLocationDefinition {

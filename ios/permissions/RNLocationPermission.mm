@@ -5,9 +5,11 @@
 
 #import <CoreLocation/CoreLocation.h>
 
+#import <UserNotifications/UserNotifications.h>
+
 @implementation RNLocationPermission
 
-+ (void)ensure:(BOOL)background {
++ (void)ensure:(BOOL)background notification:(BOOL)notification {
     bool locationAllowed = [self checkLocationGrant];
     if (!locationAllowed) {
         @throw [[RNLocationException alloc]
@@ -24,10 +26,24 @@
                     message:@"Location (Background) permission is not granted."
                     critical:YES];
         }
+        
+        if (notification) {
+            bool notificationAllowed = [self checkNotificationGrant];
+            if (!notificationAllowed) {
+                @throw [[RNLocationException alloc]
+                        initWithCode:RNLocationError.PERMISSION_NOTIFICATION
+                        message:@"Notification permission is not granted."
+                        critical:YES];
+            }
+        }
     }
 }
 
-+ (CLAuthorizationStatus)getCurrentStatus {
++ (void)ensure:(BOOL)background {
+    [self ensure:background notification:NO];
+}
+
++ (CLAuthorizationStatus)getLocationStatus {
     if (@available(iOS 14.0, *)) {
         CLLocationManager *manager = [CLLocationManager new];
         return manager.authorizationStatus;
@@ -40,11 +56,27 @@
     }
 }
 
++ (UNAuthorizationStatus)getNotificationStatus {
+    __block UNAuthorizationStatus status = UNAuthorizationStatusNotDetermined;
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+    [[UNUserNotificationCenter currentNotificationCenter]
+     getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
+        status = settings.authorizationStatus;
+        dispatch_semaphore_signal(semaphore);
+    }];
+
+    dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC);
+    dispatch_semaphore_wait(semaphore, timeout);
+    return status;
+}
+
 #pragma mark - Location
 
 + (BOOL)checkLocationGrant {
-    CLAuthorizationStatus status = [self getCurrentStatus];
-    return status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusAuthorizedAlways;
+    CLAuthorizationStatus status = [self getLocationStatus];
+    return (status == kCLAuthorizationStatusAuthorizedWhenInUse ||
+            status == kCLAuthorizationStatusAuthorizedAlways);
 }
 
 + (NSString *)checkLocation {
@@ -60,7 +92,7 @@
         return RNLocationPermissionStatus.GRANTED;
     }
     
-    CLAuthorizationStatus status = [self getCurrentStatus];
+    CLAuthorizationStatus status = [self getLocationStatus];
     if (status == kCLAuthorizationStatusNotDetermined) {
         return RNLocationPermissionStatus.DENIED;
     } else {
@@ -75,7 +107,7 @@
         return NO;
     }
 
-    CLAuthorizationStatus status = [self getCurrentStatus];
+    CLAuthorizationStatus status = [self getLocationStatus];
     return status == kCLAuthorizationStatusAuthorizedAlways;
 }
 
@@ -92,8 +124,38 @@
         return RNLocationPermissionStatus.GRANTED;
     }
     
-    CLAuthorizationStatus status = [self getCurrentStatus];
+    CLAuthorizationStatus status = [self getLocationStatus];
     if (status == kCLAuthorizationStatusNotDetermined) {
+        return RNLocationPermissionStatus.DENIED;
+    } else {
+        return RNLocationPermissionStatus.BLOCKED;
+    }
+}
+
+#pragma mark - Notification
+
++ (BOOL)checkNotificationGrant {
+    UNAuthorizationStatus status = [self getNotificationStatus];
+    return (status == UNAuthorizationStatusAuthorized ||
+            status == UNAuthorizationStatusProvisional ||
+            status == UNAuthorizationStatusEphemeral);
+}
+
++ (NSString *)checkNotification {
+    if ([self checkNotificationGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    } else {
+        return RNLocationPermissionStatus.DENIED;
+    }
+}
+
++ (NSString *)checkNotificationForRequest {
+    if ([self checkNotificationGrant]) {
+        return RNLocationPermissionStatus.GRANTED;
+    }
+    
+    UNAuthorizationStatus status = [self getNotificationStatus];
+    if (status == UNAuthorizationStatusNotDetermined) {
         return RNLocationPermissionStatus.DENIED;
     } else {
         return RNLocationPermissionStatus.BLOCKED;

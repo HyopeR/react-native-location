@@ -1,6 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
-import {CurrentOptions, Location, RNLocation} from '@hyoper/rn-location';
+import {
+  CURRENT_OPTIONS,
+  CurrentOptions,
+  Location,
+  RNLocation,
+} from '@hyoper/rn-location';
 import {Screen} from '../../commons/Screen';
 import {Button} from '../../commons/Button';
 import {CardLocation} from '../../commons/CardLocation';
@@ -9,6 +14,7 @@ import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
 const OPTIONS: CurrentOptions = {
+  ...CURRENT_OPTIONS,
   accuracy: 'high',
   timeout: 10000,
   background: false,

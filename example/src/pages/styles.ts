@@ -16,6 +16,12 @@ export const PageStyle = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
+  section: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    lineHeight: 20,
+    marginVertical: 4,
+  },
   button: {
     marginBottom: 8,
   },

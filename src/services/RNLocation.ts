@@ -38,10 +38,9 @@ class RNLocationModule extends RNLocationModuleHelper implements Module {
   }
 
   configureWithRestart(options?: ConfigureOptions) {
+    this._subscriptions.size > 0 && this.stop();
     this.configure(options);
-    if (this._subscriptions.size > 0) {
-      this.restart();
-    }
+    this._subscriptions.size > 0 && this.start();
   }
 
   private start() {
@@ -50,11 +49,6 @@ class RNLocationModule extends RNLocationModuleHelper implements Module {
 
   private stop() {
     RNLocationNative.stop();
-  }
-
-  private restart() {
-    RNLocationNative.stop();
-    RNLocationNative.start();
   }
 
   async getCurrent(options?: CurrentOptions) {

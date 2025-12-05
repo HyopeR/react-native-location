@@ -2,13 +2,18 @@
 #import "RNLocationPermission.h"
 #import "RNLocationConstants.h"
 
+#import <CoreLocation/CoreLocation.h>
+
+#import <UserNotifications/UserNotifications.h>
+
 @interface RNLocationPermissionImpl ()
 
-@property (nonatomic, strong, readonly, nonnull) CLLocationManager *manager;
-@property (nonatomic, strong, nonnull) NSMutableArray<void (^)(void)> *locationHandlers;
-@property (nonatomic, strong, nonnull) NSMutableArray<void (^)(void)> *locationAlwaysHandlers;
 @property (nonatomic, assign) BOOL locationTimerShouldRun;
+@property (nonatomic, strong, nonnull) NSMutableArray<void (^)(void)> *locationHandlers;
 @property (nonatomic, assign) BOOL locationAlwaysTimerShouldRun;
+@property (nonatomic, strong, nonnull) NSMutableArray<void (^)(void)> *locationAlwaysHandlers;
+@property (nonatomic, assign) BOOL notificationTimerShouldRun;
+@property (nonatomic, strong, nonnull) NSMutableArray<void (^)(void)> *notificationHandlers;
 
 @end
 
@@ -16,12 +21,12 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _manager = [[CLLocationManager alloc] init];
-        _manager.delegate = self;
         _locationHandlers = [NSMutableArray array];
         _locationAlwaysHandlers = [NSMutableArray array];
+        _notificationHandlers = [NSMutableArray array];
         _locationTimerShouldRun = NO;
         _locationAlwaysTimerShouldRun = NO;
+        _notificationTimerShouldRun = NO;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(onAppWillResignActive)
@@ -37,10 +42,9 @@
 }
 
 - (void)dealloc {
-    _manager.delegate = nil;
-    _manager = nil;
     _locationHandlers = nil;
     _locationAlwaysHandlers = nil;
+    _notificationHandlers = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationWillResignActiveNotification
@@ -63,20 +67,27 @@
     resolve(status);
 }
 
+- (void)checkNotification:(nonnull RCTPromiseResolveBlock)resolve
+                   reject:(nonnull RCTPromiseRejectBlock)reject {
+    NSString *status = [RNLocationPermission checkNotification];
+    resolve(status);
+}
+
 - (void)requestLocation:(nonnull RCTPromiseResolveBlock)resolve
                  reject:(nonnull RCTPromiseRejectBlock)reject {
+    self.locationTimerShouldRun = YES;
     [self.locationHandlers addObject:^{
         NSString *callbackStatus = [RNLocationPermission checkLocationForRequest];
         resolve(callbackStatus);
     }];
-    
-    self.locationTimerShouldRun = YES;
+
     int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
         [self onAppWillResignActiveLocationCheck];
     });
     
-    [self.manager requestWhenInUseAuthorization];
+    CLLocationManager *manager = [CLLocationManager new];
+    [manager requestWhenInUseAuthorization];
 }
 
 - (void)requestLocationAlways:(nonnull RCTPromiseResolveBlock)resolve
@@ -87,19 +98,38 @@
         return;
     }
     
-    
+    self.locationAlwaysTimerShouldRun = YES;
     [self.locationAlwaysHandlers addObject: ^{
         NSString *callbackStatus = [RNLocationPermission checkLocationAlwaysForRequest];
         resolve(callbackStatus);
     }];
     
-    self.locationAlwaysTimerShouldRun = YES;
     int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
         [self onAppWillResignActiveLocationAlwaysCheck];
     });
     
-    [self.manager requestAlwaysAuthorization];
+    CLLocationManager *manager = [CLLocationManager new];
+    [manager requestAlwaysAuthorization];
+}
+
+- (void)requestNotification:(nonnull RCTPromiseResolveBlock)resolve
+                     reject:(nonnull RCTPromiseRejectBlock)reject {
+    self.notificationTimerShouldRun = YES;
+    [self.notificationHandlers addObject:^{
+        NSString *callbackStatus = [RNLocationPermission checkNotificationForRequest];
+        resolve(callbackStatus);
+    }];
+    
+    int64_t delta = (int64_t)(0.3 * NSEC_PER_SEC);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), ^{
+        [self onAppWillResignActiveNotificationCheck];
+    });
+    
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    UNAuthorizationOptions options = (UNAuthorizationOptionAlert | UNAuthorizationOptionBadge);
+    [center requestAuthorizationWithOptions:options
+                          completionHandler:^(BOOL granted, NSError * _Nullable error) {}];
 }
 
 - (void)resolveHandlers:(NSMutableArray<void (^)(void)> *)handlers {
@@ -122,9 +152,15 @@
     }
 }
 
+- (void)onAppWillResignActiveNotificationCheck {
+    if (self.notificationTimerShouldRun && self.notificationHandlers.count > 0) {
+        [self resolveHandlers:self.notificationHandlers];
+    }
+}
+
 - (void)onAppWillResignActive {
     // Triggered when the application is inactive.
-    if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0) return;
+    if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0 && self.notificationHandlers.count == 0) return;
     
     if (self.locationHandlers.count > 0) {
         self.locationTimerShouldRun = NO;
@@ -133,11 +169,15 @@
     if (self.locationAlwaysHandlers.count > 0) {
         self.locationAlwaysTimerShouldRun = NO;
     }
+    
+    if (self.notificationHandlers.count > 0) {
+        self.notificationTimerShouldRun = NO;
+    }
 }
 
 - (void)onAppDidBecomeActive {
     // Triggered when the application is active.
-    if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0) return;
+    if (self.locationHandlers.count == 0 && self.locationAlwaysHandlers.count == 0 && self.notificationHandlers.count == 0) return;
 
     if (self.locationHandlers.count > 0) {
         [self resolveHandlers:self.locationHandlers];
@@ -145,6 +185,10 @@
     
     if (self.locationAlwaysHandlers.count > 0) {
         [self resolveHandlers:self.locationAlwaysHandlers];
+    }
+    
+    if (self.notificationHandlers.count > 0) {
+        [self resolveHandlers:self.notificationHandlers];
     }
 }
 

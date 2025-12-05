@@ -6,10 +6,16 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <!-- React Native Location (For Background Usage) (Optional)  -->
+    <!-- React Native Location (For Background Usage) (Optional) -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+
+    <!-- React Native Location (For Background Usage) (Optional) -->
+    <!-- This permission is required if you use (notificationMandatory: true). -->
+    <!-- Background use will show a notification. -->
+    <!-- This notification prevents foreground-service from being killed. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
       android:name=".MainApplication"
@@ -19,9 +25,9 @@
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       android:supportsRtl="true">
-        <!-- React Native Location (For Background Usage) (Optional)  -->
+        <!-- React Native Location (For Background Usage) (Optional) -->
         <service
-          android:name="com.hyoper.location.RNLocationForegroundService"
+          android:name="com.hyoper.location.RNLocationForeground"
           android:exported="false"
           android:foregroundServiceType="location" />
       <activity

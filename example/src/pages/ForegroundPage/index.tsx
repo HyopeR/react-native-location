@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {
+  CONFIGURE_OPTIONS,
   ConfigureOptions,
   Location,
   OnChangeEvent,
@@ -15,9 +16,15 @@ import {PageStyle} from '../styles';
 import {PageProps} from '../types';
 
 const OPTIONS: ConfigureOptions = {
+  ...CONFIGURE_OPTIONS,
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
-
+  notificationMandatory: false,
+  notification: {
+    icon: 'ic_launcher',
+    title: 'Location Service Running',
+    content: 'Location is being used by the app.',
+  },
   android: {
     priority: 'highAccuracy',
     provider: 'auto',
@@ -64,6 +71,9 @@ export const ForegroundPage = ({back}: PageProps) => {
         break;
       case 'ERROR_PERMISSION_ALWAYS':
         // Location "always" permission is not granted.
+        break;
+      case 'ERROR_PERMISSION_NOTIFICATION':
+        // Notification permission is not granted.
         break;
       case 'ERROR_UNKNOWN':
       default:

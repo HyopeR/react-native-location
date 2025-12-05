@@ -15,7 +15,7 @@ import static com.hyoper.location.helpers.RNLocationConstants.Error;
 import static com.hyoper.location.helpers.RNLocationConstants.PermissionStatus;
 
 public class RNLocationPermission {
-    public static void ensure(@NonNull Context context, boolean background) throws RNLocationException {
+    public static void ensure(@NonNull Context context, boolean background, boolean notification) throws RNLocationException {
         boolean permissionAllowed = checkLocationGrant(context);
         if (!permissionAllowed) {
             throw new RNLocationException(Error.PERMISSION, "Location (Coarse/Fine) permission is not granted.", true);
@@ -26,7 +26,18 @@ public class RNLocationPermission {
             if (!permissionAlwaysAllowed) {
                 throw new RNLocationException(Error.PERMISSION_ALWAYS, "Location (Background) permission is not granted.", true);
             }
+
+            if (notification) {
+                boolean permissionNotificationAllowed = checkNotificationGrant(context);
+                if (!permissionNotificationAllowed) {
+                    throw new RNLocationException(Error.PERMISSION_NOTIFICATION, "Notification permission is not granted.", true);
+                }
+            }
         }
+    }
+
+    public static void ensure(@NonNull Context context, boolean background) throws RNLocationException {
+        ensure(context, background, false);
     }
 
     private static boolean checkLocationGrant(@NonNull Context context) {
@@ -99,6 +110,42 @@ public class RNLocationPermission {
         }
 
         if (checkLocationAlwaysRationale(activity)) {
+            return PermissionStatus.DENIED;
+        } else {
+            return PermissionStatus.BLOCKED;
+        }
+    }
+
+    private static boolean checkNotificationGrant(@NonNull Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return ContextCompat.checkSelfPermission(context, permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
+        } else {
+            return true;
+        }
+    }
+
+    private static boolean checkNotificationRationale(@NonNull Activity activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.POST_NOTIFICATIONS);
+        } else {
+            return true;
+        }
+    }
+
+    public static String checkNotification(@NonNull Context context) {
+        if (checkNotificationGrant(context)) {
+            return PermissionStatus.GRANTED;
+        } else {
+            return PermissionStatus.DENIED;
+        }
+    }
+
+    public static String checkNotificationForRequest(@NonNull Context context, @NonNull Activity activity) {
+        if (checkNotificationGrant(context)) {
+            return PermissionStatus.GRANTED;
+        }
+
+        if (checkNotificationRationale(activity)) {
             return PermissionStatus.DENIED;
         } else {
             return PermissionStatus.BLOCKED;

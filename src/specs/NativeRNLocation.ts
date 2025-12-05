@@ -41,8 +41,10 @@ export interface Spec extends TurboModule {
 
   checkLocation(): Promise<string>;
   checkLocationAlways(): Promise<string>;
+  checkNotification(): Promise<string>;
   requestLocation(): Promise<string>;
   requestLocationAlways(): Promise<string>;
+  requestNotification(): Promise<string>;
 
   checkGps(): Promise<boolean>;
   openGps(): Promise<boolean>;
