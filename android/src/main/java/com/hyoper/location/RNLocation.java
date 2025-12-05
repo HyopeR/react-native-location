@@ -1,8 +1,6 @@
 package com.hyoper.location;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 
@@ -41,6 +39,7 @@ public class RNLocation extends NativeRNLocationSpec {
         reactContext.addActivityEventListener(permission);
         reactContext.addActivityEventListener(manager);
         RNLocationUtils.setName(NAME);
+        RNLocationForeground.setProvider(provider);
     }
 
     @Override
@@ -55,6 +54,7 @@ public class RNLocation extends NativeRNLocationSpec {
         manager = null;
         RNLocationManager.reset();
         RNLocationUtils.reset();
+        RNLocationForeground.reset();
     }
 
     @NonNull
@@ -145,44 +145,23 @@ public class RNLocation extends NativeRNLocationSpec {
             RNLocationPermission.ensure(context, locationBackground, locationNotificationMandatory);
 
             if (locationBackground) {
-                startForegroundService();
-                return;
+                RNLocationForeground.setProvider(provider);
+                RNLocationForeground.start(context);
+            } else {
+                provider.start();
             }
-            provider.start();
         } catch (Exception e) {
             RNLocationUtils.handleException(e);
         }
     }
 
     public void stop() {
-        if (RNLocationForeground.locationProviderRunning) {
-            stopForegroundService();
-            return;
-        }
-        provider.stop();
-    }
+        ReactApplicationContext context = getReactApplicationContext();
 
-    private void startForegroundService() {
-        if (!RNLocationForeground.locationProviderRunning) {
-            ReactApplicationContext context = getReactApplicationContext();
-            Intent intent = new Intent(context, RNLocationForeground.class);
-
-            RNLocationForeground.setLocationProvider(provider);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent);
-            } else {
-                context.startService(intent);
-            }
-        }
-    }
-
-    private void stopForegroundService() {
-        if (RNLocationForeground.locationProviderRunning) {
-            ReactApplicationContext context = getReactApplicationContext();
-            Intent intent = new Intent(context, RNLocationForeground.class);
-
-            context.stopService(intent);
+        if (RNLocationForeground.providerWorking) {
+            RNLocationForeground.stop(context);
+        } else {
+            provider.stop();
         }
     }
 
