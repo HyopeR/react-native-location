@@ -1,9 +1,13 @@
 #import <Foundation/Foundation.h>
 
-@interface RNLocationForeground : NSObject
+#import <UserNotifications/UserNotifications.h>
 
+@interface RNLocationForeground : NSObject <UNUserNotificationCenterDelegate>
+
++ (void)setCenter;
 + (void)setNotification:(NSDictionary *)map;
-+ (void)start;
++ (void)start:(BOOL)notification;
 + (void)stop;
++ (void)reset;
 
 @end

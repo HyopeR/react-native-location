@@ -1,13 +1,14 @@
 #import "RNLocationForeground.h"
 
-#import <UserNotifications/UserNotifications.h>
-
 static NSString *CHANNEL_ID = @"RNLocationForeground";
 static NSString *CHANNEL_NAME = @"Location Service";
 
 static NSString *notificationIcon = @"ic_launcher";
 static NSString *notificationTitle = @"Location Service Running";
 static NSString *notificationContent = @"Location is being used by the app.";
+
+static UNUserNotificationCenter *center = nil;
+static BOOL working = NO;
 
 /**
  * This class simulates Android's foreground-service behavior on IOS.
@@ -16,19 +17,24 @@ static NSString *notificationContent = @"Location is being used by the app.";
  */
 @implementation RNLocationForeground
 
++ (void)setCenter {
+    center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = (id<UNUserNotificationCenterDelegate>)self;
+}
+
 + (void)setNotification:(NSDictionary *)map {
     if (map && [map[@"icon"] isKindOfClass:[NSString class]]) {
         notificationIcon = map[@"icon"];
     } else {
         notificationIcon = @"ic_launcher";
     }
-
+    
     if (map && [map[@"title"] isKindOfClass:[NSString class]]) {
         notificationTitle = map[@"title"];
     } else {
         notificationTitle = @"Location Service Running";
     }
-
+    
     if (map && [map[@"content"] isKindOfClass:[NSString class]]) {
         notificationContent = map[@"content"];
     } else {
@@ -36,24 +42,38 @@ static NSString *notificationContent = @"Location is being used by the app.";
     }
 }
 
-+ (void)start {
-    UNMutableNotificationContent *content = [self buildNotification];
++ (void)start:(BOOL)notification {
+    if (center == nil || working) return;
 
-    UNTimeIntervalNotificationTrigger *trigger =
-        [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:0.1 repeats:NO];
-
-    UNNotificationRequest *request =
+    working = YES;
+    
+    if (notification) {
+        UNMutableNotificationContent *content = [self buildNotification];
+        
+        UNTimeIntervalNotificationTrigger *trigger =
+        [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:1 repeats:NO];
+        
+        UNNotificationRequest *request =
         [UNNotificationRequest requestWithIdentifier:CHANNEL_ID
                                              content:content
                                              trigger:trigger];
-
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center addNotificationRequest:request withCompletionHandler:nil];
+        
+        [center addNotificationRequest:request withCompletionHandler:nil];
+    }
 }
 
 + (void)stop {
-    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    if (center == nil || !working) return;
+    
+    working = NO;
+    
     [center removeDeliveredNotificationsWithIdentifiers:@[CHANNEL_ID]];
+}
+
++ (void)reset {
+    [self stop];
+    center.delegate = nil;
+    center = nil;
 }
 
 + (UNMutableNotificationContent *)buildNotification {
@@ -61,6 +81,14 @@ static NSString *notificationContent = @"Location is being used by the app.";
     notification.title = notificationTitle;
     notification.body = notificationContent;
     return notification;
+}
+
+#pragma mark - UNUserNotificationCenterDelegate
+
++ (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+    completionHandler(UNNotificationPresentationOptionBanner | UNNotificationPresentationOptionList);
 }
 
 @end

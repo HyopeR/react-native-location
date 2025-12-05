@@ -34,6 +34,7 @@
         _locationBackground = NO;
         _locationNotificationMandatory = NO;
         [RNLocationUtils setName:[[self class] moduleName]];
+        [RNLocationForeground setCenter];
     }
     return self;
 }
@@ -45,6 +46,7 @@
     _manager = nil;
     [RNLocationManager reset];
     [RNLocationUtils reset];
+    [RNLocationForeground reset];
 }
 
 - (void)setEventEmitterCallback:(EventEmitterCallbackWrapper *)eventEmitterCallbackWrapper {
@@ -119,7 +121,9 @@
                         notification:self.locationNotificationMandatory];
         
         [self.provider start];
-        [self startForeground];
+        if (self.locationBackground) {
+            [RNLocationForeground start:self.locationNotificationMandatory];
+        }
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e];
     }
@@ -127,16 +131,6 @@
 
 - (void)stop {
     [self.provider stop];
-    [self stopForeground];
-}
-
-- (void)startForeground {
-    if (self.locationBackground && self.locationNotificationMandatory) {
-        [RNLocationForeground start];
-    }
-}
-
-- (void)stopForeground {
     [RNLocationForeground stop];
 }
 
