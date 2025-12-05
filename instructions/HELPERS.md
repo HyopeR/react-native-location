@@ -9,18 +9,26 @@ The Permission class provides methods to check and request foreground and backgr
   - Checks foreground (when-in-use) permission.
   - Returns "denied" or "granted".
 
+- **requestLocation()**
+    - Requests foreground (when-in-use) permission.
+    - Returns "denied", "granted" or "blocked".
+
 - **checkLocationAlways()**
   - Checks background (always) permission.
   - Returns "denied" or "granted".
-
-- **requestLocation()** 
-  - Requests foreground (when-in-use) permission.
-  - Returns "denied", "granted" or "blocked".
 
 - **requestLocationAlways()**
   - Requests background (always) permission.
   - Returns "denied", "granted" or "blocked".
   - Background (always) permission cannot be obtained without Foreground (when-in-use) permission.
+
+- **checkNotification()**
+    - Checks notification permission.
+    - Returns "denied" or "granted".
+
+- **requestNotification()**
+    - Requests notification permission.
+    - Returns "denied", "granted" or "blocked".
 
 ```typescript ts
 RNLocation.permission
@@ -29,19 +37,29 @@ RNLocation.permission
   .catch(error => console.log('Check Location', error));
 
 RNLocation.permission
-  .checkLocationAlways()
-  .then(status => console.log('Check Location Always Status', status))
-  .catch(error => console.log('Check Location Always', error));
-
-RNLocation.permission
   .requestLocation()
   .then(status => console.log('Request Location Status', status))
   .catch(error => console.log('Request Location', error));
 
 RNLocation.permission
+  .checkLocationAlways()
+  .then(status => console.log('Check Location Always Status', status))
+  .catch(error => console.log('Check Location Always', error));
+
+RNLocation.permission
   .requestLocationAlways()
   .then(status => console.log('Request Location Always Status', status))
   .catch(error => console.log('Request Location Always', error));
+
+RNLocation.permission
+  .checkNotification()
+  .then(status => console.log('Check Notification Status', status))
+  .catch(error => console.log('Check Notification', error));
+
+RNLocation.permission
+  .requestNotification()
+  .then(status => console.log('Request Notification Status', status))
+  .catch(error => console.log('Request Notification', error));
 ```
 
 ## ⚙️ Manager Helpers

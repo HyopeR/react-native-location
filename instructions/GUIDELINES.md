@@ -19,6 +19,12 @@ At this stage you will find examples of side effects that you may experience whi
 const OPTIONS = {
   allowsBackgroundLocationUpdates: false,
   distanceFilter: 0,
+  notificationMandatory: false,
+  notification: {
+    icon: 'ic_launcher',
+    title: 'Location Service Running',
+    content: 'Location is being used by the app.',
+  },
   android: {
     priority: 'highAccuracy',
     provider: 'auto',
@@ -134,6 +140,18 @@ RNLocation.configure({allowsBackgroundLocationUpdates: true});
 RNLocation.subscribe()
   .onChange(locations => console.log('Background:', locations))
   .onError(error => console.log('Background error:', error));
+
+// Requires Location when-in-use permission.
+RNLocation.configure({allowsBackgroundLocationUpdates: false, notificationMandatory: false});
+RNLocation.configure({allowsBackgroundLocationUpdates: false, notificationMandatory: true});
+
+// Requires Location always permission.
+RNLocation.configure({allowsBackgroundLocationUpdates: true, notificationMandatory: false});
+
+// Requires Location always permission + Notification permission.
+// notificationMandatory is only meaningful in the always case.
+// It ensures that the process started in the background does not die.
+RNLocation.configure({allowsBackgroundLocationUpdates: true, notificationMandatory: true});
 ```
 
 ### Permission Behaviour on GetCurrent

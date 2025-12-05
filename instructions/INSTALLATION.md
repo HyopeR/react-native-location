@@ -23,10 +23,16 @@ To use location services in the background on Android, **ACCESS_BACKGROUND_LOCAT
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 ```
 
-On Android, location services are run through the ForegroundService while the app is in the background. This service must be defined in AndroidManifest.xml. **[See Lines](https://github.com/HyopeR/react-native-location/blob/master/example/android/app/src/main/AndroidManifest.xml#L22-L26)**
+On Android, the foreground service includes a notification. This notification prevents the system from forcibly stopping the started foreground service. You can control this behavior with "notificationMandatory".<br/>
+To use notification on Android, **POST_NOTIFICATIONS** permission must be added to the AndroidManifest.xml. **[See Lines](https://github.com/HyopeR/react-native-location/blob/master/example/android/app/src/main/AndroidManifest.xml#L14-L18)**
+```xml
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+```
+
+On Android, location services are run through the ForegroundService while the app is in the background. This service must be defined in AndroidManifest.xml. **[See Lines](https://github.com/HyopeR/react-native-location/blob/master/example/android/app/src/main/AndroidManifest.xml#L28-L32)**
 ```xml
 <service 
-    android:name="com.hyoper.location.RNLocationForegroundService"
+    android:name="com.hyoper.location.RNLocationForeground"
     android:exported="false"
     android:foregroundServiceType="location" />
 ```
@@ -51,6 +57,8 @@ To use location services in the background on IOS, **NSLocationAlwaysAndWhenInUs
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 <string>Location access when the app is in the foreground and background.</string>
 ```
+
+On IOS, you can set the notification behavior with "notificationMandatory" when using location in the background, but no setup is required.<br/>
 
 On IOS, if location services are to be used while the app is running in the background, this behavior must be defined as background modes in Info.plist. **[See Lines](https://github.com/HyopeR/react-native-location/blob/master/example/ios/ExampleApp/Info.plist#L38-L41)**
 ```xml
