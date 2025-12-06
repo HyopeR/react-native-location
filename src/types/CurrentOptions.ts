@@ -8,10 +8,10 @@ export type CurrentAccuracy = 'high' | 'balanced' | 'low';
 /**
  * @hidden
  */
-export type CurrentSharedOptions = Pick<
-  CurrentOptions,
-  'timeout' | 'background'
->;
+export type CurrentSharedOptions = {
+  duration?: number;
+  allowsBackgroundLocationUpdates?: boolean;
+};
 
 /**
  * @hidden

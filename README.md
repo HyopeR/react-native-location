@@ -1,3 +1,9 @@
+---
+title: Home
+group: Documents
+category: Instructions
+---
+
 # React Native Location
 
 <img src="./preview.gif" alt="Preview" width="100%" />
@@ -54,9 +60,13 @@ const Example = () => {
   useEffect(() => {
     // You can configure the subscription. This stage doesn't require permissions directly, 
     // but the configurations made at this stage determine which permissions the onChange callback should use.
-    // allowsBackgroundLocationUpdates: false -> requires the "when-in-use" permission.
-    // allowsBackgroundLocationUpdates: true -> requires the "always" permission.
+
+    // 1- Foreground mode → requires location "when-in-use" permission.
     RNLocation.configure({allowsBackgroundLocationUpdates: false});
+    // 2- Background mode → requires location "always" permission.
+    // RNLocation.configure({allowsBackgroundLocationUpdates: true});
+    // 3- Background safe mode → requires location "always" + notification permission.
+    // RNLocation.configure({allowsBackgroundLocationUpdates: true, notificationMandatory: true});
 
     // You can create a subscription without obtaining location permissions.
     // However, to receive a location, location permissions must be granted and GPS must be enabled.
@@ -85,6 +95,9 @@ const Example = () => {
           break;
         case 'ERROR_PERMISSION_ALWAYS':
           // Location "always" permission is not granted.
+          break;
+        case 'ERROR_PERMISSION_NOTIFICATION':
+          // Notification permission is not granted.
           break;
         case 'ERROR_UNKNOWN':
         default:

@@ -41,7 +41,7 @@ export class RNLocationModuleHelper {
 
   protected getPlatformCurrentOptions(options?: CurrentOptions) {
     const merge: Required<CurrentOptions> = {...CURRENT_OPTIONS, ...options};
-    const share = {
+    const share: Required<CurrentSharedOptions> = {
       duration: merge.timeout,
       allowsBackgroundLocationUpdates: merge.background,
     };
