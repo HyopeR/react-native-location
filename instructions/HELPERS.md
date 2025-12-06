@@ -11,30 +11,30 @@ These helper classes provide helper functions that simplify permission managemen
 ## 🔐 Permission Helpers
 The Permission class provides methods to check and request foreground and background location permissions.
 
-- **checkLocation()**
-  - Checks foreground (when-in-use) permission.
-  - Returns "denied" or "granted".
+#### checkLocation()
+- Checks foreground (when-in-use) permission.
+- Returns "denied" or "granted".
 
-- **requestLocation()**
-    - Requests foreground (when-in-use) permission.
-    - Returns "denied", "granted" or "blocked".
+#### requestLocation()
+- Requests foreground (when-in-use) permission.
+- Returns "denied", "granted" or "blocked".
 
-- **checkLocationAlways()**
-  - Checks background (always) permission.
-  - Returns "denied" or "granted".
+#### checkLocationAlways()
+- Checks background (always) permission.
+- Returns "denied" or "granted".
 
-- **requestLocationAlways()**
-  - Requests background (always) permission.
-  - Returns "denied", "granted" or "blocked".
-  - Background (always) permission cannot be obtained without Foreground (when-in-use) permission.
+#### requestLocationAlways()
+- Requests background (always) permission.
+- Returns "denied", "granted" or "blocked".
+- Background (always) permission cannot be obtained without Foreground (when-in-use) permission.
 
-- **checkNotification()**
-    - Checks notification permission.
-    - Returns "denied" or "granted".
+#### checkNotification()
+- Checks notification permission.
+- Returns "denied" or "granted".
 
-- **requestNotification()**
-    - Requests notification permission.
-    - Returns "denied", "granted" or "blocked".
+#### requestNotification()
+- Requests notification permission.
+- Returns "denied", "granted" or "blocked".
 
 ```typescript ts
 RNLocation.permission
@@ -71,18 +71,18 @@ RNLocation.permission
 ## ⚙️ Manager Helpers
 The Manager class provides methods for checking, opening, and redirecting users to GPS settings.
 
-- **checkGps()**
-    - Checks whether GPS is enabled.
+#### checkGps()
+- Checks whether GPS is enabled.
 
-- **openGps()**
-    - Attempts to programmatically enable GPS.
-    - This feature is only supported for Android.
+#### openGps()
+- Attempts to programmatically enable GPS.
+- This feature is only supported for Android.
 
-- **redirectGps()**
-    - Open the device location settings page.
+#### redirectGps()
+- Open the device location settings page.
 
-- **redirectGpsAlert()**
-    - Show the user a customizable alert and open the device location settings page.
+#### redirectGpsAlert()
+- Show the user a customizable alert and open the device location settings page.
 
 ```typescript ts
 RNLocation.manager
