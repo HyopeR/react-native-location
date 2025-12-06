@@ -1,3 +1,9 @@
+---
+title: Home
+group: Documents
+category: Instructions
+---
+
 # React Native Location
 
 <img src="./preview.gif" alt="Preview" width="100%" />

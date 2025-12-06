@@ -1,3 +1,9 @@
+---
+title: Helpers
+group: Documents
+category: Instructions
+---
+
 # 📄 Helpers
 This section covers the helper classes included in the package.<br/>
 These helper classes provide helper functions that simplify permission management and GPS management for Android and iOS.
