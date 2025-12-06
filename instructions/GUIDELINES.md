@@ -1,9 +1,3 @@
----
-title: Guidelines
-group: Documents
-category: Instructions
----
-
 # 📄 Guidelines
 In this section, you will see what you need to pay attention to when using the package, what steps to follow in certain scenarios, and other details about the package's behavior.
 
