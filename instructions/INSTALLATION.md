@@ -1,9 +1,3 @@
----
-title: Installation
-group: Documents
-category: Instructions
----
-
 # ⚒️ Installation
 This package requires some configuration on native Android & IOS to function correctly. The steps below will guide you through enabling both foreground and background location features.
 

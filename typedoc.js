@@ -6,12 +6,36 @@ module.exports = {
   githubPages: true,
 
   entryPoints: ['src/index.ts'],
+  plugin: ['./typedoc-front-matter.mjs'],
   projectDocuments: ['README.md', 'instructions/*.md'],
-  highlightLanguages: ['bash', 'typescript', 'javascript', 'json', 'xml'],
+  projectDetails: {
+    README: {
+      title: 'Home',
+      group: 'Documents',
+      category: 'Instructions',
+    },
+    GUIDELINES: {
+      title: 'Guidelines',
+      group: 'Documents',
+      category: 'Instructions',
+    },
+    HELPERS: {
+      title: 'Helpers',
+      group: 'Documents',
+      category: 'Instructions',
+    },
+    INSTALLATION: {
+      title: 'Installation',
+      group: 'Documents',
+      category: 'Instructions',
+    },
+  },
 
   navigationLinks: {
     Github: 'https://github.com/hyoper/react-native-location',
     Npm: 'https://www.npmjs.com/package/@hyoper/rn-location',
   },
+
+  highlightLanguages: ['bash', 'typescript', 'javascript', 'json', 'xml'],
   customCss: ['typedoc.css'],
 };
