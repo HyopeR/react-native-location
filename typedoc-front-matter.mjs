@@ -31,4 +31,4 @@ export function load(app) {
     reflection.name = title || fileName;
     reflection.frontmatter = {...fileFrontMatter, ...omit};
   });
-};
+}
