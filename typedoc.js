@@ -1,4 +1,6 @@
-/** @type {Partial<import("typedoc").TypeDocOptions>} */
+/**
+ * @type {Partial<import("typedoc").TypeDocOptions>}
+ */
 module.exports = {
   name: 'React Native Location',
   out: 'docs',
