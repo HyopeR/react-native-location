@@ -3,7 +3,7 @@ const {
   withInfoPlist,
   createRunOncePlugin,
 } = require('@expo/config-plugins');
-const {Description, Android, Ios} = require('./plugin.utils');
+const {Description, Android, Ios} = require('./app.plugin.utils');
 
 /**
  * @param {import("@expo/config-plugins").ExportedConfigWithProps} config
