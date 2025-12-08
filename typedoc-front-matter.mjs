@@ -9,14 +9,15 @@ export function load(app) {
 
   app.options.addDeclaration({
     name: 'projectDetails',
-    help: 'FrontMatter configuration to be added to Markdown files.',
+    help: 'Provides dynamic front-matter support for documents.',
     type: ParameterType.Object,
     defaultValue: {},
   });
 
   app.converter.on(Converter.EVENT_BEGIN, () => {
     config = app.options.getValue('projectDetails');
-    app.logger.info(`${PLUGIN_NAME} ${Object.keys(config).length} added.`);
+    const count = Object.keys(config).length;
+    app.logger.info(`${PLUGIN_NAME} ${count} settings detected.`);
   });
 
   app.converter.on(Converter.EVENT_RESOLVE, (context, reflection) => {
@@ -30,5 +31,6 @@ export function load(app) {
     const {title, ...omit} = config[fileKey];
     reflection.name = title || fileName;
     reflection.frontmatter = {...fileFrontMatter, ...omit};
+    app.logger.verbose(`${PLUGIN_NAME} ${fileKey} updated.`);
   });
 }
