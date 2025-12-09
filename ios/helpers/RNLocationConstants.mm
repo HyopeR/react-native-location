@@ -30,5 +30,11 @@ const RNLocationErrorMessageConst RNLocationErrorMessage = {
     .PERMISSION_NOTIFICATION = @"Notification permission is not granted.",
     .LOCATION_TIMEOUT = @"Location fetching operation timed out.",
     .LOCATION_PROVIDER_TEMPORARY = @"Location provider is temporarily unavailable.",
-    .PLATFORM_SUPPORT = @"This feature is not supported on ios.",
+    .PLATFORM_SUPPORT = @"This feature is not supported on ios."
+};
+
+const RNLocationNotifyConst RNLocationNotify = {
+    .ICON = @"ic_launcher",
+    .TITLE = @"Location Service Running",
+    .CONTENT = @"Location is being used by the app."
 };
