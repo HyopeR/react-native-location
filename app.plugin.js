@@ -4,6 +4,7 @@ const {
   createRunOncePlugin,
 } = require('@expo/config-plugins');
 const {Description, Android, Ios} = require('./app.plugin.utils');
+const pack = require('./package.json');
 
 /**
  * @param {import("@expo/config-plugins").ExportedConfigWithProps} config
@@ -92,8 +93,4 @@ const withLocation = (config, props) => {
   return config;
 };
 
-module.exports = createRunOncePlugin(
-  withLocation,
-  '@hyoper/rn-location',
-  '1.0.0',
-);
+module.exports = createRunOncePlugin(withLocation, pack.name, pack.version);

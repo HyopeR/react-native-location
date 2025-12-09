@@ -21,7 +21,9 @@
     "!android/build",
     "ios",
     "!ios/build",
-    "RNLocation.podspec"
+    "RNLocation.podspec",
+    "app.plugin.js",
+    "app.plugin.utils.js"
   ],
   "keywords": [
     "react",
