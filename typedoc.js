@@ -1,4 +1,6 @@
-/** @type {Partial<import("typedoc").TypeDocOptions>} */
+/**
+ * @type {Partial<import("typedoc").TypeDocOptions>}
+ */
 module.exports = {
   name: 'React Native Location',
   out: 'docs',
@@ -36,6 +38,6 @@ module.exports = {
     Npm: 'https://www.npmjs.com/package/@hyoper/rn-location',
   },
 
-  highlightLanguages: ['bash', 'typescript', 'javascript', 'json', 'xml'],
+  highlightLanguages: ['bash', 'typescript', 'json', 'json5', 'xml'],
   customCss: ['typedoc.css'],
 };

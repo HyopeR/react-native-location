@@ -66,3 +66,27 @@ On IOS, if location services are to be used while the app is running in the back
     <string>location</string>
 </array>
 ```
+
+## 🔼 Expo Setup
+There is a built-in plugin for **Expo** installations.<br/>
+Simply update the **app.json** **plugins** section in the Expo project.<br/>
+```json5
+{
+  // ...others configs
+  "plugins": [
+    // ...other plugins
+    [
+      "@hyoper/rn-location",
+      {
+        // (Optional) Set to true if you only use location in the background.
+        // This setting adds additional permissions for Android and iOS.
+        "background": true,
+        // (Optional) Updates the "Location Always" permission message for iOS.
+        "backgroundDescription": "Required to use location information while the app is open in the background.",
+        // (Optional) Updates the "Location When-In-Use" permission message for iOS.
+        "foregroundDescription": "Required to use location information while the app is in use."
+      }
+    ]
+  ]
+}
+```

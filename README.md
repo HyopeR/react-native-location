@@ -18,7 +18,7 @@ A **high-performance** React Native location library built with **New Architectu
 ---
 
 ## 🛠️️ Installation
-1- Install the package in your React Native project.
+1- Install the package in your React Native project. [🔗 NPM](https://www.npmjs.com/package/@hyoper/rn-location)
 
 ```bash
 npm install @hyoper/rn-location
