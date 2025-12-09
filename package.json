@@ -1,6 +1,6 @@
 {
   "name": "@hyoper/rn-location",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A high-performance react-native library for foreground and background location tracking.",
   "author": "hyoper <tolcelik11@gmail.com> (https://github.com/hyoper)",
   "homepage": "https://github.com/hyoper/react-native-location",
