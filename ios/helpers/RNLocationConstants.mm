@@ -12,12 +12,12 @@ const RNLocationEventConst RNLocationEvent = {
 };
 
 const RNLocationErrorConst RNLocationError = {
+    .UNKNOWN = @"ERROR_UNKNOWN",
     .SETUP = @"ERROR_SETUP",
     .PROVIDER = @"ERROR_PROVIDER",
     .PERMISSION = @"ERROR_PERMISSION",
     .PERMISSION_ALWAYS = @"ERROR_PERMISSION_ALWAYS",
-    .PERMISSION_NOTIFICATION = @"ERROR_PERMISSION_NOTIFICATION",
-    .UNKNOWN = @"ERROR_UNKNOWN"
+    .PERMISSION_NOTIFICATION = @"ERROR_PERMISSION_NOTIFICATION"
 };
 
 const RNLocationErrorMessageConst RNLocationErrorMessage = {
