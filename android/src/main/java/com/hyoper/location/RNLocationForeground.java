@@ -19,15 +19,16 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 
 import com.hyoper.location.providers.RNLocationProvider;
+import static com.hyoper.location.helpers.RNLocationConstants.Notify;
 
 public class RNLocationForeground extends Service {
     private static final String CHANNEL_ID = "RNLocationForeground";
     private static final String CHANNEL_NAME = "Location Service";
 
     private static final int NOTIFICATION_ID = 0x2000 + 1;
-    private static String notificationIcon = "ic_launcher";
-    private static String notificationTitle = "Location Service Running";
-    private static String notificationContent = "Location is being used by the app.";
+    private static String notificationIcon = Notify.ICON;
+    private static String notificationTitle = Notify.TITLE;
+    private static String notificationContent = Notify.CONTENT;
 
     private static RNLocationProvider provider = null;
     public static boolean providerWorking = false;
@@ -40,19 +41,19 @@ public class RNLocationForeground extends Service {
         if (map != null && map.hasKey("icon") && map.getType("icon") == ReadableType.String) {
             notificationIcon = map.getString("icon");
         } else {
-            notificationIcon = "ic_launcher";
+            notificationIcon = Notify.ICON;
         }
 
         if (map != null && map.hasKey("title") && map.getType("title") == ReadableType.String) {
             notificationTitle = map.getString("title");
         } else {
-            notificationTitle = "Location Service Running";
+            notificationTitle = Notify.TITLE;
         }
 
         if (map != null && map.hasKey("content") && map.getType("content") == ReadableType.String) {
             notificationContent = map.getString("content");
         } else {
-            notificationContent = "Location is being used by the app.";
+            notificationContent = Notify.CONTENT;
         }
     }
 

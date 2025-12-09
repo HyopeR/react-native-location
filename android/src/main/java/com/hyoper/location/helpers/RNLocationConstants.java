@@ -33,4 +33,10 @@ public class RNLocationConstants {
         public static final String LOCATION_PROVIDER_TEMPORARY = "Location provider is temporarily unavailable.";
         public static final String ACTIVITY = "Activity is not available.";
     }
+
+    public static class Notify {
+        public static final String ICON = "ic_launcher";
+        public static final String TITLE = "Location Service Running";
+        public static final String CONTENT = "Location is being used by the app.";
+    }
 }
