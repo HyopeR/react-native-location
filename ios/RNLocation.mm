@@ -13,6 +13,7 @@
 @property (nonatomic, strong, nonnull) RNLocationProvider *provider;
 @property (nonatomic, strong, nonnull) RNLocationPermissionImpl *permission;
 @property (nonatomic, strong, nonnull) RNLocationManagerImpl *manager;
+@property (nonatomic, assign) BOOL tracking;
 @property (nonatomic, assign) BOOL locationHighAccuracy;
 @property (nonatomic, assign) BOOL locationBackground;
 @property (nonatomic, assign) BOOL locationNotificationMandatory;
@@ -30,6 +31,7 @@
         _provider = [[RNLocationProvider alloc] init];
         _permission = [[RNLocationPermissionImpl alloc] init];
         _manager = [[RNLocationManagerImpl alloc] init];
+        _tracking = NO;
         _locationHighAccuracy = YES;
         _locationBackground = NO;
         _locationNotificationMandatory = NO;
@@ -114,6 +116,8 @@
 
 - (void)start {
     @try {
+        if (self.tracking) return;
+        
         [RNLocationGuard ensure:self.locationBackground
                    notification:self.locationNotificationMandatory];
         [RNLocationManager ensure:self.locationHighAccuracy];
@@ -124,14 +128,24 @@
         if (self.locationBackground && self.locationNotificationMandatory) {
             [RNLocationForeground start];
         }
+
+        self.tracking = YES;
     } @catch (NSException *e) {
         [RNLocationUtils handleException:e];
     }
 }
 
 - (void)stop {
-    [self.provider stop];
-    [RNLocationForeground stop];
+    @try {
+        if (!self.tracking) return;
+
+        [self.provider stop];
+        [RNLocationForeground stop];
+        
+        self.tracking = NO;
+    } @catch (NSException *e) {
+        [RNLocationUtils handleException:e];
+    }
 }
 
 - (void)checkLocation:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {

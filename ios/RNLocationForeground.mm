@@ -43,8 +43,6 @@ static BOOL centerWorking = NO;
 }
 
 + (void)start {
-    if (centerWorking) return;
-
     centerWorking = YES;
     
     UNMutableNotificationContent *content = [self buildNotification];
@@ -61,8 +59,6 @@ static BOOL centerWorking = NO;
 }
 
 + (void)stop {
-    if (!centerWorking) return;
-    
     centerWorking = NO;
     
     [center removeDeliveredNotificationsWithIdentifiers:@[CHANNEL_ID]];
