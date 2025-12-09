@@ -33,7 +33,14 @@ typedef struct {
     __unsafe_unretained NSString * _Nonnull PLATFORM_SUPPORT;
 } RNLocationErrorMessageConst;
 
+typedef struct {
+    __unsafe_unretained NSString * _Nonnull ICON;
+    __unsafe_unretained NSString * _Nonnull TITLE;
+    __unsafe_unretained NSString * _Nonnull CONTENT;
+} RNLocationNotifyConst;
+
 extern const RNLocationPermissionStatusConst RNLocationPermissionStatus;
 extern const RNLocationEventConst RNLocationEvent;
 extern const RNLocationErrorConst RNLocationError;
 extern const RNLocationErrorMessageConst RNLocationErrorMessage;
+extern const RNLocationNotifyConst RNLocationNotify;
