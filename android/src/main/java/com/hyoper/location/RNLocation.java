@@ -27,6 +27,7 @@ public class RNLocation extends NativeRNLocationSpec {
     private RNLocationProvider provider = null;
     private RNLocationPermissionImpl permission = null;
     private RNLocationManagerImpl manager = null;
+    private boolean tracking = false;
     private boolean locationHighAccuracy = true;
     private boolean locationBackground = false;
     private boolean locationNotificationMandatory = true;
@@ -138,6 +139,8 @@ public class RNLocation extends NativeRNLocationSpec {
 
     public void start() {
         try {
+            if (tracking) return;
+
             ReactApplicationContext context = getReactApplicationContext();
 
             RNLocationGuard.ensure(context, locationBackground, locationNotificationMandatory);
@@ -150,18 +153,28 @@ public class RNLocation extends NativeRNLocationSpec {
             } else {
                 provider.start();
             }
+
+            tracking = true;
         } catch (Exception e) {
             RNLocationUtils.handleException(e);
         }
     }
 
     public void stop() {
-        ReactApplicationContext context = getReactApplicationContext();
+        try {
+            if (!tracking) return;
 
-        if (RNLocationForeground.providerWorking) {
-            RNLocationForeground.stop(context);
-        } else {
-            provider.stop();
+            ReactApplicationContext context = getReactApplicationContext();
+
+            if (RNLocationForeground.providerWorking) {
+                RNLocationForeground.stop(context);
+            } else {
+                provider.stop();
+            }
+
+            tracking = false;
+        } catch (Exception e) {
+            RNLocationUtils.handleException(e);
         }
     }
 

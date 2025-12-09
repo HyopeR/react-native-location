@@ -57,8 +57,6 @@ public class RNLocationForeground extends Service {
     }
 
     public static void start(@NonNull Context context) {
-        if (providerWorking) return;
-
         Intent intent = new Intent(context, RNLocationForeground.class);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -69,8 +67,6 @@ public class RNLocationForeground extends Service {
     }
 
     public static void stop(@NonNull Context context) {
-        if (!providerWorking) return;
-
         Intent intent = new Intent(context, RNLocationForeground.class);
         context.stopService(intent);
     }
