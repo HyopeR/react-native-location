@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import static com.hyoper.location.helpers.RNLocationConstants.Error;
+import static com.hyoper.location.helpers.RNLocationConstants.ErrorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public final class RNLocationGuard {
 
     public static void ensureActivity(@Nullable Activity activity) throws RNLocationException {
         if (activity == null) {
-            throw new RNLocationException(Error.UNKNOWN, "Current activity is not available.", false);
+            throw new RNLocationException(Error.UNKNOWN, ErrorMessage.ACTIVITY, false);
         }
     }
 
@@ -173,15 +174,15 @@ public final class RNLocationGuard {
 
     private static void throwException(@NonNull List<String> array) throws RNLocationException {
         String message = String.join(", ", array);
-        throw new RNLocationException(Error.SETUP, "Setup missing: " + message, true);
+        throw new RNLocationException(Error.SETUP, ErrorMessage.SETUP + message, true);
     }
 
     private static void throwHandleException(@NonNull Exception exception) throws RNLocationException {
         if (exception instanceof RNLocationException) {
             throw (RNLocationException) exception;
         } else {
-            String message = (exception.getMessage() != null) ? exception.getMessage() : "Unknown error.";
-            throw new RNLocationException(Error.SETUP, "Setup runtime issue: " + message, true);
+            String message = (exception.getMessage() != null) ? exception.getMessage() : ErrorMessage.UNKNOWN;
+            throw new RNLocationException(Error.SETUP, ErrorMessage.SETUP_RUNTIME + message, true);
         }
     }
 

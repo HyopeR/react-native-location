@@ -1,6 +1,12 @@
 package com.hyoper.location.helpers;
 
 public class RNLocationConstants {
+    public static class PermissionStatus {
+        public static final String GRANTED = "granted";
+        public static final String DENIED = "denied";
+        public static final String BLOCKED = "blocked";
+    }
+
     public static class Event {
         public static final String ON_CHANGE = "onChange";
         public static final String ON_ERROR = "onError";
@@ -15,9 +21,16 @@ public class RNLocationConstants {
         public static final String UNKNOWN = "ERROR_UNKNOWN";
     }
 
-    public static class PermissionStatus {
-        public static final String GRANTED = "granted";
-        public static final String DENIED = "denied";
-        public static final String BLOCKED = "blocked";
+    public static class ErrorMessage {
+        public static final String UNKNOWN = "Unknown error.";
+        public static final String SETUP = "Setup missing: ";
+        public static final String SETUP_RUNTIME = "Setup runtime error: ";
+        public static final String PROVIDER = "No location manager is available.";
+        public static final String PERMISSION = "Location when-in-use permission is not granted.";
+        public static final String PERMISSION_ALWAYS = "Location always permission is not granted.";
+        public static final String PERMISSION_NOTIFICATION = "Notification permission is not granted.";
+        public static final String LOCATION_TIMEOUT = "Location fetching operation timed out.";
+        public static final String LOCATION_PROVIDER_TEMPORARY = "Location provider is temporarily unavailable.";
+        public static final String ACTIVITY = "Activity is not available.";
     }
 }
