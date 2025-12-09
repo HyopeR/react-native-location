@@ -12,25 +12,26 @@ import androidx.core.content.ContextCompat;
 
 import com.hyoper.location.helpers.RNLocationException;
 import static com.hyoper.location.helpers.RNLocationConstants.Error;
+import static com.hyoper.location.helpers.RNLocationConstants.ErrorMessage;
 import static com.hyoper.location.helpers.RNLocationConstants.PermissionStatus;
 
 public class RNLocationPermission {
     public static void ensure(@NonNull Context context, boolean background, boolean notification) throws RNLocationException {
         boolean permissionAllowed = checkLocationGrant(context);
         if (!permissionAllowed) {
-            throw new RNLocationException(Error.PERMISSION, "Location (Coarse/Fine) permission is not granted.", true);
+            throw new RNLocationException(Error.PERMISSION, ErrorMessage.PERMISSION, true);
         }
 
         if (background) {
             boolean permissionAlwaysAllowed = checkLocationAlwaysGrant(context);
             if (!permissionAlwaysAllowed) {
-                throw new RNLocationException(Error.PERMISSION_ALWAYS, "Location (Background) permission is not granted.", true);
+                throw new RNLocationException(Error.PERMISSION_ALWAYS, ErrorMessage.PERMISSION_ALWAYS, true);
             }
 
             if (notification) {
                 boolean permissionNotificationAllowed = checkNotificationGrant(context);
                 if (!permissionNotificationAllowed) {
-                    throw new RNLocationException(Error.PERMISSION_NOTIFICATION, "Notification permission is not granted.", true);
+                    throw new RNLocationException(Error.PERMISSION_NOTIFICATION, ErrorMessage.PERMISSION_NOTIFICATION, true);
                 }
             }
         }

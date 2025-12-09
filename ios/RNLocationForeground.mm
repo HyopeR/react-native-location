@@ -1,11 +1,12 @@
 #import "RNLocationForeground.h"
+#import "RNLocationConstants.h"
 
 static NSString *CHANNEL_ID = @"RNLocationForeground";
 static NSString *CHANNEL_NAME = @"Location Service";
 
-static NSString *notificationIcon = @"ic_launcher";
-static NSString *notificationTitle = @"Location Service Running";
-static NSString *notificationContent = @"Location is being used by the app.";
+static NSString *notificationIcon = RNLocationNotify.ICON;
+static NSString *notificationTitle = RNLocationNotify.TITLE;
+static NSString *notificationContent = RNLocationNotify.CONTENT;
 
 static UNUserNotificationCenter *center = nil;
 static BOOL centerWorking = NO;
@@ -26,25 +27,23 @@ static BOOL centerWorking = NO;
     if (map && [map[@"icon"] isKindOfClass:[NSString class]]) {
         notificationIcon = map[@"icon"];
     } else {
-        notificationIcon = @"ic_launcher";
+        notificationIcon = RNLocationNotify.ICON;
     }
     
     if (map && [map[@"title"] isKindOfClass:[NSString class]]) {
         notificationTitle = map[@"title"];
     } else {
-        notificationTitle = @"Location Service Running";
+        notificationTitle = RNLocationNotify.TITLE;
     }
     
     if (map && [map[@"content"] isKindOfClass:[NSString class]]) {
         notificationContent = map[@"content"];
     } else {
-        notificationContent = @"Location is being used by the app.";
+        notificationContent = RNLocationNotify.CONTENT;
     }
 }
 
 + (void)start {
-    if (centerWorking) return;
-
     centerWorking = YES;
     
     UNMutableNotificationContent *content = [self buildNotification];
@@ -61,8 +60,6 @@ static BOOL centerWorking = NO;
 }
 
 + (void)stop {
-    if (!centerWorking) return;
-    
     centerWorking = NO;
     
     [center removeDeliveredNotificationsWithIdentifiers:@[CHANNEL_ID]];

@@ -12,6 +12,7 @@ import com.facebook.react.bridge.WritableMap;
 
 import static com.hyoper.location.helpers.RNLocationConstants.Event;
 import static com.hyoper.location.helpers.RNLocationConstants.Error;
+import static com.hyoper.location.helpers.RNLocationConstants.ErrorMessage;
 
 public class RNLocationUtils {
     public static String name = "RNLocation";
@@ -48,7 +49,7 @@ public class RNLocationUtils {
 
     public static void handleException(Exception exception, @Nullable Promise promise) {
         boolean hasPromise = promise != null;
-        String message = (exception.getMessage() != null) ? exception.getMessage() : "Unknown error.";
+        String message = (exception.getMessage() != null) ? exception.getMessage() : ErrorMessage.UNKNOWN;
 
         if (exception instanceof RNLocationException e) {
             if (hasPromise) promise.reject(e.code, message);
