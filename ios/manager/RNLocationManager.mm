@@ -11,7 +11,7 @@
     if (![CLLocationManager locationServicesEnabled]) {
         @throw [[RNLocationException alloc]
                 initWithCode:RNLocationError.PROVIDER
-                message:@"No location manager is available."
+                message:RNLocationErrorMessage.PROVIDER
                 critical:YES];
     }
 }

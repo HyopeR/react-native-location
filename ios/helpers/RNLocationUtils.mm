@@ -48,7 +48,7 @@ static facebook::react::EventEmitterCallback eventEmitter = nullptr;
                 resolve:(nullable RCTPromiseResolveBlock)resolve
                  reject:(nullable RCTPromiseRejectBlock)reject {
     BOOL hasPromise = (reject != nil);
-    NSString *message = exception.reason ?: @"Unknown error.";
+    NSString *message = exception.reason ?: RNLocationErrorMessage.UNKNOWN;
 
     if ([exception isKindOfClass:[RNLocationException class]]) {
         RNLocationException *e = (RNLocationException *)exception;

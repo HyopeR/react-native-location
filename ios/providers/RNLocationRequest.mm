@@ -33,14 +33,14 @@
             if (strongSelf.resolved) return;
             strongSelf.resolved = YES;
             dispatch_async(dispatch_get_main_queue(), ^{
-                strongSelf.reject(RNLocationError.UNKNOWN, @"Location timed out.", nil);
+                strongSelf.reject(RNLocationError.UNKNOWN, RNLocationErrorMessage.LOCATION_TIMEOUT, nil);
             });
         });
     } @catch (NSException *e) {
         if (self.resolved) return;
         self.resolved = YES;
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *message = e.reason ?: @"Unknown error.";
+            NSString *message = e.reason ?: RNLocationErrorMessage.UNKNOWN;
             self.reject(RNLocationError.UNKNOWN, message, nil);
         });
     }

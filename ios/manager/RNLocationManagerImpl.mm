@@ -24,7 +24,7 @@
          reject:(nonnull RCTPromiseRejectBlock)reject {
     @throw [[RNLocationException alloc]
             initWithCode:RNLocationError.UNKNOWN
-            message:@"This feature is not supported on IOS."
+            message:RNLocationErrorMessage.PLATFORM_SUPPORT
             critical:NO];
 }
 

@@ -81,7 +81,7 @@ static NSString * const kUIBackgroundModeLocation = @"location";
     NSString *message = [array componentsJoinedByString:@", "];
     @throw [[RNLocationException alloc]
             initWithCode:RNLocationError.SETUP
-            message:[@"Setup missing: " stringByAppendingString:message]
+            message:[RNLocationErrorMessage.SETUP stringByAppendingString:message]
             critical:YES];
 }
 
@@ -89,10 +89,10 @@ static NSString * const kUIBackgroundModeLocation = @"location";
     if ([exception isKindOfClass:[RNLocationException class]]) {
         @throw exception;
     } else {
-        NSString *message = exception.reason ?: @"Unknown error.";
+        NSString *message = exception.reason ?: RNLocationErrorMessage.UNKNOWN;
         @throw [[RNLocationException alloc]
                 initWithCode:RNLocationError.SETUP
-                message:[@"Setup runtine issue: " stringByAppendingString:message]
+                message:[RNLocationErrorMessage.SETUP_RUNTIME stringByAppendingString:message]
                 critical:YES];
     }
 }

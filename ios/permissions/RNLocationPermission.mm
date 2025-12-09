@@ -14,7 +14,7 @@
     if (!locationAllowed) {
         @throw [[RNLocationException alloc]
                 initWithCode:RNLocationError.PERMISSION
-                message:@"Location (Coarse/Fine) permission is not granted."
+                message:RNLocationErrorMessage.PERMISSION
                 critical:YES];
     }
     
@@ -23,7 +23,7 @@
         if (!locationAlwaysAllowed) {
             @throw [[RNLocationException alloc]
                     initWithCode:RNLocationError.PERMISSION_ALWAYS
-                    message:@"Location (Background) permission is not granted."
+                    message:RNLocationErrorMessage.PERMISSION_ALWAYS
                     critical:YES];
         }
         
@@ -32,7 +32,7 @@
             if (!notificationAllowed) {
                 @throw [[RNLocationException alloc]
                         initWithCode:RNLocationError.PERMISSION_NOTIFICATION
-                        message:@"Notification permission is not granted."
+                        message:RNLocationErrorMessage.PERMISSION_NOTIFICATION
                         critical:YES];
             }
         }
