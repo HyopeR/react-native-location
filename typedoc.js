@@ -6,7 +6,9 @@ module.exports = {
   out: 'docs',
   tsconfig: 'tsconfig.json',
   githubPages: true,
+  favicon: 'preview.ico',
 
+  defaultCategory: 'Package',
   entryPoints: ['src/index.ts'],
   plugin: ['./typedoc-front-matter.mjs'],
   projectDocuments: ['README.md', 'instructions/*.md'],
@@ -39,5 +41,6 @@ module.exports = {
   },
 
   highlightLanguages: ['bash', 'typescript', 'json', 'json5', 'xml'],
-  customCss: ['typedoc.css'],
+  customCss: ['typedoc-custom.css'],
+  customJs: ['typedoc-custom.js'],
 };
