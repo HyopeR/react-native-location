@@ -44,7 +44,7 @@ function withLocationAndroid(config, props = {}) {
 
       manifest.application[0].service = manifest.application[0].service || [];
       Android.addService(manifest.application[0].service, {
-        'android:name': '.RNLocationForeground',
+        'android:name': 'com.hyoper.location.RNLocationForeground',
         'android:exported': 'false',
         'android:foregroundServiceType': 'location',
       });
