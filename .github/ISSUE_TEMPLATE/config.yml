@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://hyoper.github.io/react-native-location
+    about: Please check docs before opening an issue.
